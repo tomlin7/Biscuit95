@@ -138,10 +138,8 @@ class SecondarySideBar(Frame):
     def pack(self, *args, **kwargs):
         if isinstance(self.master, ttk.PanedWindow):
             self.master.add(self, weight=0)
-            # ttk.PanedWindow doesn't support minsize or width directly
-        elif isinstance(self.master, tk.PanedWindow):
-            self.master.add(self, width=380, stretch="never")
-            self.master.paneconfigure(self, minsize=50)
+            self.configure(width=250)
+            self.update_idletasks()
         else:
             super().pack(
                 side=tk.LEFT,

@@ -4,7 +4,7 @@ import tkinter as tk
 import typing
 from tkinter import ttk
 
-from biscuit.common.ui import Frame, tkPanedWindow
+from biscuit.common.ui import Frame, PanedWindow
 
 from .editors import EditorsManager
 from .panel import Panel
@@ -24,7 +24,7 @@ class Content(Frame):
         super().__init__(master, *args, **kwargs)
         self.base.contentpane = self
 
-        self.container = tkPanedWindow(self, orient=tk.VERTICAL, bd=0, sashwidth=2)
+        self.container = PanedWindow(self, orient=tk.VERTICAL)
         self.container.pack(fill=tk.BOTH, expand=True)
 
         self.editorspane = EditorsManager(self.container)
@@ -32,7 +32,7 @@ class Content(Frame):
         self._panel_enabled = False
         self._panel_maxed = False
 
-        self.container.add(self.editorspane, stretch="always")
+        self.container.add(self.editorspane, weight=1)
 
     def show_panel(self) -> None:
         if not self._panel_enabled:
@@ -44,9 +44,9 @@ class Content(Frame):
         else:
             if self._panel_maxed:
                 self.container.forget(self.editorspane)
-                self.container.add(self.panel, stretch="always")
+                self.container.add(self.panel, weight=1)
             else:
-                self.container.add(self.panel, height=300, stretch="never")
+                self.container.add(self.panel, weight=0)
 
             if not self.panel.terminals.active_terminal:
                 self.panel.terminals.open_terminal()
@@ -56,11 +56,11 @@ class Content(Frame):
     def toggle_max_panel(self, *_) -> None:
         if self._panel_maxed:
             self.container.forget(self.panel)
-            self.container.add(self.editorspane, stretch="always")
-            self.container.add(self.panel, height=300, stretch="never")
+            self.container.add(self.editorspane, weight=1)
+            self.container.add(self.panel, weight=0)
         else:
             self.container.forget(self.editorspane)
-            self.container.add(self.panel, stretch="always")
+            self.container.add(self.panel, weight=1)
 
         self._panel_maxed = not self._panel_maxed
 

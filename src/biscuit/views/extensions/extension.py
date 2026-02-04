@@ -82,8 +82,8 @@ class ExtensionGUI(Frame):
         self.namelbl = Label(
             self.container,
             text=name[0].upper() + name[1:],
-            font=("Segoi UI", 11, "bold"),
-            anchor=tk.W,
+            # font=("Segoi UI", 11, "bold"),
+            # anchor=tk.W,
         )
         self.namelbl.pack(fill=tk.X)
 
@@ -94,10 +94,10 @@ class ExtensionGUI(Frame):
                 if len(self.description) >= 30
                 else self.description
             ),
-            font=("Segoi UI", 9),
-            anchor=tk.W,
+            # font=("Segoi UI", 9),
+            # anchor=tk.W,
         )
-        self.descriptionlbl.config(fg="grey")
+        # self.descriptionlbl.config(fg="grey")
         self.descriptionlbl.pack(fill=tk.X, expand=True)
 
         self.subcontainer = Frame(self.container)
@@ -106,14 +106,14 @@ class ExtensionGUI(Frame):
         self.authorlbl = Label(
             self.subcontainer,
             text=f"@{self.author}",
-            font=("Segoi UI", 7, "bold"),
-            anchor=tk.W,
+            # font=("Segoi UI", 7, "bold"),
+            # anchor=tk.W,
         )
-        self.authorlbl.config(fg="grey")
+        # self.authorlbl.config(fg="grey")
         self.authorlbl.pack(side=tk.LEFT, fill=tk.X)
 
-        self.install = HoverChangeButton(self.subcontainer, "Install", padx=10)
-        self.install.config(font=("Segoi UI", 8), pady=2)
+        self.install = HoverChangeButton(self.subcontainer, "Install") #, padx=10)
+        # self.install.config(font=("Segoi UI", 8), pady=2)
         self.install.pack(side=tk.RIGHT, fill=tk.X)
 
         if self.installed:
@@ -156,7 +156,7 @@ class ExtensionGUI(Frame):
 
         self.install.text = "Installed"
         self.install.hovertext = "Uninstall"
-        self.install.config(text="Installed", activebackground="#c61c1c")
+        self.install.config(text="Installed")
 
     def set_uninstalled(self):
         self.install.set_command(self.install_extension)
@@ -176,18 +176,18 @@ class ExtensionGUI(Frame):
         # self.config(bg=self.hbg)
         # self.namelbl.config(bg=self.hbg)
         # self.authorlbl.config(bg=self.hbg)
-        self.descriptionlbl.config(bg=self.hbg)
-        self.container.config(bg=self.hbg)
-        self.subcontainer.config(bg=self.hbg)
+        # self.descriptionlbl.config(bg=self.hbg)
+        # self.container.config(bg=self.hbg)
+        # self.subcontainer.config(bg=self.hbg)
 
     def deselect(self):
         self.selected = False
         # self.config(bg=self.bg)
         # self.namelbl.config(bg=self.bg)
         # self.authorlbl.config(bg=self.bg)
-        self.descriptionlbl.config(bg=self.bg)
-        self.container.config(bg=self.bg)
-        self.subcontainer.config(bg=self.bg)
+        # self.descriptionlbl.config(bg=self.bg)
+        # self.container.config(bg=self.bg)
+        # self.subcontainer.config(bg=self.bg)
 
     def hoverin(self, *_) -> None:
         if self.selected:

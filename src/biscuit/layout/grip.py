@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import tkinter as tk
+from tkinter import ttk
 import typing
 
 if typing.TYPE_CHECKING:
     from .root import Root
 
 
-class Grip(tk.Frame):
+class Grip(ttk.Frame):
     """A grip to resize the application
 
     - Can be placed on the left, right, top, or bottom of the application

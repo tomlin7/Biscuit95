@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tkinter as tk
+from tkinter import ttk
 import typing
 
 from ..ui import Text
@@ -14,7 +15,7 @@ class PaletteItem(Text):
 
     def __init__(
         self,
-        master: tk.Frame,
+        master: tk.Frame | ttk.Frame,
         palette: Palette,
         text: str,
         command: str,

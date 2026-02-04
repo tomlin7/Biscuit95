@@ -46,8 +46,8 @@ class Root(Frame):
         self.menubar = Menubar(self)
         self.statusbar = Statusbar(self)
 
-        self.subcontainer = tkPanedWindow(
-            self, orient=tk.HORIZONTAL, bd=0, sashwidth=2 #, bg=self.base.settings.style.theme.background
+        self.subcontainer = PanedWindow(
+            self, orient=tk.HORIZONTAL
         )
         self.sidebar = SideBar(
             self.subcontainer, activitybar=self.statusbar.activitybar

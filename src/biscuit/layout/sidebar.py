@@ -107,16 +107,9 @@ class SideBar(Frame):
 
     def pack(self, *args, **kwargs):
         if isinstance(self.master, ttk.PanedWindow):
-            self.master.add(self, weight=0)
-            # ttk.PanedWindow doesn't support minsize or width directly
-        elif isinstance(self.master, tk.PanedWindow):
-            try:
-                self.master.add(
-                    self, before=self.base.contentpane, width=270, stretch="never"
-                )
-            except:
-                self.master.add(self, width=270, stretch="never")
-            self.master.paneconfigure(self, minsize=50)
+            self.master.insert(0, self, weight=0)
+            self.configure(width=250)
+            self.update_idletasks()
         else:
             super().pack(
                 side=tk.LEFT, fill=tk.Y, before=self.base.contentpane, *args, **kwargs
@@ -124,7 +117,7 @@ class SideBar(Frame):
         self.visible = True
 
     def hide(self):
-        if isinstance(self.master, tk.PanedWindow):
+        if isinstance(self.master, (tk.PanedWindow, ttk.PanedWindow)):
             self.master.forget(self)
         else:
             super().pack_forget()

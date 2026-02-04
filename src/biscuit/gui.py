@@ -204,7 +204,7 @@ class GUIManager(Tk, ConfigManager):
         if self.testing:
             return
 
-        # self.setup_extensions()
+        self.setup_extensions()
 
     def register_misc_palettes(self) -> None:
         """Register miscellaneous palettes that don't belong to any specific component."""

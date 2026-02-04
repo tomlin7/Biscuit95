@@ -31,6 +31,9 @@ class HoverChangeButton(ttk.Button):
         self.text = text
         self.hovertext = hovertext
 
+    def set_command(self, command) -> None:
+        self.configure(command=command)
+
 
 class IconLabelButton(Frame):
     """Icon label button with both text and icon"""
