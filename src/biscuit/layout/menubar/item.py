@@ -11,10 +11,12 @@ if typing.TYPE_CHECKING:
 
 class MenubarItem(ttk.Button):
     def __init__(self, master: Menubar, text, *args, **kwargs) -> None:
-        super().__init__(master, *args, **kwargs)
+        super().__init__(master, style="MenubarItem.TButton", *args, **kwargs)
         self.name = text
         self.config(
             text=text,
+            width=0,
+            command=self.onclick,
         )
         # padx=10,
         # pady=5,

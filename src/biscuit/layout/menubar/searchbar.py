@@ -12,7 +12,7 @@ class SearchBar(Frame):
     - When active directory, opens the file search, shows the active directory name"""
 
     def __init__(self, master, *args, **kwargs):
-        super().__init__(master, *args, **kwargs)
+        super().__init__(master, style="SearchBar.TFrame", *args, **kwargs)
         self.config()
 
         self.label = IconLabelButton(

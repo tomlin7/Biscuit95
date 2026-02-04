@@ -50,7 +50,20 @@ class Style(ttk.Style):
 
         # Menubar Styles
         self.configure("MenuBar.TFrame", padding=3, borderwidth=1, relief="raised")
-
+        self.configure("MenubarItem.TButton", 
+                      font=self.settings.uifont, 
+                      padding=(1,1), 
+                      relief="flat", 
+                      borderwidth=1)
+        self.map("MenubarItem.TButton",
+                relief=[("active", "raised"), ("pressed", "sunken")])
+        
+        # Icon Button (used for window controls, notifications)
+        self.configure("IconButton.TButton", font=("codicon", 12), width=0, padding=(8, 3), relief="flat", borderwidth=0)
+        
+        # SearchBar Style
+        self.configure("SearchBar.TFrame", borderwidth=1, relief="sunken")
+        
         self.gen_fileicons()
         self.config_treeview()
         self.config_scrollbars()

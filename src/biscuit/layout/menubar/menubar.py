@@ -31,7 +31,7 @@ class Menubar(Frame):
         self.searchbar.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
         self.container_right = Frame(self)
-        self.container_right.pack(side=tk.RIGHT, fill=tk.BOTH)
+        self.container_right.pack(side=tk.RIGHT, fill=tk.BOTH, pady=2)
 
         self.notifications = Notifications(self.container_right)
         self.notifications.pack(side=tk.LEFT, fill=tk.BOTH)
@@ -114,7 +114,7 @@ class Menubar(Frame):
 
     def add_menu(self, text: str) -> Menu:
         new_menu = MenubarItem(self, text)
-        new_menu.pack(side=tk.LEFT, fill=tk.BOTH, in_=self.container)
+        new_menu.pack(side=tk.LEFT, fill=tk.Y, in_=self.container, pady=2)
         self.menus.append(new_menu)
 
         return new_menu.menu
