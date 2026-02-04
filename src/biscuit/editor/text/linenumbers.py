@@ -27,7 +27,7 @@ class LineNumbers(Canvas):
 
         super().__init__(master, *args, **kwargs)
         self.master: TextEditor = master
-        # self.config(width=65, bd=0, highlightthickness=0)
+        self.config(width=65, bd=0, highlightthickness=0)
         self.text = text
         self.font = self.base.settings.font
         self.breakpoints: set[int] = set()
@@ -57,8 +57,7 @@ class LineNumbers(Canvas):
         self.create_window(70, y - 2, anchor=tk.NE, window=btn)
 
     def set_bar_width(self, width):
-        return
-        # self.configure(width=width)
+        self.configure(width=width)
 
     def toggle_breakpoint(self, line):
         if line in self.breakpoints:

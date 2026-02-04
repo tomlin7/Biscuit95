@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-import sqlite3
+import toml
 import typing
 
 from .common import ActionSet, FixedSizeStack
@@ -14,29 +14,17 @@ class HistoryManager:
     """Manages the history of opened files and folders.
 
     Manages the history of opened files and folders.
-    Uses an sqlite3 database to store the history.
+    Uses a toml file to store the history.
     """
 
     def __init__(self, base: App) -> None:
         self.base = base
-        self.path = self.base.datadir / "history.db"
+        self.path = self.base.datadir / "history.toml"
 
-        self.db = sqlite3.connect(self.path)
-        self.cursor = self.db.cursor()
-
-        self.cursor.executescript(
-            """
-            CREATE TABLE IF NOT EXISTS file_history (path TEXT NOT NULL);
-            CREATE TABLE IF NOT EXISTS folder_history (path TEXT NOT NULL);
-            """
-        )
-
-        self.file_history = FixedSizeStack(self, "file_history").load_sqlite(
-            self.cursor
-        )
-        self.folder_history = FixedSizeStack(self, "folder_history").load_sqlite(
-            self.cursor
-        )
+        self.file_history = FixedSizeStack(self, "file_history", capacity=10)
+        self.folder_history = FixedSizeStack(self, "folder_history", capacity=10)
+        
+        self.load()
 
     def generate_actionsets(self) -> None:
         self.base.palette.register_actionset(
@@ -51,12 +39,33 @@ class HistoryManager:
 
     def register_folder_history(self, path: str) -> None:
         self.folder_history.push(path)
+    
+    def load(self) -> None:
+        if not self.path.exists():
+            return
+
+        try:
+            with open(self.path, "r") as f:
+                data = toml.load(f)
+            
+            self.file_history.load(data.get("file_history", []))
+            self.folder_history.load(data.get("folder_history", []))
+        except Exception as e:
+            self.base.logger.error(f"History load failed: {e}")
 
     def dump(self) -> None:
-        self.file_history.dump_sqlite(self.cursor)
-        self.folder_history.dump_sqlite(self.cursor)
-        self.db.commit()
+        data = {
+            "file_history": self.file_history.get(),
+            "folder_history": self.folder_history.get()
+        }
+        
+        try:
+            with open(self.path, "w") as f:
+                toml.dump(data, f)
+        except Exception as e:
+            self.base.logger.error(f"History dump failed: {e}")
 
     def clear_history(self) -> None:
         self.file_history.clear()
         self.folder_history.clear()
+        self.dump()

@@ -29,16 +29,16 @@ class PaletteItem(Text):
         self.command = command
 
         self.config(
-            # font=self.base.settings.uifont,
-            # cursor="hand2",
-            # padx=15,
-            # pady=8,
-            # relief=tk.FLAT,
-            # highlightthickness=0,
-            # width=30,
-            # height=1,
-            # spacing1=2,
-            # spacing3=2,
+            font=self.base.settings.uifont,
+            cursor="hand2",
+            padx=15,
+            pady=8,
+            relief=tk.FLAT,
+            highlightthickness=0,
+            width=30,
+            height=1,
+            spacing1=2,
+            spacing3=2,
         )
 
         self.tag_config("term", font=self.base.settings.uifont_bold)

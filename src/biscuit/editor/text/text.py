@@ -113,12 +113,14 @@ class Text(BaseText):
         self.update_idletasks()
         self.comment_prefix = get_comment_prefix(self.language.lower())
         tab_width = self.base.settings.font.measure(" " * self.tab_spaces)
-        # self.configure(
-        #     tabs=(tab_width),
-        #     blockcursor=self.base.block_cursor,
-        #     wrap=tk.NONE,
-        #     relief=tk.FLAT,
-        #     highlightthickness=0,
+        self.configure(
+            font=self.base.settings.font,
+            padx=0,
+            pady=0,
+            wrap=tk.NONE,
+            relief=tk.FLAT,
+            highlightthickness=0,
+        )
         #     bd=0,
         # )
 
@@ -1043,8 +1045,6 @@ class Text(BaseText):
     def load_new_file(self, path: str):
         self.path = path
         self.load_file()
-        self.highlighter.detect_language()
-        self.highlighter.highlight()
 
     def load_text(self, text: str = "", eol: str = ""):
         self.clear()
@@ -1097,7 +1097,8 @@ class Text(BaseText):
                         self.master.on_scroll()
                         self.update_idletasks()
                         self.master.file_loaded()
-                        self.focus_set()
+                        self.highlighter.detect_language()
+                        self.highlighter.highlight()
                     except Exception:
                         pass
                     break

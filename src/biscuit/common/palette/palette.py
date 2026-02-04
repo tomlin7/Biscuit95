@@ -22,9 +22,6 @@ class Palette(Toplevel):
         super().__init__(master, *args, **kwargs)
 
         self.width = round(width * self.base.scale)
-        self.active = False
-        self.withdraw()
-
         if platform.system() == "Windows":
             from ctypes import byref, c_int, sizeof, windll
 

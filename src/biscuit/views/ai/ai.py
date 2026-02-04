@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-import sqlite3
+import toml
 import tkinter as tk
 import typing
 
@@ -65,19 +65,19 @@ class AI(SideBarView):
         self.add_action(Icons.COPY, self.copy_chat)
         self.add_action(Icons.ELLIPSIS, self.menu.show)
 
-        # Database setup
-        self.db = sqlite3.connect(os.path.join(self.base.datadir, "secrets.db"))
-        self.cursor = self.db.cursor()
-        self.cursor.executescript(
-            """
-            CREATE TABLE IF NOT EXISTS secrets (key TEXT PRIMARY KEY NOT NULL, value TEXT);
-            """
-        )
+        self.add_action(Icons.ELLIPSIS, self.menu.show)
 
-        self.cursor.execute("SELECT key, value FROM secrets WHERE key IN ('GEMINI_API_KEY', 'ANTHROPIC_API_KEY')")
-        keys = dict(self.cursor.fetchall())
-        self.api_keys["gemini"] = keys.get("GEMINI_API_KEY", "")
-        self.api_keys["anthropic"] = keys.get("ANTHROPIC_API_KEY", "")
+        # Secrets setup
+        self.secrets_path = os.path.join(self.base.datadir, "secrets.toml")
+        
+        try:
+            if os.path.exists(self.secrets_path):
+                with open(self.secrets_path, "r") as f:
+                    secrets = toml.load(f)
+                    self.api_keys["gemini"] = secrets.get("GEMINI_API_KEY", "")
+                    self.api_keys["anthropic"] = secrets.get("ANTHROPIC_API_KEY", "")
+        except Exception as e:
+            self.base.logger.error(f"Failed to load secrets: {e}")
 
         self.placeholder = AIPlaceholder(self)
         if self.api_keys["gemini"] or self.api_keys["anthropic"]:
@@ -129,15 +129,22 @@ class AI(SideBarView):
             return self.add_placeholder()
 
     def save_keys(self, gemini: str = None, anthropic: str = None) -> None:
-        """Save API keys to database and start chat."""
+        """Save API keys to toml file and start chat."""
         if gemini:
             self.api_keys["gemini"] = gemini
-            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('GEMINI_API_KEY', ?)", (gemini))
         if anthropic:
             self.api_keys["anthropic"] = anthropic
-            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('ANTHROPIC_API_KEY', ?)", (anthropic))
-        
-        self.db.commit()
+            
+        try:
+            secrets = {
+                "GEMINI_API_KEY": self.api_keys["gemini"],
+                "ANTHROPIC_API_KEY": self.api_keys["anthropic"]
+            }
+            with open(self.secrets_path, "w") as f:
+                toml.dump(secrets, f)
+        except Exception as e:
+            self.base.logger.error(f"Failed to save secrets: {e}")
+            
         self.add_chat()
 
     def add_chat(self) -> None:

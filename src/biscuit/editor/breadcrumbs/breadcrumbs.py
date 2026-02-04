@@ -25,8 +25,8 @@ class Item(IconLabelButton):
             # hfg_only=True
         )
         self.path = path
-        self.text_label.config(padx=0, pady=0, font=self.base.settings.uifont)
-        self.icon_label.config(padx=0, pady=0, font=("codicon", 12))
+        # self.text_label.config(padx=0, pady=0, font=self.base.settings.uifont)
+        # self.icon_label.config(padx=0, pady=0, font=("codicon", 12))
 
     def on_click(self, e: tk.Event):
         self.callback(self)
@@ -42,7 +42,7 @@ class BreadCrumbs(Frame):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config()
+        # self.config()
 
         self.pathview = self.base.pathview
 

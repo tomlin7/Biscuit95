@@ -23,22 +23,24 @@ class BiscuitStyle(Style):
         self.background_color = None
 
 
+from pygments.token import Token
+
 class Highlighter:
     """Syntax Highlighter
-
+    
     This highlighter uses pygments to highlight the text content based on the lexer provided.
     The lexer can be provided explicitly or it can be detected from the file extension.
     If the file extension is not recognized, it will default to plain text.
-
+    
     Supported languages and text formats: https://pygments.org/docs/lexers/
     """
 
     def __init__(self, text: Text, language: str = None, *args, **kwargs) -> None:
         """Highlighter based on pygments lexers
-
+        
         If language is not given, it will try to detect the language from the file extension.
         If the file extension is not recognized, it will default to plain text.
-
+        
         Args:
             text (Text): The text instance to be highlighted
             language (str, optional): Language to highlight. Defaults to None."""
@@ -72,8 +74,66 @@ class Highlighter:
                 self.text.language = "Plain Text"
                 self.text.language_alias = "text"
 
-        self.tag_colors = None
-        # self.setup_highlight_tags()
+        self.tag_colors = {
+            Token.Keyword: "#0000ff",
+            Token.Keyword.Constant: "#0000ff",
+            Token.Keyword.Declaration: "#0000ff",
+            Token.Keyword.Namespace: "#0000ff",
+            Token.Keyword.Pseudo: "#0000ff",
+            Token.Keyword.Reserved: "#0000ff",
+            Token.Keyword.Type: "#0000ff",
+            Token.Name: "#000000",
+            Token.Name.Attribute: "#001080",
+            Token.Name.Builtin: "#001080",
+            Token.Name.Builtin.Pseudo: "#001080",
+            Token.Name.Class: "#267f99",
+            Token.Name.Constant: "#0070c1",
+            Token.Name.Decorator: "#795e26",
+            Token.Name.Entity: "#098658",
+            Token.Name.Exception: "#a31515",
+            Token.Name.Function: "#795e26",
+            Token.Name.Label: "#001080",
+            Token.Name.Namespace: "#267f99",
+            Token.Name.Other: "#001080",
+            Token.Name.Tag: "#800000",
+            Token.Name.Variable: "#001080",
+            Token.Name.Variable.Class: "#001080",
+            Token.Name.Variable.Global: "#001080",
+            Token.Name.Variable.Instance: "#001080",
+            Token.Literal: "#098658",
+            Token.Literal.Date: "#098658",
+            Token.String: "#a31515",
+            Token.String.Affix: "#a31515",
+            Token.String.Backtick: "#a31515",
+            Token.String.Char: "#a31515",
+            Token.String.Doc: "#008000",
+            Token.String.Double: "#a31515",
+            Token.String.Escape: "#ee0000",
+            Token.String.Heredoc: "#a31515",
+            Token.String.Interpol: "#0000ff",
+            Token.String.Other: "#a31515",
+            Token.String.Regex: "#811f3f",
+            Token.String.Single: "#a31515",
+            Token.String.Symbol: "#001080",
+            Token.Number: "#098658",
+            Token.Number.Bin: "#098658",
+            Token.Number.Float: "#098658",
+            Token.Number.Hex: "#098658",
+            Token.Number.Integer: "#098658",
+            Token.Number.Integer.Long: "#098658",
+            Token.Number.Oct: "#098658",
+            Token.Operator: "#000000",
+            Token.Operator.Word: "#0000ff",
+            Token.Punctuation: "#000000",
+            Token.Comment: "#008000",
+            Token.Comment.Hashbang: "#008000",
+            Token.Comment.Multiline: "#008000",
+            Token.Comment.Preproc: "#795e26",
+            Token.Comment.Single: "#008000",
+            Token.Comment.Special: "#008000",
+            Token.Generic: "#000000",
+        }
+        self.setup_highlight_tags()
 
     def detect_language(self) -> None:
         """Detect the language from the file extension and set the lexer

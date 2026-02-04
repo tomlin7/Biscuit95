@@ -129,20 +129,22 @@ class Dropdown(Frame):
             self.icon_label.bind("<Button-1>", self.menu.show)
 
     def on_enter(self, *_) -> None:
-        self.config(bg=self.hbg)
-        if self.text:
-            self.text_label.config(bg=self.hbg, fg=self.hfg)
-        if self.icon:
-            self.icon_label.config(bg=self.iconhbg, fg=self.iconhfg)
-        self.dropdown_btn.config(bg=self.hbg, fg=self.hfg)
+        return
+        # self.config(bg=self.hbg)
+        # if self.text:
+        #     self.text_label.config(bg=self.hbg, fg=self.hfg)
+        # if self.icon:
+        #     self.icon_label.config(bg=self.iconhbg, fg=self.iconhfg)
+        # self.dropdown_btn.config(bg=self.hbg, fg=self.hfg)
 
     def on_leave(self, *_) -> None:
-        self.config(bg=self.bg)
-        if self.text:
-            self.text_label.config(bg=self.bg, fg=self.fg)
-        if self.icon:
-            self.icon_label.config(bg=self.iconbg, fg=self.iconfg)
-        self.dropdown_btn.config(bg=self.bg, fg=self.fg)
+        return
+        # self.config(bg=self.bg)
+        # if self.text:
+        #     self.text_label.config(bg=self.bg, fg=self.fg)
+        # if self.icon:
+        #     self.icon_label.config(bg=self.iconbg, fg=self.iconfg)
+        # self.dropdown_btn.config(bg=self.bg, fg=self.fg)
 
     def change_text(self, text) -> None:
         """Change the text of the item"""
