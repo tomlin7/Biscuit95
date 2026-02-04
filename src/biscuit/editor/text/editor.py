@@ -141,8 +141,8 @@ class TextEditor(BaseEditor):
             self.minimap.attach(self.text)
         self.scrollbar.config(command=self.text.yview)
 
-        # self.text.config(font=self.font)
-        # self.text.configure(yscrollcommand=self.scrollbar.set)
+        self.text.config(font=self.font)
+        self.text.configure(yscrollcommand=self.scrollbar.set)
 
         self.linenumbers.grid(row=0, column=0, sticky=tk.NS)
         self.text.grid(row=0, column=1, sticky=tk.NSEW)
