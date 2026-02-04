@@ -20,12 +20,12 @@ class Menubar(Frame):
     """Menubar - Contains and manages MenubarItems."""
 
     def __init__(self, master: Frame, *args, **kwargs) -> None:
-        super().__init__(master, *args, **kwargs)
+        super().__init__(master, style="MenuBar.TFrame", *args, **kwargs)
         self.menus: list[MenubarItem] = []
         self.events = self.base.commands
 
         self.container = Frame(self)
-        self.container.pack(side=tk.LEFT, fill=tk.BOTH)
+        self.container.pack(side=tk.LEFT, fill=tk.BOTH, pady=2)
 
         self.searchbar = SearchBar(self)
         self.searchbar.place(relx=0.5, rely=0.5, anchor=tk.CENTER)

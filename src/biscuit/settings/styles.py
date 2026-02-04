@@ -23,21 +23,33 @@ class Style(ttk.Style):
         # Global TTK Configurations
         self.configure(".", font=self.settings.uifont)
         
-        # Configure standard widgets with consistent padding/margins
+        # Configure standard widgets with consistent padding/margins and borders
         self.configure("TFrame") 
         self.configure("TLabel", font=self.settings.uifont, padding=2)
-        self.configure("TButton", font=self.settings.uifont, padding=(10, 5))
+        self.configure("TButton", font=self.settings.uifont, padding=(5, 2), borderwidth=1, relief="raised")
         self.configure("TCheckbutton", font=self.settings.uifont, padding=2)
-        self.configure("TEntry", font=self.settings.uifont, padding=2)
+        self.configure("TEntry", font=self.settings.uifont, padding=5, borderwidth=1, relief="sunken")
         self.configure("TMenubutton", font=self.settings.uifont, padding=(10, 5))
-        self.configure("TNotebook", font=self.settings.uifont)
-        self.configure("TNotebook.Tab", font=self.settings.uifont, padding=(12, 4))
+        self.configure("TNotebook", font=self.settings.uifont, borderwidth=0)
+        self.configure("TNotebook.Tab", font=self.settings.uifont, padding=(12, 4), borderwidth=1, relief="flat")
+        
+        # Configure PanedWindow sash
+        self.configure("TPanedwindow", sashwidth=4, sashrelief="raised", background="#d0d0d0")
         
         # Activity Bar icons (font-based)
-        self.configure("ActivityBar.TButton", font=("codicon", 12), width=0, padding=2)
+        self.configure("ActivityBar.TButton", font=("codicon", 11), width=0, padding=(5, 5), relief="flat", borderwidth=0)
         
         # Generic Icon Button
         self.configure("IconButton.TButton", font=("codicon", 12), width=0, padding=2)
+
+        # Status Bar Styles
+        self.configure("StatusBar.TFrame", padding=3, borderwidth=1, relief="raised")
+        self.configure("StatusBar.Button.TFrame", padding=0, borderwidth=0, relief="flat")
+        self.configure("StatusBar.TLabel", padding=(2, 0), font=("Segoe UI", 9))
+        self.configure("StatusBar.Icon.TLabel", padding=(2, 0), font=("codicon", 10))
+
+        # Menubar Styles
+        self.configure("MenuBar.TFrame", padding=3, borderwidth=1, relief="raised")
 
         self.gen_fileicons()
         self.config_treeview()

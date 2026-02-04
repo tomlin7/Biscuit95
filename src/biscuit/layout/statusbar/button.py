@@ -34,7 +34,7 @@ class SButton(Frame):
         *args,
         **kwargs,
     ) -> None:
-        super().__init__(master, style="StatusBar.TFrame")  # , padx=padx, pady=pady, *args, **kwargs)
+        super().__init__(master, style="StatusBar.Button.TFrame")  # , padx=padx, pady=pady, *args, **kwargs)
         self.callback = callback or (lambda *_: None)
         self.text = text
         self.icon = icon
@@ -99,7 +99,7 @@ class SButton(Frame):
         if not self.visible:
             self.lift()
             self.visible = True
-            self.pack(**self.get_pack_data(), fill=tk.Y)
+            self.pack(**self.get_pack_data(), fill=tk.Y, pady=2)
 
     def hide(self) -> None:
         if self.visible:

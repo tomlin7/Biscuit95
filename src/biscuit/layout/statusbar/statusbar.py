@@ -21,10 +21,10 @@ class Statusbar(Frame):
     """Status bar - displays information about the current file and editor state."""
 
     def __init__(self, master: Frame, *args, **kwargs) -> None:
-        super().__init__(master, *args, **kwargs)
+        super().__init__(master, style="StatusBar.TFrame", *args, **kwargs)
 
         self.activitybar = ActivityBar(self)
-        self.activitybar.pack(side=tk.LEFT, padx=(10, 0))
+        self.activitybar.pack(side=tk.LEFT, padx=(5, 0), pady=2)
 
         self.branch = self.add_button(
             text="main",
