@@ -17,8 +17,7 @@ class CallStack(SideBarViewItem):
         self.tree = Tree(
             self.content,
             cursor="hand2",
-            columns=("fullpath", "line"),
-        )
+            columns=("fullpath", "line"))
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
         self.tree.bind("<<TreeviewSelect>>", self.goto_line)
 

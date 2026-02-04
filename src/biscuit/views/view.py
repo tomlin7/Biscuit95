@@ -6,4 +6,3 @@ class View(Frame):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.views)

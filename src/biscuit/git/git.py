@@ -21,8 +21,7 @@ try:
 except ImportError:
     messagebox.showerror(
         "Git not found",
-        "Git is not installed on your PC. Install and add Git to the PATH to use Biscuit",
-    )
+        "Git is not installed on your PC. Install and add Git to the PATH to use Biscuit")
     git_available = False
 
 URL = re.compile(r"^(?:http)s?://")
@@ -51,8 +50,7 @@ class Git(git.Git):
                     "Create new branch: {}",
                     lambda branch=None: self.repo.create_branch(branch),
                 ]
-            ],
-        )
+            ])
 
     def late_setup(self) -> None:
         """This function is called after the app is initialized."""

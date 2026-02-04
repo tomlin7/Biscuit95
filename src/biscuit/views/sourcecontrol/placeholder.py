@@ -7,15 +7,14 @@ from biscuit.common.ui import Frame, IconLabelButton, WrappingLabel
 class ChangesTreePlaceholder(Frame):
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(padx=15, pady=10, **self.base.theme.views.sidebar.item)
+        # self.config(padx=15, pady=10)
         self.columnconfigure(0, weight=1)
 
         WrappingLabel(
             self,
             font=self.base.settings.uifont,
             anchor=tk.W,
-            **self.base.theme.views.sidebar.item.content,
-            text="Open a folder containing a git repository."
+            text="Open a folder containing a git repository.",
         ).grid(row=0, sticky=tk.EW)
 
         # TODO add init repo button if no repo is found for opened folder

@@ -29,7 +29,7 @@ class Inspect(PanelView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__actions__ = ((Icons.CLEAR_ALL, self.clear),)
+        self.__actions__ = (Icons.CLEAR_ALL, self.clear)
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -41,44 +41,27 @@ class Inspect(PanelView):
         container.columnconfigure(0, weight=1)
 
         self.text = tk.Text(
-            container,
-            relief=tk.FLAT,
-            padx=10,
-            pady=10,
-            font=("Consolas", 11),
-            **self.base.theme.editors.text,
+            container, relief=tk.FLAT, padx=10, pady=10, font=("Consolas", 11)
         )
         self.text.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.scrollbar = Scrollbar(container, style="EditorScrollbar")
+        self.scrollbar = Scrollbar(container)
         self.scrollbar.grid(sticky=tk.NSEW, row=0, column=1)
 
-        frame = Frame(
-            self,
-            padx=5,
-            pady=5,
-            bg=self.base.theme.layout.background,
-        )
+        frame = Frame(self)
+        # padx=5,
+        # pady=5)
         frame.grid(row=1, column=0, sticky=tk.NSEW, pady=(1, 0))
 
         self.entry = HintedEntry(
-            frame,
-            relief=tk.FLAT,
-            font=("Consolas", 11),
-            hint="Use /help for help",
-            bg=self.base.theme.layout.background,
-            fg=self.base.theme.layout.foreground,
+            frame, relief=tk.FLAT, font=("Consolas", 11), hint="Use /help for help"
         )
         self.entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.entry.bind("<Return>", self.enter)
         self.entry.bind("<Up>", self.previous_command)
         self.entry.bind("<Down>", self.next_command)
 
-        self.text.tag_config(
-            "hline",
-            background=self.base.theme.border,
-            bgstipple=f"@{self.base.resources.line}",
-        )
+        self.text.tag_config("hline", bgstipple=f"@{self.base.resources.line}")
 
         self.text.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.text.yview)

@@ -15,34 +15,31 @@ class Tree(Text):
         super().__init__(master, wrap="none", borderwidth=0, highlightthickness=0)
         self.master = master
         self.base = master.base
-        self.config(
-            cursor="hand2",
-            **self.base.theme.views.sidebar.item.content,
-            font=self.base.settings.uifont,
-            padx=10,
-            pady=10,
-            spacing1=0,
-            spacing2=0,
-            spacing3=0,
-        )
+        # self.config(
+        #     cursor="hand2",
+
+        #     font=self.base.settings.uifont,
+        #     padx=10,
+        #     pady=10,
+        #     spacing1=0,
+        #     spacing2=0,
+        #     spacing3=0)
 
         for kind in kinds:
             if kind[1]:
                 self.tag_config(kind[0], foreground=kind[1])
             self.tag_config(kind[0], font="codicon 12")
-        self.tag_config(
-            "branch", foreground=self.base.theme.border, font=("Segoi UI", 15)
-        )
+        self.tag_config("branch", font=("Segoi UI", 15))
 
         # self.bind("<Button-1>", self.onclick)
         # self.bind("<Enter>", self.hoverin)
         # self.bind("<Leave>", self.hoverout)
 
     # def hoverin(self, _: tk.Event) -> None:
-    #     self.tag_config("branch", foreground=self.base.theme.border)
+    #     self.tag_config("branch")
 
     # def hoverout(self, _: tk.Event) -> None:
-    #     self.tag_config("branch", foreground=self.base.theme.views.sidebar.item.content.background)
+    #     self.tag_config("branch")
 
     def add_items(self, items: list[lsp.DocumentSymbol], level=0) -> None:
         if not items:

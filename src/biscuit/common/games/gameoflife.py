@@ -23,18 +23,13 @@ class GameOfLife(BaseGame):
             self,
             text="Start",
             command=self.toggle_start_stop,
-            padx=20,
-            pady=20,
-            font=("Fixedsys", 15),
-        )
+            font=("Fixedsys", 15))
         self.canvas = tk.Canvas(
             self,
             width=GRID_WIDTH * CELL_SIZE,
             height=GRID_HEIGHT * CELL_SIZE,
             borderwidth=0,
-            highlightthickness=0,
-            **self.base.theme.editors
-        )
+            highlightthickness=0)
 
         self._grid = [[0] * GRID_WIDTH for _ in range(GRID_HEIGHT)]
         # self.randomize_grid()
@@ -67,9 +62,8 @@ class GameOfLife(BaseGame):
                 0,
                 x,
                 GRID_HEIGHT * CELL_SIZE,
-                fill=self.base.theme.border,
-                tags="grid",
-            )
+
+                tags="grid")
         for row in range(GRID_HEIGHT + 1):
             y = row * CELL_SIZE
             self.canvas.create_line(
@@ -77,9 +71,8 @@ class GameOfLife(BaseGame):
                 y,
                 GRID_WIDTH * CELL_SIZE,
                 y,
-                fill=self.base.theme.border,
-                tags="grid",
-            )
+
+                tags="grid")
 
     def toggle_start_stop(self, *_) -> None:
         if self.is_running:
@@ -150,7 +143,7 @@ class GameOfLife(BaseGame):
         x2 = x1 + CELL_SIZE
         y2 = y1 + CELL_SIZE
         self.canvas.create_rectangle(
-            x1, y1, x2, y2, fill=self.base.theme.biscuit, outline="", tags="cell"
+            x1, y1, x2, y2, outline="", tags="cell"
         )
 
     def erase_cell(self, row, col) -> None:
@@ -163,7 +156,6 @@ class GameOfLife(BaseGame):
             y1,
             x2,
             y2,
-            fill=self.base.theme.editors.background,
-            outline=self.base.theme.border,
-            tags="cell",
-        )
+
+
+            tags="cell")

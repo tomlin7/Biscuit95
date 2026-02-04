@@ -1,6 +1,9 @@
+import tkinter as tk
+from tkinter import ttk
+
 from biscuit.common.icons import Icons
 from biscuit.common.ui.labels import Label
-from biscuit.common.ui.native import Frame, Menubutton
+from biscuit.common.ui.native import Frame
 
 
 class Icon(Label):
@@ -17,10 +20,10 @@ class Icon(Label):
         self.config(text=icon)
 
     def set_color(self, color: str) -> None:
-        self.config(fg=color)
+        pass
 
 
-class IconButton(Menubutton):
+class IconButton(ttk.Button):
     """Icon button using codicons"""
 
     def __init__(
@@ -30,30 +33,16 @@ class IconButton(Menubutton):
         event=lambda *_: ...,
         icon2: Icons = "",
         iconsize=12,
-        highlighted=False,
-        hfg_only=False,
         *args,
-        **kwargs
+        **kwargs,
     ) -> None:
-        super().__init__(master, *args, **kwargs)
-        self.config(
-            cursor="hand2",
-            **(
-                (
-                    self.base.theme.utils.iconbutton_hfg
-                    if hfg_only
-                    else self.base.theme.utils.iconbutton
-                )
-                if not highlighted
-                else self.base.theme.utils.button
-            )
-        )
+        super().__init__(master, style="IconButton.TButton", *args, **kwargs)
         self.icons = [icon, icon2]
         self.icon2 = icon2
         self.switch = False
 
         self.event = event
-        self.config(text=icon, font=("codicon", iconsize))
+        self.config(text=icon)
 
         self.bind("<Button-1>", self.onclick)
 
@@ -90,19 +79,14 @@ class IconButton(Menubutton):
 
 
 class BorderedIconButton(Frame):
-    def __init__(
-        self,
-        master,
-        bd=1,
-        *args,
-        **kwargs
-    ) -> None:
+    """Icon button with a border"""
+
+    def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master)
-        self.config(padx=bd, pady=bd, bg=self.base.theme.border)
 
         self.btn = IconButton(self, *args, **kwargs)
         self.btn.pack(fill="both", expand=True)
-        
+
     def set_callback(self, event) -> None:
         self.btn.set_callback(event)
 

@@ -10,158 +10,52 @@ if typing.TYPE_CHECKING:
 
 
 class Style(ttk.Style):
-    """Handles the styling of the app"""
+    """Handles the global styling of the app using clam theme"""
 
     def __init__(self, settings: Settings, *args, **kwargs) -> None:
         super().__init__(settings.base, *args, **kwargs)
         self.settings = settings
         self.base = settings.base
-        self.theme = settings.config.theme
 
-        self.configure(
-            "TCheckbutton",
-            background=self.theme.editors.background,
-            font=self.settings.uifont,
-        )
-        self.configure("TFrame", background=self.theme.editors.background)
+        # Use the clam theme as requested
+        self.theme_use("clam")
+
+        # Global TTK Configurations
+        self.configure(".", font=self.settings.uifont)
+        
+        # Configure standard widgets with consistent padding/margins
+        self.configure("TFrame") 
+        self.configure("TLabel", font=self.settings.uifont, padding=2)
+        self.configure("TButton", font=self.settings.uifont, padding=(10, 5))
+        self.configure("TCheckbutton", font=self.settings.uifont, padding=2)
+        self.configure("TEntry", font=self.settings.uifont, padding=2)
+        self.configure("TMenubutton", font=self.settings.uifont, padding=(10, 5))
+        self.configure("TNotebook", font=self.settings.uifont)
+        self.configure("TNotebook.Tab", font=self.settings.uifont, padding=(12, 4))
+        
+        # Activity Bar icons (font-based)
+        self.configure("ActivityBar.TButton", font=("codicon", 12), width=0, padding=2)
+        
+        # Generic Icon Button
+        self.configure("IconButton.TButton", font=("codicon", 12), width=0, padding=2)
+
         self.gen_fileicons()
-
         self.config_treeview()
-        self.config_tree_scrollbar()
+        self.config_scrollbars()
 
     def config_treeview(self) -> None:
-
-        self.configure(
-            "Treeview.treearea",
-            font=self.settings.uifont,
-            relief="flat",
-            rowheight=25,
-            highlightthickness=0,
-            bd=0,
-            **self.theme.utils.tree.item,
-            padding=0,
-        )
-        self.configure(
-            "Treeview",
-            font=self.settings.uifont,
-            relief="flat",
-            rowheight=25,
-            highlightthickness=0,
-            bd=0,
-            **self.theme.utils.tree.item,
-            padding=0,
-        )
-
-        self.layout("Treeview", [("Treeview.treearea", {"sticky": "nswe"})])
-
         self.monofont = Font(family=self.settings.config.font[0], size=10)
-        self.layout("mono.Treeview", [("Treeview.treearea", {"sticky": "nswe"})])
-        self.configure(
-            "mono.Treeview.treearea",
-            font=self.monofont,
-            relief="flat",
-            rowheight=25,
-            highlightthickness=0,
-            bd=0,
-            **self.theme.utils.tree.item,
-            padding=0,
-        )
-        self.configure(
-            "mono.Treeview",
-            font=self.monofont,
-            relief="flat",
-            rowheight=25,
-            highlightthickness=0,
-            bd=0,
-            **self.theme.utils.tree.item,
-            padding=0,
-        )
 
-        self.layout("secondary.Treeview", [("Treeview.treearea", {"sticky": "nswe"})])
-        self.configure(
-            "secondary.Treeview.treearea",
-            font=self.monofont,
-            relief="flat",
-            rowheight=25,
-            highlightthickness=0,
-            bd=0,
-            **self.theme.utils.secondary_tree.item,
-            padding=0,
-        )
-        self.configure(
-            "secondary.Treeview",
-            font=self.monofont,
-            relief="flat",
-            rowheight=25,
-            highlightthickness=0,
-            bd=0,
-            **self.theme.utils.secondary_tree.item,
-            padding=0,
-        )
+        # Trust theme for colors, only set professional rowheight
+        self.configure("Treeview", font=self.settings.uifont, rowheight=25)
+        self.configure("mono.Treeview", font=self.monofont, rowheight=25)
+        self.configure("secondary.Treeview", font=self.monofont, rowheight=25)
 
-    def config_tree_scrollbar(self) -> None:
-        self.element_create("TreeScrollbar.trough", "from", "clam")
-        self.element_create("TreeScrollbar.thumb", "from", "clam")
 
-        self.layout(
-            "TreeScrollbar",
-            [
-                (
-                    "TreeScrollbar.trough",
-                    {
-                        "sticky": "ns",
-                        "children": [
-                            ("TreeScrollbar.thumb", {"unit": "1", "sticky": "nsew"})
-                        ],
-                    },
-                )
-            ],
-        )
-
-        bg, _, highlight, _ = self.theme.utils.scrollbar.values()
-        self.configure(
-            "TreeScrollbar",
-            gripcount=0,
-            background=bg,
-            troughcolor=bg,
-            bordercolor=bg,
-            lightcolor=bg,
-            darkcolor=bg,
-            arrowsize=14,
-        )
-        self.map(
-            "TreeScrollbar",
-            background=[("pressed", highlight), ("!disabled", self.theme.border)],
-        )
-
-        self.element_create("EditorScrollbar.trough", "from", "clam")
-        self.element_create("EditorScrollbar.thumb", "from", "clam")
-
-        self.layout(
-            "EditorScrollbar",
-            [
-                (
-                    "EditorScrollbar.trough",
-                    {
-                        "sticky": "nsew",
-                        "children": [("EditorScrollbar.thumb", {"sticky": "nsew"})],
-                    },
-                )
-            ],
-        )
-        self.configure(
-            "EditorScrollbar",
-            gripcount=0,
-            background=bg,
-            troughcolor=bg,
-            bordercolor=bg,
-            lightcolor=bg,
-            darkcolor=bg,
-        )
-        self.map(
-            "EditorScrollbar",
-            background=[("pressed", highlight), ("!disabled", self.theme.border)],
-        )
+    def config_scrollbars(self) -> None:
+        """Configure scrollbar styles using default theme colors"""
+        # Removed custom layouts to trust the native clam look (with arrows)
+        pass
 
     def gen_fileicons(self) -> None:
         self.document_icn = tk.PhotoImage(

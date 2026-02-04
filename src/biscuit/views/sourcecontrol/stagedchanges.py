@@ -14,10 +14,10 @@ class StagedChanges(SideBarViewItem):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__actions__ = ((Icons.REMOVE, self.git_remove_all),)
+        self.__actions__ = ((Icons.REMOVE, self.git_remove_all))
         self.title = "Staged Changes"
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.views.sidebar.item)
+        self.config()
         self.items = {}
 
     def refresh(self) -> None:

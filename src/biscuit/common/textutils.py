@@ -36,8 +36,8 @@ def get_default_newline():
 
 
 # CREDITS: https://eli.thegreenplace.net/2011/10/19/perls-guess-if-file-is-text-or-binary-implemented-in-python/
-int2byte = lambda x: bytes((x,))
-_text_characters = b"".join(int2byte(i) for i in range(32, 127)) + b"\n\r\t\f\b"
+int2byte = lambda x: bytes((x))
+_text_characters = b"".join(int2byte(i) for i in range(32, 127)) + b"\n\r\t\f\b" + b"".join(int2byte(i) for i in range(128, 256))
 
 
 def is_text_file(path: str) -> bool:
@@ -47,14 +47,16 @@ def is_text_file(path: str) -> bool:
         path (str): path to the file
     """
 
-    fp = open(path, "rb")
-    block = fp.read(512)
-    fp.close()
-
-    if b"\x00" in block:
-        return False
-    elif not block:
+    try:
+        with open(path, "rb") as fp:
+            block = fp.read(1024)
+            if not block:
+                return True
+            
+            # If it contains a NULL byte, it's definitely or likely binary
+            if b"\x00" in block:
+                return False
+            
+            return True
+    except:
         return True
-
-    nontext = block.translate(None, _text_characters)
-    return float(len(nontext)) / len(block) <= 0.30

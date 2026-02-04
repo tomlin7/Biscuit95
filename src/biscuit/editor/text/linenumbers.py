@@ -4,8 +4,8 @@ import tkinter as tk
 import typing
 
 if typing.TYPE_CHECKING:
-    from .text import Text
     from .editor import TextEditor
+    from .text import Text
 
 from biscuit.common.ui import Canvas, Menubutton
 
@@ -27,18 +27,9 @@ class LineNumbers(Canvas):
 
         super().__init__(master, *args, **kwargs)
         self.master: TextEditor = master
-        self.config(
-            width=65, bd=0, highlightthickness=0, **self.base.theme.editors.linenumbers
-        )
+        # self.config(width=65, bd=0, highlightthickness=0)
         self.text = text
         self.font = self.base.settings.font
-
-        self.bg, self.fg, _, self.hfg = (
-            self.base.theme.editors.linenumbers.number.values()
-        )
-        self.bp_hover_color, _, self.bp_enabled_color, _ = (
-            self.base.theme.editors.linenumbers.breakpoint.values()
-        )
         self.breakpoints: set[int] = set()
 
     def attach(self, text):
@@ -62,12 +53,12 @@ class LineNumbers(Canvas):
             pady=0,
             padx=0,
             relief=tk.FLAT,
-            **self.base.theme.linenumbers,
         )
         self.create_window(70, y - 2, anchor=tk.NE, window=btn)
 
     def set_bar_width(self, width):
-        self.configure(width=width)
+        return
+        # self.configure(width=width)
 
     def toggle_breakpoint(self, line):
         if line in self.breakpoints:
@@ -83,7 +74,7 @@ class LineNumbers(Canvas):
         if not self.text:
             return
 
-        current_line = int(self.text.index(tk.INSERT).split('.')[0]) 
+        current_line = int(self.text.index(tk.INSERT).split(".")[0])
 
         i = self.text.index("@0,0")
         while True:
@@ -100,7 +91,7 @@ class LineNumbers(Canvas):
             #             # check if line is commented
             # if self.text.highlighter and any((tag[1].startswith("Token.Comment") for tag in self.text.dump(i, i + " lineend", tag=True))):
             # if self.text.get(f"{i} linestart", f"{i} lineend").strip().startswith("#"):
-            #     self.create_text(40, y, anchor=tk.NE, text="|   ", tag=i, fill=self.base.theme.border)
+            #     self.create_text(40, y, anchor=tk.NE, text="|   ", tag=i)
             #     i = self.text.index(f"{i}+1line")
             #     continue
 
@@ -112,23 +103,22 @@ class LineNumbers(Canvas):
                 15,
                 y + 13,
                 outline="",
-                fill=self.bg if not has_breakpoint else self.bp_enabled_color,
             )
 
             # Bind hover and click events for breakpoint
             self.tag_bind(
                 breakpoint_id,
                 "<Enter>",
-                lambda _, breakpoint_id=breakpoint_id, flag=has_breakpoint: self.on_breakpoint_enter(
-                    breakpoint_id, flag
-                ),
+                lambda _,
+                breakpoint_id=breakpoint_id,
+                flag=has_breakpoint: self.on_breakpoint_enter(breakpoint_id, flag),
             )
             self.tag_bind(
                 breakpoint_id,
                 "<Leave>",
-                lambda _, breakpoint_id=breakpoint_id, flag=has_breakpoint: self.on_breakpoint_leave(
-                    breakpoint_id, flag
-                ),
+                lambda _,
+                breakpoint_id=breakpoint_id,
+                flag=has_breakpoint: self.on_breakpoint_leave(breakpoint_id, flag),
             )
             self.tag_bind(
                 breakpoint_id,
@@ -147,29 +137,28 @@ class LineNumbers(Canvas):
                 text=linenum,
                 font=self.font,
                 tag=i,
-                fill=self.hfg if y == cur_y else self.fg,
             )
 
             self.tag_bind(
                 i,
                 "<Enter>",
-                lambda _, breakpoint_id=breakpoint_id, flag=has_breakpoint: self.on_breakpoint_enter(
-                    breakpoint_id, flag
-                ),
+                lambda _,
+                breakpoint_id=breakpoint_id,
+                flag=has_breakpoint: self.on_breakpoint_enter(breakpoint_id, flag),
             )
 
             self.tag_bind(
                 i,
                 "<Leave>",
-                lambda _, breakpoint_id=breakpoint_id, flag=has_breakpoint: self.on_breakpoint_leave(
-                    breakpoint_id, flag
-                ),
+                lambda _,
+                breakpoint_id=breakpoint_id,
+                flag=has_breakpoint: self.on_breakpoint_leave(breakpoint_id, flag),
             )
 
             i = self.text.index(f"{i}+1line")
 
     def on_breakpoint_enter(self, id, flag):
-        self.itemconfig(id, fill=self.bp_enabled_color if flag else self.bp_hover_color)
+        pass  # Let canvas use default colors
 
     def on_breakpoint_leave(self, id, flag):
-        self.itemconfig(id, fill=self.bp_enabled_color if flag else self.bg)
+        pass  # Let canvas use default colors

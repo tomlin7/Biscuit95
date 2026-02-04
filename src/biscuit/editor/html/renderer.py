@@ -15,11 +15,11 @@ class HTMLRenderer(Frame):
     def __init__(self, master, editor: TextEditor, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.editor = editor
-        self.config(bg=self.base.theme.border)
+        self.config()
 
         self.text = HtmlFrame(self, messages_enabled=False, vertical_scrollbar=False)
         self.scrollbar = Scrollbar(
-            self, orient=tk.VERTICAL, command=self.text.yview, style="EditorScrollbar"
+            self, orient=tk.VERTICAL, command=self.text.yview
         )
 
         self.rowconfigure(0, weight=1)
@@ -33,7 +33,17 @@ class HTMLRenderer(Frame):
             return
 
         self.text.load_html(htmlcontent)
-        t = self.base.theme
+        class t:
+            border = "#d9d9d9"
+            secondary_background = "#f0f0f0"
+            secondary_foreground = "#000000"
+            secondary_foreground_highlight = "#000000"
+            primary_background = "#d9d9d9"
+            primary_foreground = "#000000"
+            primary_foreground_highlight = "#000000"
+            biscuit = "#0078d7"
+            biscuit_dark = "#005a9e"
+
         self.text.add_css(
             f"""
             CODE, PRE {{

@@ -36,17 +36,14 @@ class PRs(SideBarViewItem):
             selectmode=tk.BROWSE,
             show="tree",
             displaycolumns="",
-            columns=("number"),
-        )
+            columns=("number"))
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
         self.tree.bind("<Double-Button-1>", self.on_click)
 
         self.scrollbar = Scrollbar(
             self.content,
-            style="TreeScrollbar",
             orient=tk.VERTICAL,
-            command=self.tree.yview,
-        )
+            command=self.tree.yview)
         self.scrollbar.grid(row=0, column=1, sticky=tk.NS)
         self.tree.config(yscrollcommand=self.scrollbar.set)
 
@@ -98,8 +95,7 @@ class PRs(SideBarViewItem):
             [
                 (
                     f"{pr['title']} #{pr['number']}",
-                    lambda *_, number=pr["number"]: self.open_editor(number),
-                )
+                    lambda *_, number=pr["number"]: self.open_editor(number))
                 for pr in prs
             ]
         )
@@ -107,4 +103,4 @@ class PRs(SideBarViewItem):
 
         self.tree.delete(*self.tree.get_children())
         for pr in prs:
-            self.tree.insert("", tk.END, text=pr[0], values=(pr[1],))
+            self.tree.insert("", tk.END, text=pr[0], values=(pr[1]))

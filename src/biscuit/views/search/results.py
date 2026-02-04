@@ -82,8 +82,7 @@ class Results(Frame):
         try:  # Click on child item
             self.base.goto_location(
                 self.treeview.item(item)["tags"][0],
-                str(float(self.treeview.item(item)["tags"][1])),
-            )
+                str(float(self.treeview.item(item)["tags"][1])))
 
         except IndexError:  # Click on parent item
             print("You clicked on a parent item")
@@ -221,8 +220,7 @@ class Results(Frame):
                 parent="",
                 index=tk.END,
                 open=True,
-                text=f"{os.path.basename(file_path)} | {file_path}",
-            )
+                text=f"{os.path.basename(file_path)} | {file_path}")
 
             for line_number, line in result_lines:
                 child_elm = self.add_item(
@@ -260,8 +258,7 @@ class Results(Frame):
                 else:
                     answer = askyesno(
                         "Replace Confirmation",
-                        f"Are you sure you want to apply a replace to {len(self.results)} occurrences?",
-                    )
+                        f"Are you sure you want to apply a replace to {len(self.results)} occurrences?")
                     total = len(self.results)
                     so_far = 0
 

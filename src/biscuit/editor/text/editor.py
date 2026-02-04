@@ -56,7 +56,7 @@ class TextEditor(BaseEditor):
         self.columnconfigure(1, weight=1)
 
         self.linenumbers = LineNumbers(self)
-        self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, style="EditorScrollbar")
+        self.scrollbar = Scrollbar(self, orient=tk.VERTICAL)
 
         if not self.minimalist:
             self.minimap = Minimap(self)
@@ -86,7 +86,7 @@ class TextEditor(BaseEditor):
                         "icon": Icons.PLAY,
                         "event": lambda: self.run_file(),
                         "width": 1,
-                        "hfg_only": True,
+                        # "hfg_only": True,
                     },
                 )
 
@@ -141,8 +141,8 @@ class TextEditor(BaseEditor):
             self.minimap.attach(self.text)
         self.scrollbar.config(command=self.text.yview)
 
-        self.text.config(font=self.font)
-        self.text.configure(yscrollcommand=self.scrollbar.set)
+        # self.text.config(font=self.font)
+        # self.text.configure(yscrollcommand=self.scrollbar.set)
 
         self.linenumbers.grid(row=0, column=0, sticky=tk.NS)
         self.text.grid(row=0, column=1, sticky=tk.NSEW)
@@ -151,8 +151,8 @@ class TextEditor(BaseEditor):
         self.text.bind("<<Change>>", self.on_change)
         self.text.bind("<<Scroll>>", self.on_scroll)
 
-        self.on_change()
-        self.on_scroll()
+        # self.on_change()
+        # self.on_scroll()
 
         if self.base.settings.config.auto_save_enabled:
             self.auto_save()

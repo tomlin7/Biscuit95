@@ -562,6 +562,6 @@ class Languages:
 # for lexer in get_all_lexers():
 #     try:
 #         name = lexer[1][0]
-#         print(f"{name.upper().replace('+', '_').replace('-', '_')} = \"{name}\"", )
+#         print(f"{name.upper().replace('+', '_').replace('-', '_')} = \"{name}\"")
 #     except:
 #         pass

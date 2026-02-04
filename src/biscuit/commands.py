@@ -82,8 +82,7 @@ class Commands:
             if editor.content and editor.content.editable:
                 if path := asksaveasfilename(
                     title="Save As...",
-                    initialfile=(editor.filename or "Untitled.txt"),
-                ):
+                    initialfile=(editor.filename or "Untitled.txt")):
                     editor.save(path)
 
     def save_all(self, *_) -> None:
@@ -92,8 +91,7 @@ class Commands:
                 if not editor.content.exists:
                     if path := asksaveasfilename(
                         title="Save As...",
-                        initialfile=(editor.filename or "Untitled.txt"),
-                    ):
+                        initialfile=(editor.filename or "Untitled.txt")):
                         return editor.save(path)
                 if editor.content.editable:
                     editor.save()
@@ -102,8 +100,7 @@ class Commands:
         if path := asksaveasfilename(
             title="Save Workspace As...",
             initialfile="workspace.toml",
-            filetypes=[(".toml")],
-        ):
+            filetypes=[(".toml")]):
             self.base.workspaces.save(path)
 
     def add_folder_to_workspace(self, *_) -> None:

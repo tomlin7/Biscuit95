@@ -30,28 +30,18 @@ class Peek(Toplevel):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(padx=0, pady=1, bg=self.base.theme.biscuit)
+        # self.config(padx=0, pady=1)
         self.withdraw()
         self.overrideredirect(True)
         self.wm_attributes("-topmost", True)
 
-        container = Frame(self, **self.base.theme.editors)
+        container = Frame(self)
         container.pack(fill=tk.X, pady=(0, 1))
 
-        self.filename = Label(
-            container,
-            font=self.base.settings.uifont,
-            **self.base.theme.editors.labels,
-            anchor=tk.W,
-        )
+        self.filename = Label(container, font=self.base.settings.uifont, anchor=tk.W)
         self.filename.pack(fill=tk.X, side=tk.LEFT)
-        self.path = Label(
-            container,
-            font=self.base.settings.uifont,
-            **self.base.theme.editors.labels,
-            anchor=tk.W,
-        )
-        self.path.config(fg=self.base.theme.primary_foreground)
+        self.path = Label(container, font=self.base.settings.uifont, anchor=tk.W)
+        self.path.config()
         self.path.pack(fill=tk.X, side=tk.LEFT)
 
         self.tree = PeekTree(

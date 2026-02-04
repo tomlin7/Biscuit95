@@ -20,15 +20,10 @@ class Diagnostic(Toplevel):
     def __init__(self, master: App, bd: int = 1, *args, **kw) -> None:
         super().__init__(master, *args, **kw)
         self.overrideredirect(True)
-        self.config(bg=self.base.theme.border, bd=bd)
+        # self.config( bd=bd)
 
         self.label = tk.Label(
-            self,
-            padx=6,
-            font=self.base.settings.font,
-            anchor=tk.W,
-            justify=tk.LEFT,
-            **self.base.theme.editors.hover.text,
+            self, padx=6, font=self.base.settings.font, anchor=tk.W, justify=tk.LEFT
         )
         self.label.pack(fill=tk.BOTH, expand=True)
 

@@ -60,8 +60,7 @@ class PythonDebugger(DebuggerBase, bdb.Bdb):
             target=self._run_debugger,
             name="Python Debugger Thread",
             args=(code, globals_dict, script_dir, cwd),
-            daemon=True,
-        )
+            daemon=True)
         self.thread.start()
 
     def _run_debugger(
@@ -69,8 +68,7 @@ class PythonDebugger(DebuggerBase, bdb.Bdb):
         code: CodeType,
         globals_dict: dict[str, typing.Any],
         script_dir: str,
-        cwd="",
-    ):
+        cwd=""):
         original_cwd = cwd or os.getcwd()
         try:
             os.chdir(script_dir)

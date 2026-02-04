@@ -23,7 +23,7 @@ class PathView(Toplevel):
         )
         self.tree.pack()
 
-        self.config(pady=1, padx=1, bg=self.base.theme.border)
+        # self.config(pady=1, padx=1)
         self.overrideredirect(True)
         self.withdraw()
 

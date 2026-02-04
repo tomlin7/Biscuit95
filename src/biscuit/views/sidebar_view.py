@@ -1,7 +1,7 @@
 import tkinter as tk
 
-from biscuit.common import Icons
-from biscuit.common.ui import Frame, IconButton
+from biscuit.common.icons import Icons
+from biscuit.common.ui import Frame, IconButton, Label
 
 from .sidebar_item import SideBarViewItem
 from .view import View
@@ -21,9 +21,9 @@ class SideBarView(View):
         self.__name__ = self.__class__.__name__
 
         self.pack_propagate(False)
-        self.config(width=250, **self.base.theme.views.sidebar)
+        # self.config(width=250)
 
-        self.top = Frame(self, **self.base.theme.views.sidebar)
+        self.top = Frame(self)
         self.top.pack(fill=tk.X, padx=(5, 5), pady=7)
         self.top.grid_columnconfigure(0, weight=1)
 
@@ -32,7 +32,6 @@ class SideBarView(View):
             text=name.upper() if name else self.__class__.__name__.upper(),
             anchor=tk.W,
             font=self.base.settings.uifont,
-            **self.base.theme.views.sidebar.title
         )
         self.title.grid(row=0, column=0, sticky=tk.EW)
 

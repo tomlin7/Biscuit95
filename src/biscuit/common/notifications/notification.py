@@ -38,25 +38,24 @@ class Notification(Frame):
 
         super().__init__(master, *args, **kwargs)
         self.master: Notifications = master
-        self.config(**self.base.theme.notifications)
+        self.config()
 
-        top = Frame(self, **self.base.theme.utils.frame)
+        top = Frame(self)
         top.pack(fill=tk.BOTH, expand=1)
-        bottom = Frame(self, **self.base.theme.utils.frame)
+        bottom = Frame(self)
         bottom.pack(fill=tk.BOTH)
 
-        self.icon = Icon(top, icon, padx=5, **self.base.theme.utils.iconbutton)
-        self.icon.config(fg=fg)
+        self.icon = Icon(top, icon)  # , padx=5)
+        # self.icon.config(fg=fg)
         self.icon.pack(side=tk.LEFT, fill=tk.BOTH)
 
         self.label = Label(
             top,
             text=text,
-            anchor=tk.W,
-            padx=10,
-            pady=10,
-            font=self.base.settings.uifont,
-            **self.base.theme.utils.iconbutton,
+            # anchor=tk.W,
+            # padx=10,
+            # pady=10,
+            # font=self.base.settings.uifont,
         )
         self.label.pack(side=tk.LEFT, expand=1, fill=tk.BOTH, anchor=tk.W)
 
@@ -66,21 +65,22 @@ class Notification(Frame):
         self.source_label = Label(
             bottom,
             text=f"Source: {caller_class_name(3)}",
-            anchor=tk.W,
-            padx=10,
-            pady=5,
-            font=self.base.settings.uifont,
-            **self.base.theme.notifications.source,
+            # anchor=tk.W,
+            # padx=10,
+            # pady=5,
+            # font=self.base.settings.uifont,
         )
         self.source_label.pack(side=tk.LEFT, fill=tk.BOTH)
 
         if actions:
-            self.actions = Frame(bottom, **self.base.theme.notifications)
+            self.actions = Frame(bottom)
             self.actions.pack(side=tk.RIGHT, fill=tk.BOTH)
 
             for text, action in actions:
                 btn = IconLabelButton(
-                    self.actions, text, callback=action, highlighted=True
+                    self.actions,
+                    text,
+                    callback=action,  # , highlighted=True
                 )
                 btn.pack(side=tk.LEFT, fill=tk.BOTH, padx=(0, 5), pady=(0, 5))
 

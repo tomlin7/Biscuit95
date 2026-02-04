@@ -37,7 +37,7 @@ class OutlineTree(Frame):
         self.tree.grid_remove()
 
         self.scrollbar = ttk.Scrollbar(
-            self, orient=tk.VERTICAL, command=self.tree.yview, style="TreeScrollbar"
+            self, orient=tk.VERTICAL, command=self.tree.yview
         )
         self.scrollbar.grid(row=0, column=1, sticky=tk.NS)
         self.scrollbar.grid_remove()

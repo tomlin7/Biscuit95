@@ -20,23 +20,16 @@ if typing.TYPE_CHECKING:
 
 
 class EditorsManager(Frame):
-    """Editors Pane
-
-    - Contains the Editorsbar
-    - Manages the Editorsbar
-    - Manages the Editors
-    """
+    """Editors Pane - Manages editors and editorsbar."""
 
     def __init__(self, master: Content, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
 
-        self.grid_propagate(False)
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         self.editorsbar = EditorsBar(self)
-        self.editorsbar.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
+        self.editorsbar.grid(row=0, column=0, sticky=tk.EW)
 
         self.active_editors: List[Editor] = []
         self.closed_editors: Dict[Editor] = {}
@@ -101,11 +94,6 @@ class EditorsManager(Frame):
             self.add_editor(editor)
 
     def add_editor(self, editor: Union[Editor, BaseEditor]) -> Editor | BaseEditor:
-        """Add a new editor to the editor pane.
-
-        Args:
-            editor (Union[Editor, BaseEditor]): The editor to add."""
-
         if editor in self.active_editors:
             return self.set_active_editor(editor)
 
@@ -159,15 +147,6 @@ class EditorsManager(Frame):
     def open_editor(
         self, path: str = None, exists=True, load_file=True
     ) -> Editor | BaseEditor:
-        """Open a new editor with the given path.
-
-        Args:
-            path (str): The path of the file to open.
-            exists (bool, optional): Whether the file exists. Defaults to True.
-
-        Returns:
-            Editor: The opened editor."""
-
         if path:
             if self.is_open(path):
                 return self.editorsbar.switch_tabs(path)
@@ -177,40 +156,17 @@ class EditorsManager(Frame):
         return self.add_editor(Editor(self, path, exists, load_file=load_file))
 
     def open_diff_editor(self, path: str, exists: bool) -> None:
-        """Open a new diff editor with the given path.
-
-        Args:
-            path (str): The path of the file to open.
-            exists (bool): Whether the file exists."""
-
         self.add_editor(Editor(self, path, exists, diff=True))
 
     def diff_files(self, file1: str, file2: str, standalone: bool = False) -> None:
-        """Diff two files.
-
-        Args:
-            file1 (str): The path of the first file.
-            file2 (str): The path of the second file."""
-
         self.add_editor(
             Editor(self, file1, True, file2, diff=True, standalone=standalone)
         )
 
     def open_game(self, id: str) -> None:
-        """Open a new game editor with the given id.
-
-        Args:
-            id (str): The id of the game."""
-
         self.add_editor(Game(self, id))
 
     def close_editor(self, editor: Editor) -> None:
-        """Closes the given editor.
-        Keeps the editor in cache.
-
-        Args:
-            editor (Editor): The editor to close."""
-
         if editor in self.active_editors:
             self.active_editors.remove(editor)
         editor.grid_forget()
@@ -230,27 +186,15 @@ class EditorsManager(Frame):
         if self.closed_editors:
             editor = self.closed_editors.pop()
             self.add_editor(editor)
-            # self.base.notifications.info(f"Restored {editor.filename}")
         else:
             self.base.notifications.info("No recently closed editors to restore")
 
     def close_editor_by_path(self, path: str) -> None:
-        """Closes the editor with the given path.
-        Keeps the editor in cache.
-
-        Args:
-            path (str): The path of the editor to close."""
-
         e = self.get_editor(path)
         self.close_editor(e)
         return e
 
     def get_editor(self, path: str) -> Editor:
-        """Get editor by path.
-
-        Args:
-            path (str): The path of the editor to get."""
-
         for editor in self.active_editors:
             if editor.path == path:
                 return editor
@@ -259,11 +203,6 @@ class EditorsManager(Frame):
         self.editorsbar.close_active_tab()
 
     def delete_editor(self, editor: Editor) -> None:
-        """Delete the given editor.
-
-        Args:
-            editor (Editor): The editor to delete."""
-
         if editor not in self.active_editors:
             return
 
@@ -277,11 +216,6 @@ class EditorsManager(Frame):
         self.refresh()
 
     def set_active_editor(self, editor: Editor) -> Editor:
-        """Set an existing editor to currently shown one.
-
-        Args:
-            editor (Editor): The editor to set as active."""
-
         for tab in self.editorsbar.active_tabs:
             if tab.editor == editor:
                 self.editorsbar.set_active_tab(tab)
@@ -290,21 +224,11 @@ class EditorsManager(Frame):
         return editor
 
     def set_active_editor_by_index(self, index: int) -> Editor:
-        """Set an existing editor to currently shown one by index.
-
-        Args:
-            index (int): The index of the editor to set as active."""
-
         if index < len(self.editorsbar.active_tabs):
             self.editorsbar.set_active_tab(self.editorsbar.active_tabs[index])
             return self.editorsbar.active_tabs[index].editor
 
     def set_active_editor_by_path(self, path: str) -> Editor:
-        """Set an existing editor to currently shown one by path.
-
-        Args:
-            path (str): The path of the editor to set as active."""
-
         for tab in self.editorsbar.active_tabs:
             if (
                 tab.editor.path
@@ -314,9 +238,7 @@ class EditorsManager(Frame):
                 self.editorsbar.set_active_tab(tab)
                 return tab.editor
 
-    def split_editor(self) -> None:
-        # TODO: Implement split editor
-        ...
+    def split_editor(self) -> None: ...
 
     def change_tab_forward(self) -> None:
         self.editorsbar.change_tab_forward()

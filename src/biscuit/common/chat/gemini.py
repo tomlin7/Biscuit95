@@ -19,8 +19,7 @@ class Gemini2p0Flash(ChatModelInterface):
                 HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-            },
-        )
+            })
 
     def set_api_key(self, api_key: str):
         self.api_key = api_key
@@ -51,8 +50,7 @@ class Gemini2p0FlashLite(ChatModelInterface):
                 HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-            },
-        )
+            })
 
     def set_api_key(self, api_key: str):
         self.api_key = api_key
@@ -84,8 +82,7 @@ class Gemini1p5Flash(ChatModelInterface):
                 HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-            },
-        )
+            })
 
     def set_api_key(self, api_key: str):
         self.api_key = api_key
@@ -117,8 +114,7 @@ class Gemini1p5Pro(ChatModelInterface):
                 HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
                 HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-            },
-        )
+            })
 
     def set_api_key(self, api_key: str):
         self.api_key = api_key

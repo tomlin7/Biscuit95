@@ -30,8 +30,7 @@ class Editor(BaseEditor):
         preview_file_callback=None,
         open_file_callback=None,
         *args,
-        **kwargs,
-    ) -> None:
+        **kwargs) -> None:
         """Editor widget
 
         Args:
@@ -61,7 +60,7 @@ class Editor(BaseEditor):
         self.preview_file_callback = preview_file_callback
         self.open_file_callback = open_file_callback
 
-        self.config(bg=self.base.theme.border)
+        self.config()
         self.grid_columnconfigure(0, weight=1)
 
         self.content = self.base.editortypes.get_editor(
@@ -72,8 +71,7 @@ class Editor(BaseEditor):
             diff,
             language,
             load_file=load_file,
-            standalone=standalone,
-        )
+            standalone=standalone)
         self.filename = os.path.basename(self.path) if path else None
 
         self.grid_rowconfigure(0, weight=1)

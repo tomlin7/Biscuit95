@@ -36,8 +36,7 @@ class Debug(SideBarView):
             callback=self.set_config,
             iconfg="#87d282",
             iconhfg="#87d282",
-            empty_message=EMPTY_MESSAGE,
-        )
+            empty_message=EMPTY_MESSAGE)
         self.dropdown.icon_label.bind("<Button-1>", self.run_config)
         self.dropdown.pack(fill=tk.X, padx=10, pady=10)
 
@@ -68,8 +67,7 @@ class Debug(SideBarView):
         if not self.selected_config or self.selected_config == EMPTY_MESSAGE:
             self.base.notifications.error(
                 "You need to create a launch configuration to run the debugger.",
-                actions=[["Configure launch...", self.open_config_editor]],
-            )
+                actions=[["Configure launch...", self.open_config_editor]])
             return
 
         try:
@@ -84,16 +82,14 @@ class Debug(SideBarView):
                         actions=[
                             ["Configure launch...", self.open_config_editor],
                             ["Search Extensions", self.base.sidebar.show_extensions],
-                        ],
-                    )
+                        ])
         except Exception as e:
             self.base.notifications.error(
                 f"Launch configuration {self.selected_config} failed.",
                 actions=[
                     ["Configure launch...", self.open_config_editor],
                     ["Logs", self.base.panel.show_logs],
-                ],
-            )
+                ])
             self.base.logger.error(
                 f"Launch configuration {self.selected_config} failed: {e}"
             )

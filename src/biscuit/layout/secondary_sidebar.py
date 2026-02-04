@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import tkinter as tk
 import typing
+from tkinter import ttk
 
 from biscuit.common.ui import Frame
-from biscuit.views import *
 from biscuit.common.ui.icon import Icons
+from biscuit.views import *
 
 if typing.TYPE_CHECKING:
     from biscuit.layout.statusbar.activitybar import ActivityBar
@@ -22,7 +23,7 @@ class SecondarySideBar(Frame):
         self, master: Frame, activitybar: ActivityBar, *args, **kwargs
     ) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
+        self.config()
 
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
@@ -34,7 +35,9 @@ class SecondarySideBar(Frame):
         self.secondary_activitybar = activitybar
         self.secondary_activitybar.attach_sidebar(self)
 
-        self.secondary_activitybar.add_button(Icons.TERMINAL, "Terminal", lambda: self.base.panel.show_terminal())
+        self.secondary_activitybar.add_button(
+            Icons.TERMINAL, "Terminal", lambda: self.base.panel.show_terminal()
+        )
 
         self.default_views = {
             "Debug": Debug(self),
@@ -133,16 +136,25 @@ class SecondarySideBar(Frame):
         return self.show_view(self.extensions)
 
     def pack(self, *args, **kwargs):
-        if isinstance(self.master, tk.PanedWindow):
-            # Already handled by add() being at the end of the PanedWindow list
+        if isinstance(self.master, ttk.PanedWindow):
+            self.master.add(self, weight=0)
+            # ttk.PanedWindow doesn't support minsize or width directly
+        elif isinstance(self.master, tk.PanedWindow):
             self.master.add(self, width=380, stretch="never")
             self.master.paneconfigure(self, minsize=50)
         else:
-            super().pack(side=tk.LEFT, fill=tk.Y, after=self.base.contentpane, padx=(1, 0), *args, **kwargs)
+            super().pack(
+                side=tk.LEFT,
+                fill=tk.Y,
+                after=self.base.contentpane,
+                padx=(1, 0),
+                *args,
+                **kwargs,
+            )
         self.visible = True
 
     def hide(self):
-        if isinstance(self.master, tk.PanedWindow):
+        if isinstance(self.master, (tk.PanedWindow, ttk.PanedWindow)):
             self.master.forget(self)
         else:
             super().pack_forget()

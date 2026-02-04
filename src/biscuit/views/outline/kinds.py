@@ -26,5 +26,4 @@ kinds = (
     (Icons.SYMBOL_STRUCTURE, None),
     (Icons.SYMBOL_EVENT, "#ffd700"),
     (Icons.SYMBOL_OPERATOR, None),
-    (Icons.SYMBOL_PARAMETER, "#ffd700"),
-)
+    (Icons.SYMBOL_PARAMETER, "#ffd700"))

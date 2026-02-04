@@ -39,19 +39,15 @@ def clone(url) -> typing.Callable[[App, str], None]:
     type=click.Path(
         exists=True,
         dir_okay=False,
-        resolve_path=True,
-    ),
-    required=False,
-)
+        resolve_path=True),
+    required=False)
 @click.argument(
     "file2",
     type=click.Path(
         exists=True,
         dir_okay=False,
-        resolve_path=True,
-    ),
-    required=False,
-)
+        resolve_path=True),
+    required=False)
 def diff(file1=None, file2=None) -> typing.Callable[[App, str], None]:
     """Diff two files
 

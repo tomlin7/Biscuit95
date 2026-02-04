@@ -1,4 +1,5 @@
 import os
+import queue
 import tkinter as tk
 from threading import Thread
 
@@ -53,7 +54,7 @@ class TerminalBase(PanelView):
         super().__init__(master, *args, **kwargs)
 
         # MOVED to terminal manager
-        # self.__actions__ = (("add",), ("trash", self.destroy))
+        # self.__actions__ = (("add"), ("trash", self.destroy))
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -62,6 +63,7 @@ class TerminalBase(PanelView):
         self.cwd = cwd
         self.last_command = ""
         self.last_command_index = ""
+        self.queue = queue.Queue()
         # self.prediction = ""
 
         self.text = TerminalText(
@@ -70,15 +72,15 @@ class TerminalBase(PanelView):
         self.text.grid(row=0, column=0, sticky=tk.NSEW)
         self.text.bind("<Return>", self.enter)
 
-        self.terminal_scrollbar = Scrollbar(self, style="EditorScrollbar")
+        self.terminal_scrollbar = Scrollbar(self)
         self.terminal_scrollbar.grid(row=0, column=1, sticky="NSW")
 
         self.text.config(yscrollcommand=self.terminal_scrollbar.set)
         self.terminal_scrollbar.config(command=self.text.yview, orient=tk.VERTICAL)
 
-        self.text.tag_config("prompt", foreground=self.base.theme.biscuit_dark)
-        self.text.tag_config("command", foreground=self.base.theme.biscuit)
-        self.text.tag_config("ghost", foreground=self.base.theme.border)
+        self.text.tag_config("prompt")
+        self.text.tag_config("command")
+        self.text.tag_config("ghost")
 
         self.ai = AI(self)
 
@@ -89,8 +91,23 @@ class TerminalBase(PanelView):
         self.alive = True
         self.last_command = None
 
-        self.p = PTY.spawn([self.shell], cwd=self.cwd)
+        try:
+            self.p = PTY.spawn([self.shell], cwd=self.cwd)
+            self.base.logger.info(f"Terminal process spawned: {self.shell}")
+        except Exception as e:
+            self.base.logger.error(f"Terminal process spawn failed: {e}")
+            return
+
         Thread(target=self.write_loop, daemon=True).start()
+        self.after(10, self.gui_refresh_loop)
+
+    def gui_refresh_loop(self) -> None:
+        if not self.queue.empty():
+            output = self.queue.get()
+            self.insert(output)
+        
+        if self.alive:
+            self.after(10, self.gui_refresh_loop)
 
     def destroy(self, *_) -> None:
         self.alive = False
@@ -131,7 +148,7 @@ class TerminalBase(PanelView):
                 ]
                 buf = "\n".join(buf)
 
-                self.insert(buf)
+                self.queue.put(buf)
                 if "is not recognized as an internal or external command" in buf:
                     self.error()
 

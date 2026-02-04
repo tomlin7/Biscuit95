@@ -114,8 +114,7 @@ class EventManager(GUIManager, ConfigManager):
         if new_window:
             new_window = askyesnocancel(
                 "Open in new window or current",
-                "Do you want to open the cloned repository in a new window?",
-            )
+                "Do you want to open the cloned repository in a new window?")
 
         try:
 
@@ -178,8 +177,7 @@ class EventManager(GUIManager, ConfigManager):
             lambda _, editor=editor.content.text, edits=edits: threading.Thread(
                 target=self.do_workspace_edits, args=(editor, edits), daemon=True
             ).start(),
-            add=True,
-        )
+            add=True)
         editor.content.load_file()
 
     def do_workspace_edits(self, tab: Text, edits: list[TextEdit]):

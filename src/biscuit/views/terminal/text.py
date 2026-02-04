@@ -29,7 +29,7 @@ class TerminalText(Text):
         self.mark_gravity("input", "left")
 
         self.proxy_enabled = proxy_enabled
-        self.config(**self.base.theme.editors.text, highlightthickness=0)
+        self.config( highlightthickness=0)
 
         self._history = []
         self._history_level = 0
@@ -39,6 +39,10 @@ class TerminalText(Text):
         self._orig = self._w + "_orig"
         self.tk.call("rename", self._w, self._orig)
         self.tk.createcommand(self._w, self._proxy)
+
+        # DEBUG: Add a border to see the text widget
+        # self.config(highlightbackground="red", highlightthickness=1)
+        # self.insert("end", "Terminal widget ready\n")
 
     def history_up(self, *_) -> None:
         "moves up the history"
@@ -93,7 +97,7 @@ class TerminalText(Text):
         """
 
         if not self.proxy_enabled:
-            return self.tk.call((self._orig,) + args)
+            return self.tk.call((self._orig) + args)
 
         try:
             largs = list(args)
@@ -106,8 +110,11 @@ class TerminalText(Text):
                         return
                     largs[1] = "input"
 
-            result = self.tk.call((self._orig,) + tuple(largs))
+            result = self.tk.call((self._orig) + tuple(largs))
             return result
-        except:
+        except Exception as e:
             # most probably some tkinter-unhandled exception
-            pass
+            try:
+                return self.tk.call((self._orig,) + args)
+            except:
+                return ""

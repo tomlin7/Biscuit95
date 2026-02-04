@@ -2,27 +2,23 @@ from __future__ import annotations
 
 import tkinter as tk
 import typing
+from tkinter import ttk
 
 from biscuit.common.ui import Frame
-from biscuit.views import *
 from biscuit.common.ui.icon import Icons
+from biscuit.views import *
 
 if typing.TYPE_CHECKING:
     from biscuit.layout.statusbar.activitybar import ActivityBar
 
 
 class SideBar(Frame):
-    """Side bar of the application
-
-    - Contains the SidebarViews
-    - Manages the SidebarViews
-    """
+    """Side bar - Contains and manages SidebarViews."""
 
     def __init__(
         self, master: Frame, activitybar: ActivityBar, *args, **kwargs
     ) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
 
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
@@ -36,18 +32,20 @@ class SideBar(Frame):
 
         self.default_views = {
             "Explorer": Explorer(self),
-            "Source Control": SourceControl(self),
+            # "Source Control": SourceControl(self),
             "Outline": Outline(self),
         }
         self.add_views(self.default_views.values())
         self.activitybar.add_separator()
-        
-        self.activitybar.add_button(Icons.SEARCH, "Search", lambda: self.base.editorsmanager.add_search())
-        self.activitybar.add_button(Icons.CHECK, "Problems", lambda: self.base.panel.show_problems())
+
+        self.activitybar.add_button(
+            Icons.SEARCH, "Search", lambda: self.base.editorsmanager.add_search()
+        )
+        self.activitybar.add_button(
+            Icons.CHECK, "Problems", lambda: self.base.panel.show_problems()
+        )
 
     def toggle(self) -> None:
-        """Toggle the sidebar."""
-
         if self.visible:
             self.hide()
         else:
@@ -57,46 +55,24 @@ class SideBar(Frame):
                 self.pack()
 
     def add_views(self, views: list[SideBarView]) -> None:
-        """Adds multiple views to the sidebar at once."""
-
         for view in views:
             self.add_view(view)
 
     def add_view(self, view: SideBarView) -> None:
-        """Adds a view to the sidebar.
-
-        Args:
-            view (SidebarView): The view to add."""
-
         self.views.append(view)
         self.activitybar.add_view(view)
 
     def create_view(self, name: str, icon: str = "browser") -> SideBarView:
-        """Create a new view.
-
-        Args:
-            name (str): The name of the view.
-            icon (str, optional): The icon of the view. Defaults to "browser"
-        """
-
         view = SideBarView(self, name, icon)
         self.add_view(view)
         return view
 
     def delete_all_views(self) -> None:
-        """Permanently delete all views."""
-
         for view in self.views:
             view.destroy()
-
         self.views.clear()
 
     def delete_view(self, view: SideBarView) -> None:
-        """Permanently delete a view.
-
-        Args:
-            view (SidebarView): The view to delete."""
-
         view.destroy()
         self.views.remove(view)
 
@@ -113,11 +89,6 @@ class SideBar(Frame):
         return self.default_views["Outline"]
 
     def show_view(self, view: SideBarView) -> SideBarView:
-        """Show a view in the sidebar.
-
-        Args:
-            view (SidebarView): The view to show."""
-
         for i in self.activitybar.buttons:
             if i.view == view:
                 self.activitybar.set_active_slot(i)
@@ -135,11 +106,21 @@ class SideBar(Frame):
         return self.show_view(self.outline)
 
     def pack(self, *args, **kwargs):
-        if isinstance(self.master, tk.PanedWindow):
-            self.master.add(self, before=self.base.contentpane, width=270, stretch="never")
+        if isinstance(self.master, ttk.PanedWindow):
+            self.master.add(self, weight=0)
+            # ttk.PanedWindow doesn't support minsize or width directly
+        elif isinstance(self.master, tk.PanedWindow):
+            try:
+                self.master.add(
+                    self, before=self.base.contentpane, width=270, stretch="never"
+                )
+            except:
+                self.master.add(self, width=270, stretch="never")
             self.master.paneconfigure(self, minsize=50)
         else:
-            super().pack(side=tk.LEFT, fill=tk.Y, before=self.base.contentpane, padx=(0, 1), *args, **kwargs)
+            super().pack(
+                side=tk.LEFT, fill=tk.Y, before=self.base.contentpane, *args, **kwargs
+            )
         self.visible = True
 
     def hide(self):

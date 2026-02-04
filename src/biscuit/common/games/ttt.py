@@ -12,11 +12,11 @@ class TicTacToe(BaseGame):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, None, None, *args, **kwargs)
 
-        self.player = self.base.theme.biscuit
-        self.computer = self.base.theme.border
-        self.border = self.base.theme.border
+        self.player = None
+        self.computer = None
+        self.border = None
 
-        self.canvas = Canvas(self, width=300, height=300, **self.base.theme.editors)
+        self.canvas = Canvas(self, width=300, height=300)
         self.canvas.pack(pady=100)
 
         self.start()

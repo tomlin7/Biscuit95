@@ -88,7 +88,6 @@ class ConfigManager:
         self.resources = self.settings.resources
         self.bindings = self.settings.bindings
         self.config = self.settings.config
-        self.theme = self.config.theme
 
         self.commands = Commands(self)
         self.binder = Binder(self)

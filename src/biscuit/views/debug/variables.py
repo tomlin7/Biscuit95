@@ -22,8 +22,7 @@ class Variables(SideBarViewItem):
             style="mono.Treeview",
             columns=("key", "value"),
             *args,
-            **kwargs,
-        )
+            **kwargs)
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
 
         self.ctxmenu = VariablesContextMenu(self)
@@ -45,7 +44,7 @@ class Variables(SideBarViewItem):
             section (str): section name for grouping variables
         """
         section_node = self.tree.insert(
-            "", "end", text=section_name, open=open_, tags=("bold",)
+            "", "end", text=section_name, open=open_, tags=("bold")
         )
         self._insert_items(d, parent=section_node)
 
@@ -61,8 +60,7 @@ class Variables(SideBarViewItem):
                     parent,
                     "end",
                     text=f"{key} = {value}",
-                    values=(key, str(value)),
-                )
+                    values=(key, str(value)))
 
     def clear(self):
         """Clear the local variables."""

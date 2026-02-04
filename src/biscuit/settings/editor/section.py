@@ -20,16 +20,12 @@ class Section(Frame):
             title (str, optional): title of the section. Defaults to"""
 
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.editors, padx=30)
+        # self.config( padx=30)
 
         self.items = []
-        tk.Label(
-            self,
-            text=title,
-            font=("Segoi UI", 22, "bold"),
-            anchor=tk.W,
-            **self.base.theme.editors.labels
-        ).pack(fill=tk.X, expand=True)
+        tk.Label(self, text=title, font=("Segoi UI", 22, "bold"), anchor=tk.W).pack(
+            fill=tk.X, expand=True
+        )
 
     def add_dropdown(
         self, name="Example", options=["True", "False"], default=0

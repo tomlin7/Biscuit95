@@ -20,27 +20,27 @@ class TabScroll(Frame):
     def __init__(self, master: EditorsBar, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.master: EditorsBar = master
-        self.config(bg=self.base.theme.border)
+        self.config()
 
         self.left = IconButton(
             self,
             Icons.ARROW_LEFT,
             event=self.scroll_right,
-            iconsize=12,
-            padx=7,
-            hfg_only=True,
+            # iconsize=12,
+            # padx=7,
+            # hfg_only=True
         )
-        self.left.config(**self.base.theme.layout.content.editors.bar)
+        self.left.config()
 
         self.right = IconButton(
             self,
             Icons.ARROW_RIGHT,
             event=self.scroll_left,
-            iconsize=12,
-            padx=7,
-            hfg_only=True,
+            # iconsize=12,
+            # padx=7,
+            # hfg_only=True,
         )
-        self.right.config(**self.base.theme.layout.content.editors.bar)
+        self.right.config()
 
         self.left.config(state=tk.DISABLED)
         self.right.config(state=tk.DISABLED)

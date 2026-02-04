@@ -30,7 +30,7 @@ class GUIManager(Tk, ConfigManager):
         # remove decorations on windows only
         # config for high DPI with winAPI
         if platform.system() == "Windows":
-            from ctypes import windll, c_void_p, c_int, c_long, byref, sizeof
+            from ctypes import byref, c_int, c_long, c_void_p, sizeof, windll
 
             # DPI awareness
             try:
@@ -58,7 +58,14 @@ class GUIManager(Tk, ConfigManager):
             # Remove title bar (CAPTION) but keep resizing (THICKFRAME) and shadows
             style = windll.user32.GetWindowLongPtrW(hwnd, GWL_STYLE)
             style &= ~WS_CAPTION
-            style |= WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU | WS_CLIPCHILDREN | WS_CLIPSIBLINGS
+            style |= (
+                WS_THICKFRAME
+                | WS_MINIMIZEBOX
+                | WS_MAXIMIZEBOX
+                | WS_SYSMENU
+                | WS_CLIPCHILDREN
+                | WS_CLIPSIBLINGS
+            )
             windll.user32.SetWindowLongPtrW(hwnd, GWL_STYLE, style)
 
             # Ensure taskbar icon
@@ -71,18 +78,29 @@ class GUIManager(Tk, ConfigManager):
                 DWMWA_USE_IMMERSIVE_DARK_MODE = 20
                 DWMWA_CAPTION_COLOR = 35
                 DWMWA_BORDER_COLOR = 34
-                
+
                 dark_mode = c_int(1)
-                color = c_int(0x000000) # Black
-                
-                windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, byref(dark_mode), sizeof(dark_mode))
-                windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_CAPTION_COLOR, byref(color), sizeof(color))
-                windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_BORDER_COLOR, byref(color), sizeof(color))
+                color = c_int(0x000000)  # Black
+
+                windll.dwmapi.DwmSetWindowAttribute(
+                    hwnd,
+                    DWMWA_USE_IMMERSIVE_DARK_MODE,
+                    byref(dark_mode),
+                    sizeof(dark_mode),
+                )
+                windll.dwmapi.DwmSetWindowAttribute(
+                    hwnd, DWMWA_CAPTION_COLOR, byref(color), sizeof(color)
+                )
+                windll.dwmapi.DwmSetWindowAttribute(
+                    hwnd, DWMWA_BORDER_COLOR, byref(color), sizeof(color)
+                )
             except:
                 pass
 
             # Redraw window
-            windll.user32.SetWindowPos(hwnd, 0, 0, 0, 0, 0, 0x0027) # SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER
+            windll.user32.SetWindowPos(
+                hwnd, 0, 0, 0, 0, 0, 0x0027
+            )  # SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER
 
             myappid = "com.tomlin7.biscuit"
             windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
@@ -101,7 +119,7 @@ class GUIManager(Tk, ConfigManager):
         x = int((self.winfo_screenwidth() - app_width) / 2)
         y = int((self.winfo_screenheight() - app_height) / 2)
         self.geometry(f"{app_width}x{app_height}+{x}+{y}")
-        self.configure(bg=self.theme.border, highlightthickness=0)
+        # self.configure(highlightthickness=0)
 
         # very bad hack to fix the window size on windows
         self.withdraw()
@@ -138,7 +156,7 @@ class GUIManager(Tk, ConfigManager):
 
         self.explorer = self.sidebar.explorer
         self.outline = self.sidebar.outline
-        self.source_control = self.sidebar.source_control
+        # self.source_control = self.sidebar.source_control
         self.debug = self.secondary_sidebar.debug
         self.ai = self.secondary_sidebar.ai
         self.extensions_view = self.secondary_sidebar.extensions
@@ -175,8 +193,8 @@ class GUIManager(Tk, ConfigManager):
         self.editorsmanager.add_default_editors()
         self.editorsmanager.generate_actionsets()
         self.settings.late_setup()
-        self.history.generate_actionsets()
-        self.git.late_setup()
+        # self.history.generate_actionsets()
+        # self.git.late_setup()
         self.debugger_manager.register_actionsets()
         self.register_misc_palettes()
 
@@ -186,7 +204,7 @@ class GUIManager(Tk, ConfigManager):
         if self.testing:
             return
 
-        self.setup_extensions()
+        # self.setup_extensions()
 
     def register_misc_palettes(self) -> None:
         """Register miscellaneous palettes that don't belong to any specific component."""
@@ -229,7 +247,6 @@ class GUIManager(Tk, ConfigManager):
         return opened_files
 
     def on_close_app(self) -> None:
-
         opened_files = self._get_opened_files()
         self.sessions.clear_session()
         self.sessions.save_session(opened_files, self.active_directory)

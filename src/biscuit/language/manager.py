@@ -44,8 +44,7 @@ class LanguageServerManager:
                         i.name,
                         lambda _, i=i: self.base.goto_location_in_active_editor(
                             decode_position(i.location.range.start)
-                        ),
-                    )
+                        ))
                     for i in resp
                 ]
             )

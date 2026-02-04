@@ -19,7 +19,7 @@ class SettingsEditor(BaseEditor):
 
     def __init__(self, master, exists=False, editable=False, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(padx=100, pady=20, **self.base.theme.editors)
+        # self.config(padx=100, pady=20)
         self.filename = "Settings"
 
         # TODO searchbar functionality not implemented yet
@@ -27,17 +27,17 @@ class SettingsEditor(BaseEditor):
         self.search = Searchbar(self)
         self.search.pack(fill=tk.X)
 
-        frame = Frame(self, bg=self.base.theme.border)
+        frame = Frame(self)
         frame.pack(fill=tk.BOTH, expand=True)
 
-        self.tree = Frame(frame, **self.base.theme.editors, width=200, pady=20)
+        self.tree = Frame(frame)  # , width=200, pady=20)
         self.tree.pack_propagate(False)
         self.tree.pack(fill=tk.Y, side=tk.LEFT, padx=(0, 1))
 
         self.sections = []
         self.container = ScrollableFrame(frame)
         self.container.content.config(pady=10)
-        self.container.config(**self.base.theme.editors)
+        self.container.config()
         self.container.pack(fill=tk.BOTH, expand=True)
 
         self.add_sections()
@@ -82,7 +82,7 @@ class SettingsEditor(BaseEditor):
 
         shortcut = Button(self.tree, name, anchor=tk.W)
         shortcut.pack(fill=tk.X)
-        shortcut.config(**self.base.theme.editors.button)
+        shortcut.config()
 
         return section
 

@@ -14,17 +14,15 @@ NUM_MINES = 10
 class Tile(IconButton):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.config(
-            font=("Segoi UI", 13),
-            width=2,
-            bg=self.base.theme.biscuit,
-            fg="white",
-            activebackground=self.base.theme.biscuit_dark,
-        )
+        # self.config(
+        #     font=("Segoi UI", 13),
+        #     width=2,
+
+        #     fg="white")
 
     def reveal_count(self, count) -> None:
         self.config(font=("Segoi UI", 13), text=count)
-        bg = self.base.theme.editors.background
+
         self.config(bg=bg, activebackground=bg)
 
     def reveal_icon(self, icon, **kw) -> None:
@@ -32,7 +30,7 @@ class Tile(IconButton):
         self.set_icon(icon)
 
     def clear(self) -> None:
-        self.config(fg=self.base.theme.editors.background)
+        self.config()
 
 
 class Minesweeper(BaseGame):
@@ -41,19 +39,13 @@ class Minesweeper(BaseGame):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self.container = Frame(self, bg=self.base.theme.border, padx=1, pady=1)
+        self.container = Frame(self)  # , padx=1, pady=1)
         self.container.pack(pady=100)
 
-        self.gameover_frame = Frame(self, **self.base.theme.editors, pady=50)
-        Label(
-            self.gameover_frame,
-            text="Game Over",
-            font=("Fixedsys", 20),
-            fg=self.base.theme.biscuit,
-            **self.base.theme.editors
-        ).pack()
+        self.gameover_frame = Frame(self)  # , pady=50)
+        Label(self.gameover_frame, text="Game Over", font=("Fixedsys", 20)).pack()
         restart = Button(self.gameover_frame, "Retry!", self.reload)
-        restart.config(font=("Fixedsys", 20))
+        # restart.config(font=("Fixedsys", 20))
         restart.pack(pady=20)
 
         self.start_game()

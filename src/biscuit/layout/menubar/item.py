@@ -1,25 +1,24 @@
 from __future__ import annotations
 
 import typing
+from tkinter import ttk
 
 from biscuit.common import Menu
-from biscuit.common.ui import Menubutton
 
 if typing.TYPE_CHECKING:
     from . import Menubar
 
 
-class MenubarItem(Menubutton):
+class MenubarItem(ttk.Button):
     def __init__(self, master: Menubar, text, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.name = text
         self.config(
             text=text,
-            padx=10,
-            pady=5,
-            font=self.base.settings.uifont,
-            **self.base.theme.layout.menubar.item,
         )
+        # padx=10,
+        # pady=5,
+        # font=self.base.settings.uifont)
 
         self.menu = Menu(self, self.name)
         self.bind("<<Hide>>", self.deselect)
@@ -34,7 +33,9 @@ class MenubarItem(Menubutton):
         self.master.switch_menu(self)
 
     def select(self):
-        self.config(bg=self.base.theme.layout.menubar.item.highlightbackground)
+        return
+        self.config(bg=None)
 
     def deselect(self, *_):
-        self.config(bg=self.base.theme.layout.menubar.item.background)
+        return
+        self.config(bg=None)

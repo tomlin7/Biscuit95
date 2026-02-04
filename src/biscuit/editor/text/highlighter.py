@@ -19,8 +19,8 @@ class BiscuitStyle(Style):
 
     def __init__(self, master: Highlighter) -> None:
         self.base = master.base
-        self.styles = self.base.theme.syntax
-        self.background_color = self.base.theme.editors.background
+        self.styles = None
+        self.background_color = None
 
 
 class Highlighter:
@@ -72,8 +72,8 @@ class Highlighter:
                 self.text.language = "Plain Text"
                 self.text.language_alias = "text"
 
-        self.tag_colors = self.base.theme.syntax
-        self.setup_highlight_tags()
+        self.tag_colors = None
+        # self.setup_highlight_tags()
 
     def detect_language(self) -> None:
         """Detect the language from the file extension and set the lexer
@@ -113,7 +113,7 @@ class Highlighter:
 
         self.text.language = self.lexer.name
         self.text.language_alias = self.lexer.aliases[0]
-        self.tag_colors = self.base.theme.syntax
+        self.tag_colors = None
         self.text.master.on_change()
         self.base.statusbar.on_open_file(self.text)
 

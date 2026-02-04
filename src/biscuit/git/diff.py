@@ -34,10 +34,9 @@ class DiffEditor(BaseEditor):
         standalone: bool = False,
         language="",
         *args,
-        **kwargs,
-    ) -> None:
+        **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
+        self.config()
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -74,21 +73,19 @@ class DiffEditor(BaseEditor):
 
         self.left.tag_config(
             "addition",
-            background=self.base.theme.editors.diff.not_exist,
-            bgstipple=f"@{self.stipple}",
-        )
-        self.left.tag_config("removal", background=self.base.theme.editors.diff.removed)
-        self.left.tag_config("removedword", background="red")
+
+            bgstipple=f"@{self.stipple}")
+        self.left.tag_config("removal")
+        self.left.tag_config("removedword")
 
         self.right.tag_config(
-            "addition", background=self.base.theme.editors.diff.addition
+            "addition"
         )
         self.right.tag_config(
             "removal",
-            background=self.base.theme.editors.diff.not_exist,
-            bgstipple=f"@{self.stipple}",
-        )
-        self.right.tag_config("addedword", background="green")
+
+            bgstipple=f"@{self.stipple}")
+        self.right.tag_config("addedword")
 
         if path2:
             self.run_show_diff()
@@ -121,8 +118,7 @@ class DiffEditor(BaseEditor):
                 if self.standalone
                 else os.path.join(self.base.active_directory, self.path)
             ),
-            "r",
-        ) as f:
+            "r") as f:
             lhs_data = f.read()
         with open(
             (
@@ -130,8 +126,7 @@ class DiffEditor(BaseEditor):
                 if self.standalone
                 else os.path.join(self.base.active_directory, self.path2)
             ),
-            "r",
-        ) as f:
+            "r") as f:
             rhs_data = f.read()
 
         lhs_lines = [line + "\n" for line in lhs_data.split("\n")]
@@ -241,8 +236,7 @@ class DiffEditor(BaseEditor):
                     if matches := re.finditer(r"\++", content):
                         self.left.delete(
                             str(float(self.rhs_last_line + 1)),
-                            str(float(int(float(self.left.index(tk.INSERT))))),
-                        )
+                            str(float(int(float(self.left.index(tk.INSERT))))))
                         for match in matches:
                             start = f"{self.rhs_last_line}.{match.start()}"
                             end = f"{self.rhs_last_line}.{match.end()}"
@@ -251,8 +245,7 @@ class DiffEditor(BaseEditor):
                     if matches := re.finditer(r"-+", content):
                         self.right.delete(
                             str(float(self.lhs_last_line + 1)),
-                            str(float(int(float(self.right.index(tk.INSERT))))),
-                        )
+                            str(float(int(float(self.right.index(tk.INSERT))))))
                         for match in matches:
                             start = f"{self.lhs_last_line}.{match.start()}"
                             end = f"{self.lhs_last_line}.{match.end()}"

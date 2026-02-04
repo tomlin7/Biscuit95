@@ -6,8 +6,7 @@ from .common import check_python_installation
 
 def get_app_instance(
     exec_dir: str = os.path.abspath(__file__),
-    open_path: str = None,
-) -> App:
+    open_path: str = None) -> App:
     """Get an instance of the application.
 
     Args:

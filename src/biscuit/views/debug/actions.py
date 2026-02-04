@@ -16,7 +16,7 @@ class DebuggerActions(Frame):
         self.debug = debug
         self.base = debug.base
         self.manager = debug.base.debugger_manager
-        self.config(**self.base.theme.views.sidebar)
+        self.config()
 
         self.pause_btn = self.add_button(
             Icons.DEBUG_PAUSE, self.toggle_pause, "#72bdff", icon2=Icons.DEBUG_CONTINUE
@@ -38,7 +38,7 @@ class DebuggerActions(Frame):
         self, icon: str, action: typing.Callable, color: str, icon2: str = None
     ):
         button = IconButton(self, icon, action, icon2=icon2)
-        button.config(fg=color, activeforeground=color)
+        # button.config(fg=color, activeforeground=color)
         button.pack(side=tk.LEFT)
         return button
 

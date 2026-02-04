@@ -132,10 +132,10 @@ class AI(SideBarView):
         """Save API keys to database and start chat."""
         if gemini:
             self.api_keys["gemini"] = gemini
-            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('GEMINI_API_KEY', ?)", (gemini,))
+            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('GEMINI_API_KEY', ?)", (gemini))
         if anthropic:
             self.api_keys["anthropic"] = anthropic
-            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('ANTHROPIC_API_KEY', ?)", (anthropic,))
+            self.cursor.execute("INSERT OR REPLACE INTO secrets (key, value) VALUES ('ANTHROPIC_API_KEY', ?)", (anthropic))
         
         self.db.commit()
         self.add_chat()

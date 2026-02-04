@@ -40,8 +40,7 @@ def to_document_symbol(infos: list[lsp.SymbolInformation]) -> list[lsp.DocumentS
     infos.sort(
         key=lambda x: (
             (x.location.range.start.line, x.location.range.start.character),
-            (-x.location.range.end.line, -x.location.range.end.character),
-        )
+            (-x.location.range.end.line, -x.location.range.end.character))
     )
     res: list[lsp.DocumentSymbol] = []
     parents: list[lsp.DocumentSymbol] = []
@@ -52,8 +51,7 @@ def to_document_symbol(infos: list[lsp.SymbolInformation]) -> list[lsp.DocumentS
             kind=info.kind,
             children=[],
             range=info.location.range,
-            selectionRange=info.location.range,
-        )
+            selectionRange=info.location.range)
 
         while True:
             if not parents:
@@ -92,8 +90,7 @@ def decode_path_uri(file_url: str) -> str:
 
 
 def jump_paths_and_ranges(
-    locations: list[lsp.Location] | lsp.Location,
-) -> Iterator[tuple[Path, lsp.Range]]:
+    locations: list[lsp.Location] | lsp.Location) -> Iterator[tuple[Path, lsp.Range]]:
     if not locations:
         locations = []
     if not isinstance(locations, list):
@@ -107,8 +104,7 @@ def jump_paths_and_ranges(
 
 
 def hover_filter(
-    content: lsp.MarkupContent | str,
-) -> list[Optional[list[str, str]], str]:
+    content: lsp.MarkupContent | str) -> list[Optional[list[str, str]], str]:
     if not isinstance(content, lsp.MarkupContent):
         return None, None
 

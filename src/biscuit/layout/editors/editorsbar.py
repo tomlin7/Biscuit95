@@ -19,18 +19,13 @@ if typing.TYPE_CHECKING:
 
 
 class EditorsBar(Frame):
-    """Editors Bar for Editors
-
-    - Manages the tabs
-    - Manages the action buttons for the tabs
-    """
+    """Editors Bar - Manages tabs and action buttons."""
 
     def __init__(self, master: EditorsManager, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.layout.content.editors.bar)
         self.master: EditorsManager = master
 
-        self.major_container = Frame(self, **self.base.theme.layout.content.editors.bar)
+        self.major_container = Frame(self)
         self.major_container.pack(fill=tk.BOTH, expand=True)
 
         self.active_tabs: list[Tab] = []
@@ -39,7 +34,7 @@ class EditorsBar(Frame):
         self.tab_control_container = TabScroll(self.major_container)
         self.tab_control_container.pack(fill=tk.Y, side=tk.LEFT)
 
-        self.tab_container = Frame(self.major_container, bg=self.base.theme.border)
+        self.tab_container = Frame(self.major_container)
         self.tab_container.pack(fill=tk.BOTH, side=tk.LEFT)
 
         self.menu = EditorsbarMenu(self.major_container, "tabs")
@@ -59,24 +54,20 @@ class EditorsBar(Frame):
             (Icons.ADD, self.base.commands.open_empty_editor),
         )
 
-        self.action_container = Frame(
-            self.major_container, **self.base.theme.layout.content.editors.bar
-        )
+        self.action_container = Frame(self.major_container)
         self.action_container.pack(fill=tk.BOTH, side=tk.RIGHT, padx=(0, 10))
 
         for button in self.default_buttons:
             if isinstance(button, list | tuple):
-                IconButton(
-                    self.action_container, iconsize=12, pady=6, hfg_only=True, *button
-                ).pack(side=tk.RIGHT, fill=tk.Y)
+                IconButton(self.action_container, iconsize=12, *button).pack(
+                    side=tk.RIGHT, fill=tk.Y
+                )
             else:
                 IconButton(self.action_container, **button).pack(
                     side=tk.RIGHT, fill=tk.Y
                 )
 
-        self.secondary_container = Frame(
-            self, **self.base.theme.layout.content.editors.bar
-        )
+        self.secondary_container = Frame(self)
         self.secondary_container.pack(fill=tk.BOTH, expand=True)
 
         self.breadcrumbs = BreadCrumbs(self.secondary_container)
@@ -125,7 +116,7 @@ class EditorsBar(Frame):
 
     def add_tab(self, editor: Editor) -> None:
         tab = Tab(self, editor)
-        tab.pack(fill=tk.Y, side=tk.LEFT, padx=(0, 1), in_=self.tab_container)
+        tab.pack(fill=tk.Y, side=tk.LEFT, in_=self.tab_container)
         self.active_tabs.append(tab)
 
         tab.select()
@@ -153,7 +144,6 @@ class EditorsBar(Frame):
         try:
             i = self.active_tabs.index(tab)
         except ValueError:
-            # most probably in case of diff editors, not handled
             return
 
         was_selected = tab == self.active_tab

@@ -44,8 +44,7 @@ class EditorTypes:
         diff=False,
         language="",
         load_file=True,
-        standalone=False,
-    ) -> TextEditor | DiffEditor | MDEditor | ImageViewer:
+        standalone=False) -> TextEditor | DiffEditor | MDEditor | ImageViewer:
         """Get the suitable editor based on the path, exists, diff values passed.
 
         Args:

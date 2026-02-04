@@ -27,8 +27,7 @@ class PhysicsObject:
             self.x + self.width,
             self.y + self.height,
             fill=self.color,
-            outline="",
-        )
+            outline="")
 
     def update(self):
         self.vel_x += self.accel_x
@@ -72,8 +71,7 @@ class Whoops(BaseGame):
             height=400,
             bg="#22223b",
             borderwidth=0,
-            highlightthickness=0,
-        )
+            highlightthickness=0)
         self.canvas.pack(pady=30)
 
         self.canvas.create_text(
@@ -120,8 +118,7 @@ class Whoops(BaseGame):
             obstacle_y,
             obstacle_width,
             obstacle_height,
-            random.choice(["#9a8c98", "#4a4e69"]),
-        )
+            random.choice(["#9a8c98", "#4a4e69"]))
         self.obstacles.append(obstacle)
         self.canvas.tag_lower(obstacle.shape)
 

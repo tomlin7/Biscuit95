@@ -8,7 +8,6 @@ class PanelView(View):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
 
         self.__actions__ = []
 
@@ -17,8 +16,5 @@ class PanelView(View):
 
     def generate_actions(self, panelbar) -> None:
         self.__actions__ = [
-            IconButton(
-                panelbar, *action, **self.base.theme.layout.content.editors.bar.tab
-            )
-            for action in self.__actions__
+            # IconButton(panelbar, *action) for action in self.__actions__
         ]

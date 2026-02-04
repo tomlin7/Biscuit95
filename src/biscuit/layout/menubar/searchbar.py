@@ -13,13 +13,13 @@ class SearchBar(Frame):
 
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
+        self.config()
 
         self.label = IconLabelButton(
             self,
             text=f"Biscuit {__version__}",
             icon=Icons.SEARCH,
-            padx=150,
+            # padx=150,
             callback=self.onclick,
         )
         font = self.base.settings.uifont.copy()
@@ -34,7 +34,7 @@ class SearchBar(Frame):
             event=self.base.commands.show_command_palette,
             iconsize=10,
         )
-        self.palette_button.config(**self.base.theme.utils.iconlabelbutton)
+        self.palette_button.config()
         self.palette_button.pack(
             side=tk.RIGHT, fill=tk.BOTH, expand=True, pady=1, padx=(0, 1)
         )

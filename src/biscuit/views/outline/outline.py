@@ -23,9 +23,9 @@ class Outline(SideBarView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = [
-            #     (Icons.REFRESH,),
-            #     (Icons.COLLAPSE_ALL,),
-            #     (Icons.ELLIPSIS,),
+            #     (Icons.REFRESH),
+            #     (Icons.COLLAPSE_ALL),
+            #     (Icons.ELLIPSIS),
         ]
         super().__init__(master, *args, **kwargs)
         self.__icon__ = Icons.SYMBOL_CLASS

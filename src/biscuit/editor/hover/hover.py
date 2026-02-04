@@ -3,9 +3,8 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.common.ui import Frame
+from biscuit.common.ui import Frame, Toplevel
 from biscuit.common.ui import Text as TextW
-from biscuit.common.ui import Toplevel
 
 from .renderer import HoverRenderer
 
@@ -25,9 +24,9 @@ class Hover(Toplevel):
         super().__init__(master, *args, **kw)
         self.overrideredirect(True)
         self.maxsize(600, 200)
-        self.config(bg=self.base.theme.primary_background_highlight, bd=bd)
+        # self.config( bd=bd)
 
-        container = Frame(self, bg=self.base.theme.border)
+        container = Frame(self)
         container.pack(fill=tk.BOTH, expand=True)
 
         self.renderer = HoverRenderer(container)

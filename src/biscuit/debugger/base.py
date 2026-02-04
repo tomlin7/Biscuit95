@@ -59,8 +59,7 @@ class DebuggerBase:
         self.manager.latest = self
         self.launch(
             self.format_path(config["program"]),
-            self.format_path(config.get("cwd", "")),
-        )
+            self.format_path(config.get("cwd", "")))
 
     def launch(self, path: str, cwd: str = None) -> None:
         """Debug the file.

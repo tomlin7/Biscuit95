@@ -32,7 +32,7 @@ class BaseGame(Frame):
         """
 
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.editors)
+        self.config()
         self.path = path
         self.filename = None
 
@@ -41,7 +41,7 @@ class BaseGame(Frame):
         self.diff = False
         self.editable = False
 
-        self.__buttons__ = ((Icons.REFRESH, self.reload),)
+        self.__buttons__ = ((Icons.REFRESH, self.reload))
 
     def add_buttons(self, icon, event) -> None:
         """Adds a button to the editor bar

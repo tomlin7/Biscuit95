@@ -69,8 +69,7 @@ class Settings:
         self._actionset = ActionSet(
             "Show and run commands",
             ">",
-            self.commands + self.base.game_manager.get_games(),
-        )
+            self.commands + self.base.game_manager.get_games())
 
     def setup_icon(self) -> None:
         try:
@@ -78,8 +77,7 @@ class Settings:
                 "wm",
                 "iconphoto",
                 self.base._w,
-                tk.PhotoImage(file=self.resources.get_res_path_platform("icon.png")),
-            )
+                tk.PhotoImage(file=self.resources.get_res_path_platform("icon.png")))
         except tk.TclError:
             pass
 
@@ -111,8 +109,7 @@ class Settings:
         self.commands = [
             (
                 formalize_command(name),
-                lambda _, method=method: method(self.base.commands),
-            )
+                lambda _, method=method: method(self.base.commands))
             for name, method in extract_commands(self.base.commands)
         ]
 
@@ -122,8 +119,7 @@ class Settings:
         clone_actionset = ActionSet(
             "Clone git repository",
             "clone:",
-            pinned=[[Formattable("clone {}"), self.base.clone_repo]],
-        )
+            pinned=[[Formattable("clone {}"), self.base.clone_repo]])
         self.base.palette.register_actionset(lambda: clone_actionset)
 
         self.symbols_actionset = ActionSet("Go to symbol in editor", "@", [])

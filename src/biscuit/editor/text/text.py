@@ -69,6 +69,8 @@ class Text(BaseText):
         self.unsupported = False
         self.relative_line_numbers = self.base.relative_line_numbers
 
+        self._resetting_modified_flag = False
+
         self.ctrl_down = False
         self.buffer_size = 4096
         self.bom = True
@@ -111,18 +113,17 @@ class Text(BaseText):
         self.update_idletasks()
         self.comment_prefix = get_comment_prefix(self.language.lower())
         tab_width = self.base.settings.font.measure(" " * self.tab_spaces)
-        self.configure(
-            tabs=(tab_width,),
-            blockcursor=self.base.block_cursor,
-            wrap=tk.NONE,
-            relief=tk.FLAT,
-            highlightthickness=0,
-            bd=0,
-            **self.base.theme.editors.text,
-        )
+        # self.configure(
+        #     tabs=(tab_width),
+        #     blockcursor=self.base.block_cursor,
+        #     wrap=tk.NONE,
+        #     relief=tk.FLAT,
+        #     highlightthickness=0,
+        #     bd=0,
+        # )
 
         # modified event
-        self.clear_modified_flag()
+        # self.clear_modified_flag()
         self._user_edit = True
         self._edit_stack = []
         self._edit_stack_index = -1
@@ -130,36 +131,23 @@ class Text(BaseText):
     def config_tags(self):
         self.indentguide_stipple = self.base.resources.indent_guide
 
-        self.tag_config(tk.SEL, background=self.base.theme.editors.selection)
-        self.tag_config(
-            "hyperlink",
-            foreground=self.base.theme.editors.hyperlink,
-            underline=True,
-        )
+        self.tag_config(tk.SEL)
+        self.tag_config("hyperlink", underline=True)
 
-        self.tag_config("hint", underline=True, underlinefg="gray")
+        self.tag_config("hint", underline=True)
         self.tag_config("information", underline=True)
-        self.tag_config("warning", underline=True, underlinefg="yellow")
-        self.tag_config("error", underline=True, underlinefg="red")
+        self.tag_config("warning", underline=True)
+        self.tag_config("error", underline=True)
 
-        self.tag_config("found", background=self.base.theme.editors.found)
-        self.tag_config("foundcurrent", background=self.base.theme.editors.foundcurrent)
-        self.tag_config("currentword", background=self.base.theme.editors.currentword)
-        self.tag_config(
-            "currentline",
-            background=self.base.theme.editors.currentline,
-        )
-        self.tag_config("hover", background=self.base.theme.editors.hovertag)
+        self.tag_config("found")
+        self.tag_config("foundcurrent")
+        self.tag_config("currentword")
+        self.tag_config("currentline")
+        self.tag_config("hover")
 
+        self.tag_configure("indent_guide", bgstipple=f"@{self.indentguide_stipple}")
         self.tag_configure(
-            "indent_guide",
-            bgstipple=f"@{self.indentguide_stipple}",
-            background=self.base.theme.border,
-        )
-        self.tag_configure(
-            "current_indent_guide",
-            bgstipple=f"@{self.indentguide_stipple}",
-            background=self.base.theme.secondary_foreground,
+            "current_indent_guide", bgstipple=f"@{self.indentguide_stipple}"
         )
 
         self.tag_raise(tk.SEL, "hover")
@@ -167,12 +155,8 @@ class Text(BaseText):
         self.tag_raise(tk.SEL, "currentword")
         self.tag_raise("currentword", "currentline")
 
-        self.tag_config(
-            "activebracket", background=self.base.theme.editors.activebracket
-        )
-        self.tag_config("red", foreground="red")
-        for i in self.base.theme.editors.bracket_colors:
-            self.tag_config(i, foreground=f"#{i}")
+        self.tag_config("activebracket")
+        self.tag_config("red")
 
     def config_bindings(self):
         self.bind("<KeyRelease>", self.key_release_events)
@@ -369,6 +353,7 @@ class Text(BaseText):
         self.tag_add("activebracket", end, end + "+1c")
 
     def refresh_wrap(self):
+        return
         self.config(wrap=tk.WORD if self.base.wrap_words else tk.NONE)
 
     def open_bracket(self, e: tk.Event):
@@ -380,7 +365,8 @@ class Text(BaseText):
             elif ch in CLOSING_BRACKETS:
                 if i > 0:
                     i -= 1
-        self.complete_pair(e, self.base.theme.editors.bracket_colors[(i % 3)])
+        # Use simple bracket completion without color tagging
+        self.complete_pair(e, None)
 
         return "break"
 
@@ -404,10 +390,8 @@ class Text(BaseText):
                     self.mark_set(tk.INSERT, "insert+1c")
                     return "break"
 
-        # TODO; coloring not done right. whatever color the last bracket has that color is spread to the next characters
-        #     self.insert(tk.INSERT, stack.pop(), self.base.theme.editors.bracket_colors[(i%3)] if i > -1 else 'red')
-        # else:
-        self.insert(tk.INSERT, e.char, "red")
+        self.insert(tk.INSERT, e.char)
+
         return "break"
 
     def complete_pair(self, e: tk.Event, tag=None):
@@ -583,10 +567,10 @@ class Text(BaseText):
         for line in range(start_line, end_line + 1):
             # delete comment prefix with the trailing space
             if (
-                self.get(f"{line}.0", f"{line}.{len(self.comment_prefix)+1}")
+                self.get(f"{line}.0", f"{line}.{len(self.comment_prefix) + 1}")
                 == f"{self.comment_prefix} "
             ):
-                self.delete(f"{line}.0", f"{line}.{len(self.comment_prefix)+1}")
+                self.delete(f"{line}.0", f"{line}.{len(self.comment_prefix) + 1}")
             # trailing space not detected, delete the comment prefix
             elif (
                 self.get(f"{line}.0", f"{line}.{len(self.comment_prefix)}")
@@ -858,9 +842,10 @@ class Text(BaseText):
             return
 
         tab_width = self.base.settings.font.measure(" " * size)
-        self.configure(tabs=(tab_width,))
+        # self.configure(tabs=(tab_width))
 
     def set_block_cursor(self, flag: bool) -> None:
+        return
         self.configure(blockcursor=flag)
 
     def toggle_relative_numbering(self) -> None:
@@ -959,7 +944,7 @@ class Text(BaseText):
 
         try:
             with open(file_path, "rb") as file:
-                bomstring = file.read(8)
+                bomstring = file.read(4096)
                 detected = chardet.detect(bomstring)
                 encoding = detected["encoding"].lower()
                 if encoding == "ascii":
@@ -984,7 +969,7 @@ class Text(BaseText):
                 self.path, "r", encoding=self.encoding, buffering=self.buffer_size
             )
             self.queue = queue.Queue()
-            threading.Thread(target=self.read_file, args=(file,)).start()
+            threading.Thread(target=self.read_file, args=(file,), daemon=True).start()
             self.process_queue(eol=eol)
         else:
             self.load_text(text, eol=eol)
@@ -1010,7 +995,7 @@ class Text(BaseText):
             )
 
             self.queue = queue.Queue()
-            threading.Thread(target=self.read_file, args=(file,)).start()
+            threading.Thread(target=self.read_file, args=(file,), daemon=True).start()
             self.process_queue()
         except Exception as e:
             print(e)
@@ -1324,12 +1309,14 @@ class Text(BaseText):
         self.see(tk.INSERT)
 
     def set_wrap(self, flag=True):
+        return
         if flag:
             self.configure(wrap=tk.WORD)
         else:
             self.configure(wrap=tk.NONE)
 
     def set_active(self, flag=True):
+        return
         if flag:
             self.configure(state=tk.NORMAL)
         else:
@@ -1340,7 +1327,7 @@ class Text(BaseText):
         self.unsupported = True
         self.highlighter.lexer = None
         self.set_wrap(True)
-        self.configure(font=("Arial", 10), padx=10, pady=10)
+        # self.configure(font=("Arial", 10), padx=10, pady=10)
         self.write(
             "This file is not displayed in this editor because it is either binary or uses an unsupported text encoding."
         )

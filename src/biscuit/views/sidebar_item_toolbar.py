@@ -1,13 +1,13 @@
 import tkinter as tk
 
 from biscuit.common.icons import Icons
-from biscuit.common.ui import Frame, IconButton
+from biscuit.common.ui import Frame, IconButton, Label
 
 
 class SideBarItemToolBar(Frame):
     def __init__(self, master, title: str, buttons=(), *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.views.sidebar.itembar)
+        self.config()
 
         self.grid_columnconfigure(1, weight=1)
 
@@ -21,16 +21,12 @@ class SideBarItemToolBar(Frame):
         self.toggle.grid(row=0, column=0)
 
         self.label_title = tk.Label(
-            self,
-            anchor=tk.W,
-            textvariable=self.title,
-            font=self.base.settings.uifont,
-            **self.base.theme.views.sidebar.itembar.title
+            self, anchor=tk.W, textvariable=self.title, font=self.base.settings.uifont
         )
         self.label_title.grid(row=0, column=1, sticky=tk.EW)
 
         self.buttoncolumn = 0
-        self.actions = Frame(self, **self.base.theme.views.sidebar.itembar)
+        self.actions = Frame(self)
         self.actions.grid(row=0, column=2, sticky=tk.E)
 
         self.add_actions(buttons)
@@ -41,7 +37,10 @@ class SideBarItemToolBar(Frame):
 
     def add_actions(self, buttons) -> None:
         for btn in buttons:
-            self.add_action(*btn)
+            try:
+                self.add_action(*btn)
+            except Exception as e:
+                print(f"Error adding action: {e} for button {btn}")
 
     def set_title(self, title: str) -> None:
         self.title.set(title.upper())

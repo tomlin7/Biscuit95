@@ -11,8 +11,8 @@ class Item(Frame):
         self.name = name
         self.description = None  # TODO add descriptions
 
-        self.bg, self.fg, self.highlightbg, _ = self.base.theme.editors.section.values()
-        self.config(padx=10, pady=10, bg=self.bg)
+        self.bg, self.fg, self.highlightbg()
+        # self.config(padx=10, pady=10, bg=self.bg)
 
         self.lbl = tk.Label(
             self,
@@ -44,7 +44,7 @@ class DropdownItem(Item):
         options=["True", "False"],
         default=0,
         *args,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(master, name, *args, **kwargs)
 

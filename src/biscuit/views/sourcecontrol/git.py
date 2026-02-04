@@ -21,11 +21,11 @@ class Git(Frame):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.views.sidebar.item)
+        self.config()
 
-        self.commitbox = Frame(self, **self.base.theme.views.sidebar.item)
+        self.commitbox = Frame(self)
         self.commit_message = Entry(
-            self.commitbox, hint="Message", **self.base.theme.utils.entry
+            self.commitbox, hint="Message"
         )
         self.commit_message.pack(fill=tk.X, pady=(0, 5))
 
@@ -34,18 +34,17 @@ class Git(Frame):
             text="Commit",
             icon=Icons.CHECK,
             callback=self.commit,
-            highlighted=True,
-        )
+            highlighted=True)
         self.commit_button.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         # Commit menu
-        # tk.Label(self.commitbox, text="｜", **self.base.theme.utils.colorlabel).pack(side=tk.LEFT, fill=tk.Y)
+        # tk.Label(self.commitbox, text="｜").pack(side=tk.LEFT, fill=tk.Y)
         # self.more = IconButton(self.commitbox, icon='chevron-down')
-        # self.more.config(**self.base.theme.utils.button)
+        # self.more.config()
         # self.more.pack(fill=tk.BOTH)
 
-        self.container = ScrollableFrame(self, **self.base.theme.views.sidebar.item)
-        self.container.canvas.config(**self.base.theme.views.sidebar.item)
+        self.container = ScrollableFrame(self)
+        self.container.canvas.config()
 
         self.staged_changes_tree = StagedChanges(self, *args, **kwargs)
         self.container.add(self.staged_changes_tree, fill=tk.BOTH, expand=True)

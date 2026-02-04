@@ -13,9 +13,7 @@ if typing.TYPE_CHECKING:
 
 
 class Panel(Frame):
-    """Panel
-    Panel is a container for panel views. It contains a panelbar and a tabbed view of panel views.
-    """
+    """Panel - container for panel views with a panelbar."""
 
     def __init__(self, master: Content, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
@@ -23,12 +21,10 @@ class Panel(Frame):
 
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
-
-        self.grid_propagate(False)
-        self.config(height=300, bg=self.base.theme.border)
+        self.config(height=300)
 
         self.panelbar = PanelBar(self)
-        self.panelbar.grid(row=0, column=0, sticky=tk.EW, pady=(0, 1))
+        self.panelbar.grid(row=0, column=0, sticky=tk.EW)
 
         self.views: list[PanelView] = []
 
@@ -36,33 +32,20 @@ class Panel(Frame):
         self.add_views(self.default_views)
 
     def add_views(self, views: list[PanelView]) -> None:
-        """Add multiple views to the panel."""
-
         for view in views:
             self.add_view(view)
 
     def add_view(self, view: PanelView) -> None:
-        """Add a view to the panel.
-
-        Args:
-            view (PanelView): view to be added to the panel"""
-
         self.views.append(view)
         view.generate_actions(self.panelbar)
-
         self.panelbar.add_tab(view)
 
     def delete_all_views(self) -> None:
-        """Permanently delete all views."""
-
         for view in self.views:
             view.destroy()
-
         self.views.clear()
 
     def delete_view(self, view: PanelView) -> None:
-        """Permanently delete a view."""
-
         view.destroy()
         self.views.remove(view)
 
@@ -89,29 +72,21 @@ class Panel(Frame):
         return self.default_views[3]
 
     def show_terminal(self, *_) -> None:
-        """Shows the terminal if its hidden/minimized."""
-
         if not self.terminals.active_terminal:
             self.terminals.add_default_terminal()
         self.set_active_view(self.terminals)
         self.show_panel()
 
     def show_problems(self, *_) -> None:
-        """Shows the problems if its hidden/minimized."""
-
         self.set_active_view(self.problems)
         self.show_panel()
 
     def show_logs(self, *_) -> None:
-        """Shows the logs if its hidden/minimized."""
-
         self.set_active_view(self.logger)
         self.show_panel()
 
     def toggle_panel(self, *_) -> None:
-        """Toggles the panel visibility."""
-
-        self.master.toggle_panel()
+        self.base.contentpane.toggle_panel()
 
     def switch_to_terminal(self, *_) -> None:
         if not self.terminals.active_terminal:
@@ -119,6 +94,4 @@ class Panel(Frame):
         self.set_active_view(self.terminals)
 
     def show_panel(self) -> None:
-        """Calls toplevel method to show the panel."""
-
-        self.master.show_panel()
+        self.base.contentpane.show_panel()

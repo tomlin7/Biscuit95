@@ -20,7 +20,7 @@ class Attachments(Toplevel):
     def __init__(self, master: Frame, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.master: Frame = master
-        self.config(bg=self.base.theme.biscuit, padx=1, pady=1)
+        # self.config( padx=1, pady=1)
 
         self.visible = False
 
@@ -44,13 +44,7 @@ class Attachments(Toplevel):
             widget.destroy()
 
         for file in self.master.attachments:
-            item = Closable(
-                self,
-                text=os.path.basename(file),
-                icon=Icons.FILE,
-                fg=self.base.theme.biscuit,
-                hfg=self.base.theme.biscuit_light,
-            )
+            item = Closable(self, text=os.path.basename(file), icon=Icons.FILE)
             item.close_btn.set_callback(
                 lambda *_, item=item, file=file: self.remove_attachment(file, item)
             )

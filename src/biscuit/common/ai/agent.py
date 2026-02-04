@@ -221,8 +221,7 @@ class Agent:
                     config=types.GenerateContentConfig(
                         system_instruction=system_instruction,
                         tools=[types.Tool(function_declarations=self._get_tool_declarations())],
-                        temperature=0,
-                    )
+                        temperature=0)
                 )
 
                 async for response in stream:
@@ -524,8 +523,7 @@ Rules: Use tools to read/edit code. Execute plans immediately. Be concise."""
                 model=self.model_name,
                 contents=message,
                 config=types.GenerateContentConfig(
-                    temperature=0,
-                )
+                    temperature=0)
             )
             return response.text if response.candidates else ""
 

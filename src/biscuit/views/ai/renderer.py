@@ -16,20 +16,15 @@ from mistune.plugins.url import url
 from pygments import highlight
 from pygments.formatters import html
 from pygments.lexers import get_lexer_by_name
-from pygments.style import Style
 from tkinterweb import HtmlFrame
 
 from biscuit.common.ui import Frame, Scrollbar
 
-if typing.TYPE_CHECKING:
-    from ...settings.config import Theme
-
 
 class HighlightRenderer(mistune.HTMLRenderer):
-    def __init__(self, style, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.style = style
-        self.formatter = html.HtmlFormatter(style=self.style)
+        self.formatter = html.HtmlFormatter(style="monokai")
 
     def block_code(self, code, info=None):
         try:
@@ -42,47 +37,14 @@ class HighlightRenderer(mistune.HTMLRenderer):
         return "<pre><code>" + mistune.escape(code) + "</code></pre>"
 
 
-class BiscuitStyle(Style):
-    def __init__(self, theme: Theme):
-        super().__init__()
-        self.theme = theme
-        self.styles = self.theme.syntax
-
-    def __iter__(self):
-        for token, color in self.theme.syntax.items():
-            if isinstance(color, dict):
-                yield token, {
-                    "color": color["foreground"][1:],
-                    "bold": False,
-                    "italic": False,
-                    "underline": False,
-                    "bgcolor": None,
-                    "border": None,
-                }
-            else:
-                yield token, {
-                    "color": color[1:],
-                    "bold": False,
-                    "italic": False,
-                    "underline": False,
-                    "bgcolor": None,
-                    "border": None,
-                }
-
-
 class Renderer(Frame):
-    """Renderer for the AI assistant chat view.
-
-    The Renderer is used to render the chat messages in the AI chat view.
-    - The Renderer uses the HtmlFrame widget to display the chat messages.
-    - The chat messages support markdown formatting."""
+    """Renderer for the AI assistant chat view."""
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
-        self.style = BiscuitStyle(self.base.theme)
+        self.config()
 
-        self.renderer = HighlightRenderer(self.style, escape=False)
+        self.renderer = HighlightRenderer(escape=False)
         self.formatter = self.renderer.formatter
         self.markdown = mistune.Markdown(
             renderer=self.renderer,
@@ -99,8 +61,7 @@ class Renderer(Frame):
             ],
         )
         self.htmlframe = HtmlFrame(
-            self, messages_enabled=False, vertical_scrollbar=False,
-            shrink=True
+            self, messages_enabled=False, vertical_scrollbar=False, shrink=True
         )
 
         self.htmlframe.pack(fill=tk.BOTH, expand=True)
@@ -109,22 +70,18 @@ class Renderer(Frame):
         self.footer = "</body></html>"
         self.content = ""
 
-        t = self.base.theme
-        t = self.base.theme
+        # Minimal CSS - no colors, just fonts and layout
         pygments_css = self.formatter.get_style_defs(".highlight")
         self.css = f"""
             {pygments_css}
             CODE, PRE {{
-                font-family: {self.base.settings.font['family']};
-                font-size: {self.base.settings.font['size']}pt;
-                background-color: {t.border};
+                font-family: {self.base.settings.font["family"]};
+                font-size: {self.base.settings.font["size"]}pt;
                 padding: 2px;
             }}
             BODY {{
-                background-color: {t.primary_background};
-                color: {t.primary_foreground};
-                font-family: {self.base.settings.uifont['family']};
-                font-size: {self.base.settings.uifont['size']}pt;
+                font-family: {self.base.settings.uifont["family"]};
+                font-size: {self.base.settings.uifont["size"]}pt;
                 margin: 0;
                 padding: 0 5px;
                 overflow-x: hidden;
@@ -135,150 +92,17 @@ class Renderer(Frame):
                 max-width: 100%;
                 height: auto;
             }}
-
             hr {{
                 border: 0;
-                border-top: 1px solid {t.border};
+                border-top: 1px solid;
                 max-width: 100%;
             }}
             li {{
                 margin-left: 15px;
                 padding-bottom: 4px;
             }}
-
             tr, th, td {{
-                border: 1px solid {t.border};
-            }}
-
-            :link    {{ color: {t.biscuit}; }}
-            :visited {{ color: {t.biscuit_dark}; }}
-            .thought {{
-                color: {t.secondary_foreground};
-                font-style: italic;
-                font-size: 0.9em;
-                margin-bottom: 5px;
-                opacity: 0.8;
-            }}
-            .tool-call {{
-                display: inline-block;
-                padding: 2px 8px;
-                background-color: {t.secondary_background};
-                border: 1px solid {t.border};
-                border-radius: 4px;
-                font-family: {self.base.settings.font['family']};
-                font-size: 0.8em;
-                margin: 4px 0;
-            }}
-            details.tool-call {{
-                border: 1px solid {t.border};
-                border-radius: 4px;
-                margin: 8px 0;
-                background-color: {t.secondary_background};
-            }}
-            details.tool-call summary {{
-                padding: 10px;
-                cursor: pointer;
-                font-weight: bold;
-                outline: none;
-            }}
-            details.tool-call .tool-details {{
-                padding: 12px;
-                border-top: 1px solid {t.border};
-                background-color: {t.primary_background};
-                font-size: 0.95em;
-            }}
-            details.thought {{
-                margin: 8px 0;
-            }}
-            details.thought summary {{
-                color: {t.secondary_foreground};
-                cursor: pointer;
-                font-size: 0.9em;
-                padding: 6px 0;
-                list-style: none;
-                outline: none;
-                opacity: 0.8;
-                user-select: none;
-            }}
-            details.thought summary::-webkit-details-marker {{
-                display: none;
-            }}
-            details.thought summary:before {{
-                content: "›";
-                display: inline-block;
-                width: 12px;
-                font-size: 1.2em;
-                transition: transform 0.2s;
-                vertical-align: middle;
-                margin-right: 8px;
-            }}
-            details.thought[open] summary:before {{
-                transform: rotate(90deg);
-            }}
-            .thought-inner {{
-                padding: 8px 0 12px 20px;
-                font-size: 0.92em;
-                line-height: 1.6;
-                color: {t.secondary_foreground};
-                border-left: 1px solid {t.border};
-                margin-left: 5px;
-            }}
-            .step {{
-                display: flex;
-                align-items: center;
-                padding: 8px 0;
-                font-size: 0.92em;
-                color: {t.secondary_foreground};
-            }}
-            .step .icon {{
-                margin-right: 12px;
-                font-size: 1.25em;
-                width: 16px;
-                text-align: center;
-                opacity: 0.8;
-            }}
-            .step b {{
-                color: {t.foreground};
-                font-weight: 500;
-                margin-right: 6px;
-            }}
-            .step .range {{
-                color: {t.secondary_foreground};
-                opacity: 0.5;
-                font-family: {self.base.settings.font['family']};
-                margin-left: 4px;
-            }}
-            .step .diff-add {{
-                color: #3fb950;
-                margin-left: 12px;
-                font-weight: 600;
-                font-size: 0.9em;
-            }}
-            .step .diff-remove {{
-                color: #f85149;
-                margin-left: 8px;
-                font-weight: 600;
-                font-size: 0.9em;
-            }}
-            .step .open-diff {{
-                margin-left: auto;
-                color: {t.biscuit};
-                opacity: 0.8;
-                text-decoration: none;
-                font-size: 0.85em;
-            }}
-            .step .open-diff:hover {{
-                opacity: 1;
-                text-decoration: underline;
-            }}
-            INPUT, TEXTAREA, SELECT, BUTTON {{ 
-                background-color: {t.secondary_background};
-                color: {t.secondary_foreground_highlight};
-            }}
-            INPUT[type="submit"],INPUT[type="button"], INPUT[type="reset"], BUTTON {{
-                background-color: {t.primary_background};
-                color: {t.primary_foreground};
-                color: tcl(::tkhtml::if_disabled {t.primary_background}{t.primary_foreground_highlight});
+                border: 1px solid;
             }}
             """
 
@@ -287,7 +111,7 @@ class Renderer(Frame):
             self.content = self.markdown(content)
         else:
             self.content += self.markdown(content)
-            
+
         full_html = f"{self.header}{self.content}{self.footer}"
         self.htmlframe.load_html(full_html)
         self.htmlframe.add_css(self.css)

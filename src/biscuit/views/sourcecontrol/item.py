@@ -24,7 +24,7 @@ class ChangeItem(Frame):
 
     def __init__(self, master, path, kind, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.views.sidebar.item)
+        self.config()
         self.path = path
         self.kind = kind
 
@@ -34,14 +34,12 @@ class ChangeItem(Frame):
             anchor=tk.W,
             font=self.base.settings.uifont,
             padx=10,
-            pady=2,
-            **self.base.theme.views.sidebar.item.button,
-        )
+            pady=2)
         name_label.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
         name_label.bind("<Double-Button-1>", self.open_diff)
 
         # path_label = TruncatedLabel(self, text=path, anchor=tk.W, font=("Segoe UI", 9),
-        #     padx=10, pady=2, fg="grey", **self.base.theme.views.sidebar.item
+        #     padx=10, pady=2, fg="grey"
         # )
         # path_label.pack(fill=tk.BOTH, side=tk.LEFT)
         # path_label.bind("<Double-Button-1>", self.open_diff)
@@ -49,11 +47,9 @@ class ChangeItem(Frame):
         IconButton(
             self,
             Icons.DISCARD,
-            self.git_discard,
-            **self.base.theme.views.sidebar.item.button,
-        ).pack(fill=tk.BOTH, side=tk.LEFT)
+            self.git_discard).pack(fill=tk.BOTH, side=tk.LEFT)
         IconButton(
-            self, Icons.ADD, self.git_add, **self.base.theme.views.sidebar.item.button
+            self, Icons.ADD, self.git_add
         ).pack(fill=tk.BOTH, side=tk.LEFT)
         Label(
             self,
@@ -61,9 +57,7 @@ class ChangeItem(Frame):
             fg=KINDS[self.kind][2],
             font=self.base.settings.uifont_bold,
             width=3,
-            pady=2,
-            **self.base.theme.views.sidebar.item,
-        ).pack(fill=tk.BOTH, expand=True)
+            pady=2).pack(fill=tk.BOTH, expand=True)
 
         self.bubble = Bubble(self, text=f"{path} • {KINDS[self.kind][1]}")
         self.bind("<Enter>", self.bubble.show)

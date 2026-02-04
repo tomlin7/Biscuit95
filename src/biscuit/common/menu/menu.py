@@ -39,11 +39,11 @@ class Menu(Toplevel):
         self.active = False
         self.name = name
 
-        self.config(bg=self.base.theme.border)
+        # self.config(bg=None)
         self.withdraw()
         self.overrideredirect(True)
 
-        self.container = Frame(self, padx=5, pady=5, **self.base.theme.menu)
+        self.container = Frame(self)  # , padx=5, pady=5)
         self.container.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
         self.container.grid_columnconfigure(0, weight=1)
         self.container.grid_rowconfigure(0, weight=1)

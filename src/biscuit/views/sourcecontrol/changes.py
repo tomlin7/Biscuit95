@@ -17,11 +17,10 @@ class Changes(SideBarViewItem):
     def __init__(self, master, *args, **kwargs) -> None:
         self.__actions__ = (
             (Icons.DISCARD, self.git_discard_all),
-            (Icons.ADD, self.git_add_all),
-        )
+            (Icons.ADD, self.git_add_all))
         self.title = "Changes"
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.views.sidebar.item)
+        self.config()
         self.items = {}
 
     def refresh(self) -> None:

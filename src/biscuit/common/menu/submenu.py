@@ -28,7 +28,7 @@ class SubMenuItem(IconLabelButton):
             **kwargs,
         )
         self.main = main
-        self.text_label.config(padx=14)
+        # self.text_label.config(padx=14)
 
         from .menu import Menu
 

@@ -18,11 +18,11 @@ class Item(IconLabelButton):
         super().__init__(
             master,
             text=text,
-            pady=10,
+            # pady=10,
             icon=Icons.CHEVRON_RIGHT,
             callback=callback,
             iconside=tk.RIGHT,
-            hfg_only=True,
+            # hfg_only=True
         )
         self.path = path
         self.text_label.config(padx=0, pady=0, font=self.base.settings.uifont)
@@ -42,7 +42,7 @@ class BreadCrumbs(Frame):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.editors.breadcrumbs)
+        self.config()
 
         self.pathview = self.base.pathview
 

@@ -8,22 +8,19 @@ import typing
 
 
 def get_callstack(
-    frame: types.FrameType,
-) -> typing.Generator[tuple[str, str, int], None, None]:
+    frame: types.FrameType) -> typing.Generator[tuple[str, str, int], None, None]:
     """Returns the call stack as a list of tuples (function name, filename, line number)."""
 
     while frame:
         yield (
             frame.f_code.co_name,
             os.path.abspath(frame.f_code.co_filename),
-            frame.f_lineno,
-        )
+            frame.f_lineno)
         frame = frame.f_back
 
 
 def get_variables(
-    frame: types.FrameType,
-) -> typing.Generator[tuple[str, dict, bool | None], None, None]:
+    frame: types.FrameType) -> typing.Generator[tuple[str, dict, bool | None], None, None]:
     """Returns section name, variable mapping, and whether tree nodes should be expanded."""
 
     code_info = {

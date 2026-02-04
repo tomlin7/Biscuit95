@@ -16,7 +16,7 @@ class Problems(PanelView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__actions__ = ((Icons.CLEAR_ALL, self.clear),)
+        self.__actions__ = ((Icons.CLEAR_ALL, self.clear))
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -26,12 +26,10 @@ class Problems(PanelView):
             relief=tk.FLAT,
             padx=10,
             pady=10,
-            font=("Consolas", 11),
-            **self.base.theme.editors.text
-        )
+            font=("Consolas", 11))
         self.text.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.scrollbar = Scrollbar(self, style="EditorScrollbar")
+        self.scrollbar = Scrollbar(self)
         self.scrollbar.grid(sticky=tk.NSEW, row=0, column=1)
 
         self.text.config(yscrollcommand=self.scrollbar.set)

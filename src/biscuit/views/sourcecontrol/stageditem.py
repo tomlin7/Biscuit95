@@ -24,7 +24,7 @@ class StagedChangeItem(Frame):
 
     def __init__(self, master, path, kind, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.views.sidebar.item)
+        self.config()
         self.path = path
         self.kind = kind
 
@@ -34,27 +34,21 @@ class StagedChangeItem(Frame):
             anchor=tk.W,
             font=self.base.settings.uifont,
             padx=10,
-            pady=2,
-            **self.base.theme.views.sidebar.item.button,
-        )
+            pady=2)
         self.diff_btn.bind("<Double-Button-1>", self.open_diff)
         self.diff_btn.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
 
         IconButton(
             self,
             Icons.REMOVE,
-            self.git_remove,
-            **self.base.theme.views.sidebar.item.button,
-        ).pack(fill=tk.BOTH, side=tk.LEFT)
+            self.git_remove).pack(fill=tk.BOTH, side=tk.LEFT)
         Label(
             self,
             text=KINDS[self.kind][0],
             fg=KINDS[self.kind][2],
             font=self.base.settings.uifont,
             width=3,
-            pady=2,
-            **self.base.theme.views.sidebar.item,
-        ).pack(fill=tk.BOTH)
+            pady=2).pack(fill=tk.BOTH)
 
         self.bubble = Bubble(self, text=f"{path} • {KINDS[self.kind][1]}")
         self.bind("<Enter>", self.bubble.show)

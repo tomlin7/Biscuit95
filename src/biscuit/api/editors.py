@@ -5,7 +5,6 @@ class Editors(Endpoint):
     def __init__(self, *a) -> None:
         super().__init__(*a)
         self.editors = self.base.editorsmanager
-        self.theme = self.base.theme
 
     def add_editor(self, editor) -> None:
         self.editors.add_editor(editor)

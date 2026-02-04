@@ -20,7 +20,7 @@ def show_python_not_installed_message():
 
 def check_python_installation():
     """Check if python is installed and install python language server."""
-
+    return
     try:
         if os.name == "nt":
             sp.check_call(["python", "--version"])

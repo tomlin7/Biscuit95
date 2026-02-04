@@ -5,28 +5,23 @@ from biscuit.common.ui.native import Canvas, Frame
 
 
 class ScrollableFrame(Frame):
-    """Scrollable frame widget
-    Items can be added to the frame using the add method.
-    Items are added to ScrollableFrame.content using the pack manager."""
+    """Scrollable frame widget"""
 
     def __init__(self, master, *args, **kwargs) -> None:
-        super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
+        super().__init__(master) # , *args, **kwargs)
 
-        self.scrollbar = ttk.Scrollbar(self, style="EditorScrollbar")
+        self.scrollbar = ttk.Scrollbar(self)
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        self.canvas = Canvas(
-            self, yscrollcommand=self.scrollbar.set, **self.base.theme.editors
-        )
-        self.canvas.configure(highlightthickness=0)
+        self.canvas = Canvas(self, yscrollcommand=self.scrollbar.set)
+        self.canvas.configure() # removed highlightthickness
         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         self.scrollbar.config(command=self.canvas.yview)
 
         self.items = []
 
-        self.content = Frame(self.canvas, **self.base.theme.editors)
+        self.content = Frame(self.canvas)
         self._content = self.canvas.create_window(
             (0, 0), window=self.content, anchor="nw"
         )

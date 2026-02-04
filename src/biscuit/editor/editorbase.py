@@ -43,7 +43,9 @@ class BaseEditor(Frame):
         self, master, path=None, path2=None, editable=True, *args, **kwargs
     ) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.editors)
+        # Theme manager removed — rely on Tkinter/ttk defaults (clam) and widget defaults.
+        # Avoid applying any application-wide theme configuration here.
+        # self.config(bg=None)
 
         self.path = path
         self.path2 = path2
@@ -88,14 +90,11 @@ class BaseEditor(Frame):
         self.__buttons__.append(args)
 
     def create_buttons(self, editorsbar):
-        try:
-            self.__buttons__ = [
-                (
-                    IconButton(editorsbar, iconsize=12, hfg_only=True, *button)
-                    if isinstance(button, list | tuple)
-                    else IconButton(editorsbar, **button)
-                )
-                for button in self.__buttons__
-            ]
-        except:
-            pass
+        self.__buttons__ = [
+            (
+                IconButton(editorsbar, iconsize=12, *button)
+                if isinstance(button, list | tuple)
+                else IconButton(editorsbar, **button)
+            )
+            for button in self.__buttons__
+        ]

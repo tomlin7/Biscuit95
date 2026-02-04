@@ -38,8 +38,7 @@ def create_extension(
     template: str | None = None,
     output_dir: str | Path | None = None,
     force: bool = False,
-    extra_context: dict[str, str] | None = None,
-) -> bool:
+    extra_context: dict[str, str] | None = None) -> bool:
     """Generate a brand-new extension project.
 
     Parameters
@@ -95,8 +94,7 @@ def create_extension(
             print(
                 f"Error: destination '{extension_dir}' already exists. "
                 "Use force=True to overwrite.",
-                file=sys.stderr,
-            )
+                file=sys.stderr)
             return False
         shutil.rmtree(extension_dir)
 
@@ -104,8 +102,7 @@ def create_extension(
         print(
             "cookiecutter is not installed; cannot scaffold an extension. "
             "Please install it first (pip install cookiecutter).",
-            file=sys.stderr,
-        )
+            file=sys.stderr)
         return False
 
     extra_ctx = {
@@ -121,8 +118,7 @@ def create_extension(
             repo_url,
             no_input=True,
             extra_context=extra_ctx,
-            output_dir=str(dest_root),
-        )
+            output_dir=str(dest_root))
     except Exception as exc:
         print(f"Failed to scaffold extension: {exc}", file=sys.stderr)
         return False

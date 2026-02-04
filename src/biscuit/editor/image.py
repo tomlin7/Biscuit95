@@ -22,9 +22,7 @@ class ImageViewer(BaseEditor):
             width=self.photo.width(),
             height=self.photo.height(),
             bd=0,
-            highlightthickness=0,
-            **self.base.theme.editors
-        )
+            highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True)
 
         self.bind_all("<MouseWheel>", self.zoom_image)
@@ -37,8 +35,7 @@ class ImageViewer(BaseEditor):
             self.canvas.winfo_width() // 2,
             self.canvas.winfo_height() // 2,
             anchor=tk.CENTER,
-            image=self.photo,
-        )
+            image=self.photo)
 
     def zoom_image(self, event: tk.Event):
         x, y = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y)

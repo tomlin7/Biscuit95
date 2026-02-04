@@ -19,13 +19,11 @@ if typing.TYPE_CHECKING:
 class ActivityBar(Frame):
     def __init__(self, master: Statusbar, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.layout.sidebar.actionbar)
 
         self.buttons: list[ActionButton] = []
         self.active_button: ActionButton = None
 
         self.menus = []
-        # self.add_menus()
 
     def attach_sidebar(self, sidebar: SideBar) -> None:
         self.sidebar = sidebar
@@ -34,13 +32,13 @@ class ActivityBar(Frame):
         btn = ActionButton(self, view.__icon__, view.name, view=view)
         btn.pack(side=tk.LEFT)
         self.buttons.append(btn)
-        
+
     def add_button(self, icon: str, name: str, callback: typing.Callable) -> None:
         btn = ActionButton(self, icon, name, callback=callback)
         btn.pack(side=tk.LEFT)
 
     def add_separator(self) -> None:
-        sep = Frame(self, width=1, bg=self.base.theme.border)
+        sep = Frame(self)  # , width=1)
         sep.pack(side=tk.LEFT, fill=tk.Y, padx=5, pady=5)
 
     def toggle_first_slot(self) -> None:

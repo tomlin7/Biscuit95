@@ -23,8 +23,7 @@ class Default(TerminalBase):
         if not self.shell:
             Label(
                 self,
-                text="No shells detected for the host os, report an issue otherwise.",
-            ).grid()
+                text="No shells detected for the host os, report an issue otherwise.").grid()
             self.name = "Not Detected"
             self.icon = "error"
             return

@@ -19,8 +19,8 @@ class Placeholder(BaseEditor):
     """
 
     def __init__(self, master: EditorsManager, *args, **kwargs) -> None:
-        super().__init__(master, *args, **kwargs)
-        self.config(bd=0, relief=tk.FLAT, **self.base.theme.editors)
+        super().__init__(master)  # , *args, **kwargs)
+        # self.config(bd=0, relief=tk.FLAT)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -29,13 +29,13 @@ class Placeholder(BaseEditor):
         #     self.logo = tk.Label(
         #         self,
         #         image=self.base.settings.resources.logo,
-        #         **self.base.theme.editors.labels,
+        # ,
         #     )
         #     self.logo.grid(row=0, column=0)
         # except tk.TclError:
         #     pass
 
-        self.shortcuts = Shortcuts(self, **self.base.theme.editors)
+        self.shortcuts = Shortcuts(self)
         self.shortcuts.grid(row=0, column=0)
 
         self.shortcuts.add_shortcut("Show all commands", ["Ctrl", "Shift", "P"])

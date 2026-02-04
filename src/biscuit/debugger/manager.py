@@ -42,8 +42,7 @@ class DebuggerManager:
             "debugger.set_local",
             pinned=[
                 ["Change value to {}", self.base.debug.variables.set_variable_callback]
-            ],
-        )
+            ])
         self.base.register_actionset(lambda: set_local_actionset)
 
     @property

@@ -57,7 +57,7 @@ class Game(Frame):
             name (str): name of the game"""
 
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
+        self.config()
         self.filename = name
 
         self.path = None

@@ -32,15 +32,13 @@ class DirectoryTree(SideBarViewItem):
         itembar=True,
         style="",
         *args,
-        **kwargs,
-    ) -> None:
+        **kwargs) -> None:
         self.title = "No folder opened"
         self.__actions__ = (
             (Icons.NEW_FILE, lambda: self.base.palette.show("newfile:")),
             (Icons.NEW_FOLDER, lambda: self.base.palette.show("newfolder:")),
             (Icons.REFRESH, self.refresh_root),
-            (Icons.COLLAPSE_ALL, self.collapse_all),
-        )
+            (Icons.COLLAPSE_ALL, self.collapse_all))
         super().__init__(master, itembar=itembar, *args, **kwargs)
 
         self.nodes = {}
@@ -80,8 +78,7 @@ class DirectoryTree(SideBarViewItem):
             singleclick=self.preview_file,
             style=style,
             *args,
-            **kwargs,
-        )
+            **kwargs)
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
         self.tree.grid_remove()
         self.tree.bind("<<Open>>", self.toggle_node)
@@ -96,7 +93,7 @@ class DirectoryTree(SideBarViewItem):
         self.ctxmenu = DirectoryContextMenu(self, "ExplorerContextMenu")
         self.tree.bind("<Button-3>", self.right_click)
 
-        self.tree.tree.tag_configure("ignored", foreground=self.base.theme.disabled)
+        self.tree.tree.tag_configure("ignored")
 
         if startpath:
             self.change_path(startpath)
@@ -142,8 +139,7 @@ class DirectoryTree(SideBarViewItem):
         self.loading = True
         t = threading.Thread(
             target=self.run_create_sub_root if subdir else self.run_create_root,
-            args=(path, parent),
-        )
+            args=(path, parent))
         t.daemon = True
         t.start()
 
@@ -170,8 +166,7 @@ class DirectoryTree(SideBarViewItem):
                 files.append(
                     (
                         self.tree.item(item, "text"),
-                        lambda _, item=item: print(self.tree.item_fullpath(item)),
-                    )
+                        lambda _, item=item: print(self.tree.item_fullpath(item)))
                 )
 
         return files
@@ -236,8 +231,7 @@ class DirectoryTree(SideBarViewItem):
                         values=[path, "directory"],
                         # image="foldericon",
                         open=False,
-                        tags="ignored" if ignored and (unixlike in ignored) else "",
-                    )
+                        tags="ignored" if ignored and (unixlike in ignored) else "")
                     self.nodes[os.path.abspath(path)] = node
                     self.tree.insert(node, "end", text="loading...", tags="ignored")
                 except:
@@ -258,8 +252,7 @@ class DirectoryTree(SideBarViewItem):
                         text=f"  {name}",
                         values=[path, "file"],
                         # image="document",
-                        tags="ignored" if ignored and (unixlike in ignored) else "",
-                    )
+                        tags="ignored" if ignored and (unixlike in ignored) else "")
                     self.nodes[os.path.abspath(path)] = node
                 except:
                     self.refresh_root()
@@ -405,8 +398,7 @@ class DirectoryTree(SideBarViewItem):
         if path := self.tree.selected_path():
             shutil.move(
                 path,
-                os.path.join(self.tree.selected_parent_path() or self.path, newname),
-            )
+                os.path.join(self.tree.selected_parent_path() or self.path, newname))
 
         self.update_path(parent)
 

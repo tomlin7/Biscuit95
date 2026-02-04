@@ -11,7 +11,7 @@ from .renderer import HTMLRenderer
 class HTMLEditor(BaseEditor):
     def __init__(self, master, path, exists=False, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
+        self.config()
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.path = path
@@ -21,7 +21,7 @@ class HTMLEditor(BaseEditor):
 
         # TODO open in browser button
 
-        self.__buttons__ = ((Icons.OPEN_PREVIEW, self.toggle_preview),)
+        self.__buttons__ = ((Icons.OPEN_PREVIEW, self.toggle_preview))
 
         self.editor = TextEditor(self, path, exists=exists)
         self.editor.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 1))

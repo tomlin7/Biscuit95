@@ -30,12 +30,12 @@ class Checkable(IconLabelButton):
             iconsize=10,
             icon_visible=checked,
             *args,
-            **kwargs
+            **kwargs,
         )
 
         self.command = command
-        self.bg, self.fg, self.hbg, self.hfg = self.base.theme.menu.item.values()
-        self.on_leave()
+        self.bg = self.fg = self.hbg = self.hfg = None
+        # self.on_leave()
 
     def on_click(self, *_) -> None:
         self.master.hide()

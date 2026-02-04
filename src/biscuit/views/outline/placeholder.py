@@ -17,14 +17,13 @@ class OutlineTreePlaceholder(Frame):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(padx=15, pady=10, **self.base.theme.views.sidebar.item)
+        # self.config(padx=15, pady=10)
 
         self.label = WrappingLabel(
             self,
             text="No outline information",
             font=self.base.settings.uifont,
             anchor=tk.W,
-            **self.base.theme.views.sidebar.item.content,
         )
         self.label.pack(fill=tk.X)
 

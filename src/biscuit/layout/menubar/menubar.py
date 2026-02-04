@@ -7,7 +7,6 @@ import typing
 from biscuit.common import Menu
 from biscuit.common.icons import Icons
 from biscuit.common.ui import Frame, IconButton
-from biscuit.common.ui.bubble import Bubble
 
 from .item import MenubarItem
 from .notification import Notifications
@@ -18,73 +17,59 @@ if typing.TYPE_CHECKING:
 
 
 class Menubar(Frame):
-    """Menubar of the application
-
-    - Contains the MenubarItems
-    - Manages the MenubarItems
-    """
+    """Menubar - Contains and manages MenubarItems."""
 
     def __init__(self, master: Frame, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.menus: list[MenubarItem] = []
         self.events = self.base.commands
 
-        # structure of the menubar
-
-        # |---left container---|---searchbar---|---right container---|
-
-        self.container = Frame(self, **self.base.theme.layout.menubar)
+        self.container = Frame(self)
         self.container.pack(side=tk.LEFT, fill=tk.BOTH)
 
         self.searchbar = SearchBar(self)
         self.searchbar.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-        self.container_right = Frame(self, **self.base.theme.layout.menubar)
+        self.container_right = Frame(self)
         self.container_right.pack(side=tk.RIGHT, fill=tk.BOTH)
 
         self.notifications = Notifications(self.container_right)
         self.notifications.pack(side=tk.LEFT, fill=tk.BOTH)
 
-        # make this custom titlebar for windows
         if platform.system() == "Windows":
             close = IconButton(
                 self.container_right,
                 icon=Icons.CHROME_CLOSE,
-                iconsize=12,
-                padx=15,
-                pady=8,
+                # iconsize=12,
+                # padx=15,
+                # pady=8,
                 event=self.events.quit_biscuit,
             )
-            close.config(activebackground="#e81123", activeforeground="white")
             close.pack(side=tk.RIGHT, fill=tk.Y, padx=0)
 
             IconButton(
                 self.container_right,
                 icon=Icons.CHROME_MAXIMIZE,
-                iconsize=12,
+                # iconsize=12,
                 icon2=Icons.CHROME_RESTORE,
-                padx=15,
-                pady=8,
+                # padx=15,
+                # pady=8,
                 event=self.events.maximize_biscuit,
             ).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
             IconButton(
                 self.container_right,
                 icon=Icons.CHROME_MINIMIZE,
-                iconsize=12,
-                padx=15,
-                pady=8,
+                # iconsize=12,
+                # padx=15,
+                # pady=8,
                 event=self.events.minimize_biscuit,
             ).pack(side=tk.RIGHT, fill=tk.Y, padx=0)
             self.config_bindings()
 
         self.update_idletasks()
-
-        self.config(**self.base.theme.layout.menubar)
         self.add_menus()
 
     def update_notifications(self) -> None:
-        """Updates the notifications icon and description on the status bar."""
-
         n = self.base.notifications.count
         self.notifications.set_icon(Icons.BELL_DOT if n else Icons.BELL)
         self.notifications.bubble.change_text(
@@ -92,11 +77,6 @@ class Menubar(Frame):
         )
 
     def change_title(self, title: str) -> None:
-        """Change the title of the searchbar
-
-        Args:
-            title (str): Title of the searchbar"""
-
         self.searchbar.label.change_text(title)
 
     def config_bindings(self) -> None:
@@ -108,9 +88,10 @@ class Menubar(Frame):
     def start_move(self, event) -> None:
         if platform.system() == "Windows":
             from ctypes import windll
+
             hwnd = windll.user32.GetParent(self.base.winfo_id())
             windll.user32.ReleaseCapture()
-            windll.user32.PostMessageW(hwnd, 0x0112, 0xF012, 0) # WM_SYSCOMMAND, SC_MOVE + 2
+            windll.user32.PostMessageW(hwnd, 0x0112, 0xF012, 0)
             return
 
         self.x = event.x
@@ -119,7 +100,7 @@ class Menubar(Frame):
     def stop_move(self, _) -> None:
         if platform.system() == "Windows":
             return
-            
+
         self.x = None
         self.y = None
 
@@ -132,11 +113,6 @@ class Menubar(Frame):
         self.base.geometry(f"+{x}+{y}")
 
     def add_menu(self, text: str) -> Menu:
-        """Add a new menu to the menubar
-
-        Args:
-            text (str): Text of the menu"""
-
         new_menu = MenubarItem(self, text)
         new_menu.pack(side=tk.LEFT, fill=tk.BOTH, in_=self.container)
         self.menus.append(new_menu)
@@ -207,7 +183,6 @@ class Menubar(Frame):
         events = self.events
 
         self.view_menu = self.add_menu("View")
-        # TODO: Add the rest of the view menu items
         self.view_menu.add_command("Command Palette...", events.show_command_palette)
         self.view_menu.add_command("Explorer", events.show_directory_tree)
         self.view_menu.add_command("Outline", events.show_outline)
@@ -256,5 +231,5 @@ class Menubar(Frame):
             item.select()
             item.menu.show()
 
-    def pack(self):
-        super().pack(fill=tk.BOTH, pady=(0, 1))
+    def pack(self, **kwargs):
+        super().pack(**kwargs)

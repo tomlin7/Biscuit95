@@ -13,31 +13,21 @@ class DirectoryTreePlaceholder(Frame):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(padx=15, pady=10, **self.base.theme.views.sidebar.item)
+        # self.config(padx=15, pady=10)
         self.columnconfigure(0, weight=1)
 
         WrappingLabel(
-            self,
-            text="No folder opened",
-            font=self.base.settings.uifont,
-            anchor=tk.W,
-            **self.base.theme.views.sidebar.item.content
+            self, text="No folder opened", font=self.base.settings.uifont, anchor=tk.W
         ).grid(row=0, sticky=tk.EW)
 
         open_btn = Button(
-            self,
-            text="Open Folder",
-            command=self.open_folder,
-            pady=2,
-        )
+            self, text="Open Folder", command=self.open_folder
+        )  # , pady=2)
         open_btn.grid(row=1, pady=5, sticky=tk.EW)
 
         clone_btn = Button(
-            self,
-            text="Clone Repo",
-            command=self.clone_repo,
-            pady=2,
-        )
+            self, text="Clone Repo", command=self.clone_repo
+        )  # , pady=2)
         clone_btn.grid(row=3, sticky=tk.EW)
 
     def open_folder(self, *_) -> None:

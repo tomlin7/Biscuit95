@@ -20,7 +20,7 @@ class ExtensionsList(ScrollableFrame):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.views.sidebar.background)
+        self.config()
 
 
 class Results(SideBarViewItem):
@@ -40,7 +40,7 @@ class Results(SideBarViewItem):
         self.title = "Available"
 
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.views.sidebar.item)
+        self.config()
 
         self.placeholder = ExtensionsPlaceholder(self)
         self.extension_list = ExtensionsList(self.content)

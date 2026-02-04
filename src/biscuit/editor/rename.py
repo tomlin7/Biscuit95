@@ -18,14 +18,14 @@ class Rename(Toplevel):
 
     def __init__(self, master: App, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(pady=1, padx=1, bg=self.base.theme.border)
+        # self.config(pady=1, padx=1)
 
         self.tab = None
         self.active = False
         self.withdraw()
         self.overrideredirect(True)
 
-        frame = Frame(self, **self.base.theme.palette)
+        frame = Frame(self)
         frame.pack(fill=tk.BOTH, padx=2, pady=2)
 
         self.text_variable = tk.StringVar()
@@ -33,9 +33,7 @@ class Rename(Toplevel):
             frame,
             font=self.base.settings.font,
             relief=tk.FLAT,
-            highlightcolor=self.base.theme.biscuit,
             textvariable=self.text_variable,
-            **self.base.theme.palette.searchbar,
         )
         self.entry.grid(sticky=tk.EW, padx=5, pady=3)
 

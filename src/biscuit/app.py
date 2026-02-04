@@ -48,8 +48,8 @@ class App(EventManager, GUIManager, ConfigManager):
             dir (str, optional): Directory to open in the editor. Defaults to "".
         """
 
-        super().__init__(*args, **kwargs)
         self.base = self
+        super().__init__(*args, **kwargs)
         self.appdir = appdir
 
         self.setup()

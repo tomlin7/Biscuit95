@@ -16,21 +16,18 @@ from mistune.plugins.url import url
 from pygments import highlight
 from pygments.formatters import html
 from pygments.lexers import get_lexer_by_name
-from pygments.style import Style
 from tkinterweb import HtmlFrame
 
 from biscuit.common.ui import Frame, Scrollbar
 
 if typing.TYPE_CHECKING:
-    from ...settings.config import Theme
     from .hover import Hover
 
 
 class HighlightRenderer(mistune.HTMLRenderer):
-    def __init__(self, style, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.style = style
-        self.formatter = html.HtmlFormatter(style=self.style)
+        self.formatter = html.HtmlFormatter(style="monokai")
 
     def block_code(self, code, info=None):
         try:
@@ -43,45 +40,12 @@ class HighlightRenderer(mistune.HTMLRenderer):
         return "<pre><code>" + mistune.escape(code) + "</code></pre>"
 
 
-class BiscuitStyle(Style):
-    def __init__(self, theme: Theme):
-        super().__init__()
-        self.theme = theme
-        self.styles = self.theme.syntax
-
-    def __iter__(self):
-        for token, color in self.theme.syntax.items():
-            if isinstance(color, dict):
-                yield token, {
-                    "color": color["foreground"][1:],
-                    "bold": False,
-                    "italic": False,
-                    "underline": False,
-                    "bgcolor": None,
-                    "border": None,
-                }
-            else:
-                yield token, {
-                    "color": color[1:],
-                    "bold": False,
-                    "italic": False,
-                    "underline": False,
-                    "bgcolor": None,
-                    "border": None,
-                }
-
-
 class HoverRenderer(HtmlFrame):
     def __init__(self, master: Hover, *args, **kwargs) -> None:
         super().__init__(master, messages_enabled=False, *args, **kwargs)
         self.base = master.base
 
-        # NOTE: Causing app to crash
-        # self.html.shrink(True)
-
-        self.style = BiscuitStyle(self.base.theme)
-
-        self.renderer = HighlightRenderer(self.style, escape=False)
+        self.renderer = HighlightRenderer(escape=False)
         self.formatter = self.renderer.formatter
         self.markdown = mistune.Markdown(
             renderer=self.renderer,
@@ -98,7 +62,7 @@ class HoverRenderer(HtmlFrame):
             ],
         )
 
-        t = self.base.theme
+        # Minimal CSS - no colors, just fonts and layout
         pygments_css = self.formatter.get_style_defs(".highlight")
         self.css = f"""
             {pygments_css}
@@ -109,9 +73,8 @@ class HoverRenderer(HtmlFrame):
             }}
 
             CODE, PRE {{
-                font-family: {self.base.settings.font['family']};
-                font-size: {self.base.settings.font['size']}pt;
-                background-color: {t.border};
+                font-family: {self.base.settings.font["family"]};
+                font-size: {self.base.settings.font["size"]}pt;
                 padding: 2px;
             }}
 
@@ -120,8 +83,6 @@ class HoverRenderer(HtmlFrame):
             }}
 
             BODY {{
-                background-color: {t.secondary_background};
-                color: {t.secondary_foreground};
                 align-items: left;
             }}
             img {{
@@ -131,27 +92,15 @@ class HoverRenderer(HtmlFrame):
 
             hr {{
                 border: 0;
-                border-top: 1px solid {t.border};
+                border-top: 1px solid;
                 max-width: 100%;
             }}
-            li{{
-                margin-left:1px;
+            li {{
+                margin-left: 1px;
             }}
 
             tr, th, td {{
-                border: 1px solid {t.border};
-            }}
-
-            :link    {{ color: {t.biscuit}; }}
-            :visited {{ color: {t.biscuit_dark}; }}
-            INPUT, TEXTAREA, SELECT, BUTTON {{ 
-                background-color: {t.secondary_background};
-                color: {t.secondary_foreground_highlight};
-            }}
-            INPUT[type="submit"],INPUT[type="button"], INPUT[type="reset"], BUTTON {{
-                background-color: {t.primary_background};
-                color: {t.primary_foreground};
-                color: tcl(::tkhtml::if_disabled {t.primary_background}{t.primary_foreground_highlight});
+                border: 1px solid;
             }}
             """
 

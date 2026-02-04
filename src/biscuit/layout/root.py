@@ -20,7 +20,7 @@ from __future__ import annotations
 import tkinter as tk
 import typing
 
-from biscuit.common.ui import Frame, PanedWindow
+from biscuit.common.ui import Frame, PanedWindow, tkPanedWindow
 from biscuit.layout.statusbar import activitybar
 
 from .content import *
@@ -42,27 +42,26 @@ class Root(Frame):
 
     def __init__(self, base: App, *args, **kwargs) -> None:
         super().__init__(base, *args, **kwargs)
-        self.config(bg=self.base.theme.primary_background)
 
-        container = Frame(self, bg=self.base.theme.border)
+        self.menubar = Menubar(self)
+        self.statusbar = Statusbar(self)
 
-        self.menubar = Menubar(container)
-        self.statusbar = Statusbar(container)
-
-        self.subcontainer = PanedWindow(container, orient=tk.HORIZONTAL, bg=self.base.theme.border, bd=0, sashwidth=3, sashpad=0, opaqueresize=False)
+        self.subcontainer = tkPanedWindow(
+            self, orient=tk.HORIZONTAL, bd=0, sashwidth=2 #, bg=self.base.settings.style.theme.background
+        )
+        self.sidebar = SideBar(
+            self.subcontainer, activitybar=self.statusbar.activitybar
+        )
         self.content = Content(self.subcontainer)
-        self.sidebar = SideBar(self.subcontainer, activitybar=self.statusbar.activitybar)
         self.secondary_sidebar = SecondarySideBar(
             self.subcontainer, activitybar=self.statusbar.secondary_activitybar
         )
 
-        container.pack(fill=tk.BOTH, expand=True)
-        
-        self.menubar.pack()
+        self.menubar.pack(fill=tk.X)
         self.subcontainer.pack(fill=tk.BOTH, expand=True)
-        self.statusbar.pack()
+        self.statusbar.pack(fill=tk.X)
 
-        self.content.pack(padx=1)
+        self.content.pack()
         self.pack(fill=tk.BOTH, expand=True)
 
     def toggle_sidebar(self) -> None:

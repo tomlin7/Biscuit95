@@ -13,6 +13,7 @@ class _DropdownMenu(Menu):
             self.master.winfo_rooty() + self.master.winfo_height(),
         )
 
+
 class _DropdownMenu2(Menu):
     def get_coords(self, e) -> tuple:
         self.update_idletasks()
@@ -47,30 +48,23 @@ class Dropdown(Frame):
         font="",
         open_upwards=False,
         *args,
-        **kwargs
+        **kwargs,
     ) -> None:
-        super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
+        super().__init__(master)  # , padx=padx, pady=pady, *args, **kwargs)
         self.callback = callback
         self.empty_message = empty_message
 
-        self.bg, self.fg, self.hbg, self.hfg = (
-            self.base.theme.utils.iconlabelbutton.values()
-        )
-        if fg:
-            self.fg = fg
-        if bg:
-            self.bg = bg
-        if hfg:
-            self.hfg = hfg
-        if hbg:
-            self.hbg = hbg
+        self.bg = bg
+        self.fg = fg
+        self.hbg = hbg
+        self.hfg = hfg
 
         self.iconfg = iconfg or self.fg
         self.iconbg = iconbg or self.bg
         self.iconhfg = iconhfg or self.hfg
         self.iconhbg = iconhbg or self.hbg
 
-        self.config(bg=self.bg)
+        # self.config(bg=self.bg)
         self.text = selected or empty_message
         self.icon = icon
 
@@ -85,10 +79,10 @@ class Dropdown(Frame):
             self.icon_label = tk.Label(
                 self,
                 text=self.icon,
-                anchor=tk.CENTER,
-                bg=self.iconbg,
-                fg=self.iconfg,
-                font=("codicon", 12),
+                # anchor=tk.CENTER,
+                # bg=self.iconbg,
+                # fg=self.iconfg,
+                # font=("codicon", 12),
             )
             self.icon_label.pack(side=iconside, fill=tk.BOTH)
 
@@ -96,16 +90,16 @@ class Dropdown(Frame):
         self.text_label = tk.Label(
             self,
             text=self.text,
-            anchor=tk.CENTER,
-            pady=2,
-            bg=self.bg,
-            fg=self.fg,
-            font=font,
+            # anchor=tk.CENTER,
+            # pady=2,
+            # bg=self.bg,
+            # fg=self.fg,
+            # font=font,
         )
         self.text_label.pack(side=iconside, fill=tk.BOTH, expand=True)
 
         self.dropdown_btn = IconButton(self, Icons.CHEVRON_DOWN, self.menu.show)
-        self.dropdown_btn.config(bg=self.bg, fg=self.fg)
+        # self.dropdown_btn.config(bg=self.bg, fg=self.fg)
         self.dropdown_btn.pack(side=tk.RIGHT, fill=tk.BOTH)
 
         self.config_bindings()

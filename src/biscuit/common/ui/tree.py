@@ -7,15 +7,7 @@ from biscuit.common.ui.scrollbar import Scrollbar
 
 
 class Tree(Frame):
-    """Treeview with an auto hiding scrollbar
-
-    Args:
-        master (tk.Widget): Parent widget
-        startpath (str, optional): Starting path for the tree.
-        doubleclick (function, optional): Function to call on double click. Defaults to lambda _: None.
-        singleclick (function, optional): Function to call on single click. Defaults to lambda _: None.
-        columns (tuple, optional): Columns to display. Defaults to ("fullpath", "type").
-    """
+    """Treeview with an auto hiding scrollbar"""
 
     def __init__(
         self,
@@ -26,10 +18,8 @@ class Tree(Frame):
         columns=("fullpath", "type"),
         style="",
         *args,
-        **kwargs,
-    ) -> None:
+        **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(**self.base.theme.utils.tree)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
@@ -44,13 +34,10 @@ class Tree(Frame):
             columns=columns,
             displaycolumns="",
             style=style,
-            selectmode=tk.BROWSE,
-        )
+            selectmode=tk.BROWSE)
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.scrollbar = Scrollbar(
-            self, orient=tk.VERTICAL, command=self.tree.yview, style="TreeScrollbar"
-        )
+        self.scrollbar = Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
         self.scrollbar.grid(row=0, column=1, sticky=tk.NS)
 
         self.tree.config(yscrollcommand=self.scrollbar.set)
@@ -58,32 +45,6 @@ class Tree(Frame):
 
         self.bind("<Double-Button-1>", self.doubleclick)
         self.bind("<<TreeviewSelect>>", self.check_singleclick)
-
-        # self.tree.bind("<Motion>", self.on_motion)
-        # self.tree.bind("<Leave>", self.on_leave)
-        # self.tree.tag_configure("hover", background=self.base.theme.border)
-        # self.hovered = None
-
-    def on_motion(self, event):
-        try:
-            self.item(self.hovered, tags=())
-        except tk.TclError:
-            pass
-
-        item = self.identify_row(event.y)
-        try:
-            self.item(item, tags=("hover",))
-            self.hovered = item
-        except tk.TclError:
-            pass
-
-    def on_leave(self, _):
-        if self.hovered:
-            try:
-                self.item(self.hovered, tags=())
-            except tk.TclError:
-                pass
-            self.hovered = None
 
     def bind(self, *args, **kwargs) -> None:
         self.tree.bind(*args, **kwargs)
@@ -172,9 +133,6 @@ class Tree(Frame):
         return self.tree.set(*args, **kwargs)
 
     def __getattr__(self, name) -> typing.Any:
-        """For methods that are not in this class, assume it is present in tree widget
-        and delegate the call to the `tree` widget."""
-
         text_methods = set(dir(self.tree))
         if name in text_methods:
             attr = getattr(self.tree, name)

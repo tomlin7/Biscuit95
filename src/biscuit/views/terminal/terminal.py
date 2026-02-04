@@ -29,10 +29,9 @@ class Terminal(PanelView):
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
 
-        self.config(bg=self.base.theme.border)
+        self.config()
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
-        self.grid_propagate(False)
 
         self.addmenu = TerminalMenu(self, "addterminal")
         for i in SHELLS:
@@ -55,8 +54,7 @@ class Terminal(PanelView):
         self.run_actionset = ActionSet(
             "Run Command in Terminal",
             "runc:",
-            pinned=[["Run command? {}", self.run_command]],
-        )
+            pinned=[["Run command? {}", self.run_command]])
         self.base.palette.register_actionset(lambda: self.run_actionset)
 
     def add_default_terminal(self) -> Default:
@@ -93,6 +91,7 @@ class Terminal(PanelView):
         """Open another instance of active terminal in the current directory.
         If no active terminal, open a default terminal."""
 
+        self.base.logger.info("Terminal: opening new terminal instance")
         self.add_terminal(
             self.active_terminal_type(
                 self, cwd=path or self.base.active_directory or get_home_directory()

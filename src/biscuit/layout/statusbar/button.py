@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import tkinter as tk
 import typing
+from tkinter import ttk
 
 from biscuit.common import Icons
 from biscuit.common.ui import Bubble, Frame
@@ -13,7 +14,7 @@ if typing.TYPE_CHECKING:
 class SBubble(Bubble):
     def get_pos(self) -> str:
         return (
-            f"+{int(self.master.winfo_rootx() + (self.master.winfo_width() - self.winfo_width())/2)}"
+            f"+{int(self.master.winfo_rootx() + (self.master.winfo_width() - self.winfo_width()) / 2)}"
             + f"+{self.master.winfo_rooty() - self.master.winfo_height() - 15}"
         )
 
@@ -33,7 +34,7 @@ class SButton(Frame):
         *args,
         **kwargs,
     ) -> None:
-        super().__init__(master, padx=padx, pady=pady, *args, **kwargs)
+        super().__init__(master, style="StatusBar.TFrame")  # , padx=padx, pady=pady, *args, **kwargs)
         self.callback = callback or (lambda *_: None)
         self.text = text
         self.icon = icon
@@ -41,34 +42,20 @@ class SButton(Frame):
         self.icon2 = icon2
         self.toggled = False
 
-        self.bg, self.fg, self.hbg, self.hfg = (
-            self.base.theme.layout.statusbar.button_highlighted.values()
-            if self.highlighted
-            else self.base.theme.layout.statusbar.button.values()
-        )
-        self.config(bg=self.bg)
-
         self.bubble = SBubble(self, text=description)
         if icon:
-            self.icon_label = tk.Label(
+            self.icon_label = ttk.Label(
                 self,
                 text=self.icon,
-                anchor=tk.CENTER,
-                bg=self.bg,
-                fg=self.fg,
-                font=("codicon", 12),
+                style="StatusBar.Icon.TLabel"
             )
             self.icon_label.pack(side=tk.LEFT, fill=tk.Y, expand=True)
 
         if text:
-            self.text_label = tk.Label(
+            self.text_label = ttk.Label(
                 self,
                 text=self.text,
-                anchor=tk.CENTER,
-                bg=self.bg,
-                fg=self.fg,
-                pady=2,
-                font=self.base.settings.uifont,
+                style="StatusBar.TLabel"
             )
             self.text_label.pack(side=tk.LEFT, fill=tk.Y, expand=True)
 
@@ -76,43 +63,11 @@ class SButton(Frame):
         self.visible = False
 
     def config_bindings(self) -> None:
-        self.bind("<Enter>", self.on_enter)
-        self.bind("<Leave>", self.on_leave)
-
         self.bind("<Button-1>", self.on_click)
         if self.text:
             self.text_label.bind("<Button-1>", self.on_click)
         if self.icon:
             self.icon_label.bind("<Button-1>", self.on_click)
-
-    def on_enter(self, *_) -> None:
-        # warning: bad code
-        self.bubble.show()
-        if self.highlighted:
-            self.config(bg=self.hbg)
-        if self.text:
-            self.text_label.config(fg=self.hfg)
-            if self.highlighted:
-                self.text_label.config(bg=self.hbg)
-
-        if self.icon:
-            self.icon_label.config(fg=self.hfg)
-            if self.highlighted:
-                self.icon_label.config(bg=self.hbg)
-
-    def on_leave(self, *_) -> None:
-        # warning: bad code
-        self.bubble.hide()
-        if self.highlighted:
-            self.config(bg=self.bg)
-        if self.text:
-            self.text_label.config(fg=self.fg)
-            if self.highlighted:
-                self.text_label.config(bg=self.bg)
-        if self.icon:
-            self.icon_label.config(fg=self.fg)
-            if self.highlighted:
-                self.icon_label.config(bg=self.bg)
 
     def on_click(self, *_) -> None:
         self.callback()

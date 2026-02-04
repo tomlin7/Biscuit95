@@ -16,10 +16,8 @@ if typing.TYPE_CHECKING:
     type=click.Path(
         exists=True,
         dir_okay=True,
-        resolve_path=True,
-    ),
-    required=False,
-)
+        resolve_path=True),
+    required=False)
 def open(path=None) -> typing.Callable[[App, str], None]:
     """Open a file or folder in the editor
 
@@ -41,10 +39,8 @@ def open(path=None) -> typing.Callable[[App, str], None]:
     type=click.Path(
         exists=True,
         dir_okay=False,
-        resolve_path=True,
-    ),
-    required=False,
-)
+        resolve_path=True),
+    required=False)
 @click.argument("linecol", type=str, required=False)
 def goto(path=None, linecol=None) -> typing.Callable[[App, str], None]:
     """Open a file and go to a specific location

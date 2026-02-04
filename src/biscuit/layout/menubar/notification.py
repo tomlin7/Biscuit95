@@ -25,11 +25,12 @@ class Notifications(IconButton):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(
-            master, Icons.BELL, hfg_only=True, padx=10, pady=8, *args, **kwargs
+            master,
+            Icons.BELL,  # hfg_only=True, padx=10, pady=8, *args, **kwargs
         )
 
-        self.base.notifications.set_button(self)
-        self.event = self.base.notifications.show
+        # self.base.notifications.set_button(self)
+        # self.event = self.base.notifications.show
 
         self.bubble = NotificationBubble(self, "No notifications")
         self.bind("<Enter>", self.bubble.show)

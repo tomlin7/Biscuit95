@@ -36,17 +36,14 @@ class Issues(SideBarViewItem):
             selectmode=tk.BROWSE,
             show="tree",
             displaycolumns="",
-            columns=("number"),
-        )
+            columns=("number"))
         self.tree.grid(row=0, column=0, sticky=tk.NSEW)
         self.tree.bind("<Double-Button-1>", self.on_click)
 
         self.scrollbar = Scrollbar(
             self.content,
-            style="TreeScrollbar",
             orient=tk.VERTICAL,
-            command=self.tree.yview,
-        )
+            command=self.tree.yview)
         self.scrollbar.grid(row=0, column=1, sticky=tk.NS)
         self.tree.config(yscrollcommand=self.scrollbar.set)
 
@@ -98,8 +95,7 @@ class Issues(SideBarViewItem):
             [
                 (
                     f"{issue['title']} #{issue['number']}",
-                    lambda *_, number=issue["number"]: self.open_editor(number),
-                )
+                    lambda *_, number=issue["number"]: self.open_editor(number))
                 for issue in issues
                 if "pull_request" not in issue
             ]
@@ -112,4 +108,4 @@ class Issues(SideBarViewItem):
 
         self.tree.delete(*self.tree.get_children())
         for issue in issues:
-            self.tree.insert("", tk.END, text=issue[0], values=(issue[1],))
+            self.tree.insert("", tk.END, text=issue[0], values=(issue[1]))

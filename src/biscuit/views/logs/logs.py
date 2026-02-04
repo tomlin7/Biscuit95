@@ -19,7 +19,7 @@ class Logs(PanelView):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.__actions__ = ((Icons.CLEAR_ALL, self.clear_all),)
+        self.__actions__ = ((Icons.CLEAR_ALL, self.clear_all))
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
@@ -31,12 +31,10 @@ class Logs(PanelView):
             relief=tk.FLAT,
             padx=10,
             pady=10,
-            font=("Consolas", 11),
-            **self.base.theme.editors.text,
-        )
+            font=("Consolas", 11))
         self.text.grid(row=0, column=0, sticky=tk.NSEW)
 
-        self.scrollbar = Scrollbar(self, style="EditorScrollbar")
+        self.scrollbar = Scrollbar(self)
         self.scrollbar.grid(sticky=tk.NSEW, row=0, column=1)
 
         self.text.config(yscrollcommand=self.scrollbar.set)
@@ -44,19 +42,19 @@ class Logs(PanelView):
 
         fontbold = ("Consolas", 11, "bold")
 
-        self.text.tag_config("time", foreground=self.base.theme.views.panel.logs.time)
+        self.text.tag_config("time")
         self.text.tag_config(
-            "caller", foreground=self.base.theme.views.panel.logs.caller
+            "caller"
         )
 
-        self.text.tag_config("info", foreground=self.base.theme.views.panel.logs.info)
+        self.text.tag_config("info")
         self.text.tag_config(
-            "warning", foreground=self.base.theme.views.panel.logs.warning
+            "warning"
         )
         self.text.tag_config(
-            "error", foreground=self.base.theme.views.panel.logs.error, font=fontbold
+            "error", font=fontbold
         )
-        self.text.tag_config("trace", foreground=self.base.theme.border)
+        self.text.tag_config("trace")
 
         self.gui_refresh_loop()
 
@@ -77,7 +75,7 @@ class Logs(PanelView):
         self.text.see(tk.END)
 
     def newline(self) -> None:
-        self.queue.put(("\n",))
+        self.queue.put(("\n"))
 
     def log(self, type: str, caller: str, text: str) -> None:
         self.queue.put(
@@ -88,8 +86,7 @@ class Logs(PanelView):
                 type,
                 "[",
                 (caller, "caller"),
-                f"]: {text}",
-            )
+                f"]: {text}")
         )
         self.newline()
 
@@ -116,10 +113,8 @@ class Logs(PanelView):
             (
                 (
                     f"[{datetime.now().strftime('%H:%M:%S:%f')}] [trace] [{caller_class_name(skip=3)}]: {text}",
-                    "trace",
-                ),
-                "\n",
-            )
+                    "trace"),
+                "\n")
         )
 
     def _std_log(self, kindtext: str, kind: str, text: str) -> None:

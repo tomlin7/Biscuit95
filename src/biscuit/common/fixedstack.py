@@ -55,8 +55,7 @@ class FixedSizeStack:
         cursor.execute(f"DELETE FROM {self.name};")
         cursor.executemany(
             f"INSERT INTO {self.name} (path) VALUES (?);",
-            [(item,) for item in self.stack],
-        )
+            [(item) for item in self.stack])
 
     def load_sqlite(self, cursor: sqlite3.Cursor) -> FixedSizeStack:
         """Load the stack from the database.

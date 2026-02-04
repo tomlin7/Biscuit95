@@ -21,7 +21,7 @@ class Search(SideBarView):
     """
 
     def __init__(self, master, *args, **kwargs) -> None:
-        self.__actions__ = ()  # TODO: (Icons.REFRESH,), (Icons.CLEAR_ALL,), (Icons.SHADOW_MINUS,))
+        self.__actions__ = ()  # TODO: (Icons.REFRESH), (Icons.CLEAR_ALL), (Icons.SHADOW_MINUS))
         super().__init__(master, *args, **kwargs)
         self.__icon__ = Icons.SEARCH
         self.name = "Search"
@@ -29,9 +29,9 @@ class Search(SideBarView):
 
         self.top.pack_forget()
 
-        self.results = Results(self, **self.base.theme.views.sidebar.item)
+        self.results = Results(self)
 
-        self.container = Frame(self, **self.base.theme.views.sidebar)
+        self.container = Frame(self)
         self.searchbox = ButtonsEntry(
             self.container,
             hint="Search",
@@ -39,16 +39,13 @@ class Search(SideBarView):
                 (Icons.CASE_SENSITIVE, self.results.search_casesensitive),
                 (Icons.WHOLE_WORD, self.results.search_wholeword),
                 (Icons.REGEX, self.results.search_regex),
-                (Icons.SEARCH, self.results.search),
-            ),
-        )
+                (Icons.SEARCH, self.results.search)))
         self.searchbox.bind("<Return>", self.results.search)
 
         self.replacebox = ButtonsEntry(
             self.container,
             hint="Replace",
-            buttons=((Icons.REPLACE_ALL, self.results.replace_normal),),
-        )
+            buttons=((Icons.REPLACE_ALL, self.results.replace_normal)))
 
         # TODO add ignore folders & extensions boxes
 

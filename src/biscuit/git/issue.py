@@ -17,25 +17,17 @@ class IssueViewer(BaseEditor):
     Issue Viewer is a class that displays the details of an issue in a GitHub repository.
     """
 
-    def __init__(
-        self,
-        master,
-        data: dict,
-        *args,
-        **kwargs,
-    ) -> None:
+    def __init__(self, master, data: dict, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.filename = self.path = f"Issue #{data['number']}"
-        self.config(bg=self.base.theme.border)
+        self.config()
         self.data = data
 
         label_cfg = {
-            "bg": "#1C1C1C",
-            "fg": self.base.theme.secondary_foreground,
             "font": (self.base.settings.uifont["family"], 12, "bold"),
         }
 
-        container = Frame(self, width=150, padx=10, pady=10)
+        container = Frame(self)  # , width=150, padx=10, pady=10)
 
         # OPENED BY ------------------------------------------------------------
 
@@ -46,7 +38,7 @@ class IssueViewer(BaseEditor):
             container,
             data["user"]["login"],
             lambda l=data["user"]["html_url"]: webbrowser.open(l),
-        ).pack(side=tk.TOP, anchor=tk.W, pady=(0, 15)).config(bg="#1C1C1C")
+        ).pack(side=tk.TOP, anchor=tk.W, pady=(0, 15))
 
         # ASSIGNEES ------------------------------------------------------------
 
@@ -58,7 +50,7 @@ class IssueViewer(BaseEditor):
                 container,
                 assignee["login"],
                 lambda l=assignee["html_url"]: webbrowser.open(l),
-            ).pack(side=tk.TOP, anchor=tk.W).config(bg="#1C1C1C")
+            ).pack(side=tk.TOP, anchor=tk.W)
 
         # LABELS --------------------------------------------------------------
 
@@ -86,8 +78,6 @@ class IssueViewer(BaseEditor):
                 label["name"],
                 icon=Icons.TAG,
                 callback=lambda l=label_url.format(label["name"]): webbrowser.open(l),
-                # bg=color,
-                # hbg=color,
             ).pack(side=tk.LEFT, padx=5)
             inline += 1
 
@@ -95,10 +85,7 @@ class IssueViewer(BaseEditor):
 
         self.body = HtmlFrame(self, messages_enabled=False, vertical_scrollbar=False)
         self.scrollbar = Scrollbar(
-            self,
-            orient=tk.VERTICAL,
-            command=self.body.yview,
-            style="EditorScrollbar",
+            self, orient=tk.VERTICAL, command=self.body.yview
         )
         self.body.html.config(yscrollcommand=self.scrollbar.set)
         self.body.html.shrink(True)
@@ -111,13 +98,22 @@ class IssueViewer(BaseEditor):
         self.body.load_html(
             f"<h1>{data['title']} <a href={data['html_url']}>#{data['number']}</a></h1><br>"
             + f"<span class='state-label'>{data['state']}</span>"
-            + f"""Opened by <a href={data["user"]["html_url"]}>{data['user']['login']}</a><br><hr>"""
+            + f"""Opened by <a href={data["user"]["html_url"]}>{data["user"]["login"]}</a><br><hr>"""
             + mistune.html(data["body"])
         )
 
         # TODO: load comments
+        class t:
+            border = "#d9d9d9"
+            secondary_background = "#f0f0f0"
+            secondary_foreground = "#000000"
+            secondary_foreground_highlight = "#000000"
+            primary_background = "#d9d9d9"
+            primary_foreground = "#000000"
+            primary_foreground_highlight = "#000000"
+            biscuit = "#0078d7"
+            biscuit_dark = "#005a9e"
 
-        t = self.base.theme
         css = f"""
             img {{
                 max-width: 100%;
@@ -131,8 +127,8 @@ class IssueViewer(BaseEditor):
             }}
 
             CODE, PRE {{
-                font-family: {self.base.settings.font['family']};
-                font-size: {self.base.settings.font['size']}pt;
+                font-family: {self.base.settings.font["family"]};
+                font-size: {self.base.settings.font["size"]}pt;
                 background-color: {t.border};
                 padding: 2px;
             }}
@@ -159,7 +155,7 @@ class IssueViewer(BaseEditor):
             }}
             :link    {{ color: {t.biscuit}; }}
             :visited {{ color: {t.biscuit_dark}; }}
-            INPUT, TEXTAREA, SELECT, BUTTON {{ 
+            INPUT, TEXTAREA, SELECT, BUTTON {{
                 background-color: {t.secondary_background};
                 color: {t.secondary_foreground_highlight};
             }}

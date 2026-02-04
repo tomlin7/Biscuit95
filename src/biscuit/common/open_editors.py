@@ -12,7 +12,7 @@ class OpenEditors(Toplevel):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        self.config(bg=self.base.theme.border)
+        self.config()
         self.overrideredirect(True)
         self.nodes = {}
         self.withdraw()
@@ -20,14 +20,12 @@ class OpenEditors(Toplevel):
         self.container = Frame(self)
         self.container.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
 
-        Label(
-            self.container,
-            text="Opened Editors",
-            font=self.base.settings.uifont,
-            padx=10,
-            pady=5,
-            **self.base.theme.utils.label,
-        ).pack(fill=tk.X, expand=True, anchor=tk.W)
+        # Label(
+        #     self.container,
+        #     text="Opened Editors",
+        #     font=self.base.settings.uifont,
+        #     padx=10,
+        #     pady=5).pack(fill=tk.X, expand=True, anchor=tk.W)
 
         self.bind("<FocusOut>", lambda _: self.hide())
 

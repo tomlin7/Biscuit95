@@ -101,8 +101,7 @@ class ExtensionManager:
                 self.extensions_repository = self.git.clone(
                     self.extensions_repo_url,
                     extension_dir,
-                    make_folder=False,
-                )
+                    make_folder=False)
 
             self.available_extensions = toml.load(extension_dir / self.extensions_list)
             self.display_all_extensions()
@@ -204,7 +203,7 @@ class ExtensionManager:
         ext.set_fetching()
 
         t = threading.Thread(
-            target=self.fetch_extension_thread, args=(ext,), daemon=True
+            target=self.fetch_extension_thread, args=(ext), daemon=True
         )
         t.start()
         return t

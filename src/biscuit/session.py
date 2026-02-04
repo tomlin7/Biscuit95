@@ -53,11 +53,11 @@ class SessionManager:
     def save_session(self, opened_files, active_directory):
         for file_path in opened_files:
             self.cursor.execute(
-                "INSERT INTO session (file_path) VALUES (?)", (file_path,)
+                "INSERT INTO session (file_path) VALUES (?)", (file_path)
             )
 
         self.cursor.execute(
-            "INSERT INTO session (folder_path) VALUES (?)", (active_directory,)
+            "INSERT INTO session (folder_path) VALUES (?)", (active_directory)
         )
 
         self.db.commit()

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import tkinter as tk
 import typing
+from tkinter import ttk
 
 from biscuit.common import Icons
-from biscuit.common.ui import Bubble, Menubutton
+from biscuit.common.ui import Bubble
 
 if typing.TYPE_CHECKING:
     from biscuit.views import SideBarView
@@ -15,22 +16,25 @@ if typing.TYPE_CHECKING:
 class SBubble(Bubble):
     def get_pos(self) -> str:
         return (
-            f"+{int(self.master.winfo_rootx() + (self.master.winfo_width() - self.winfo_width())/2)}"
+            f"+{int(self.master.winfo_rootx() + (self.master.winfo_width() - self.winfo_width()) / 2)}"
             + f"+{self.master.winfo_rooty() - self.master.winfo_height() - 10}"
         )
 
 
-class ActionButton(Menubutton):
-    """Action buttons for activity bar
+class ActionButton(ttk.Button):
+    """Action buttons for activity bar - used to switch between views in the sidebar."""
 
-    Action buttons are used to switch between views in the sidebar,
-    view instances are attached to these buttons.
-
-    If no view is provided, the button can be used for custom actions.
-    """
-
-    def __init__(self, master: ActivityBar, icon: str, name: str, callback: typing.Callable = None, view: SideBarView = None, *args, **kwargs) -> None:
-        super().__init__(master, *args, **kwargs)
+    def __init__(
+        self,
+        master: ActivityBar,
+        icon: str,
+        name: str,
+        callback: typing.Callable = None,
+        view: SideBarView = None,
+        *args,
+        **kwargs,
+    ) -> None:
+        super().__init__(master, style="ActivityBar.TButton", *args, **kwargs)
         self.master: ActivityBar = master
 
         self.view = view
@@ -41,16 +45,13 @@ class ActionButton(Menubutton):
         self.bind("<Enter>", self.bubble.show)
         self.bind("<Leave>", self.bubble.hide)
 
-        self.config(
-            text=icon,
-            relief=tk.FLAT,
-            font=("codicon", 12),
-            cursor="hand2",
-            padx=5,
-            pady=5,
-            **self.base.theme.layout.sidebar.actionbar.slot,
-        )
-        self.pack(fill=tk.X, side=tk.TOP)
+        self.config(text=icon)
+        # relief=tk.FLAT,
+        # font=("codicon", 12),
+        # cursor="hand2",
+        # padx=5,
+        # pady=5)
+        # self.pack(fill=tk.X, side=tk.TOP)
 
         self.bind("<Button-1>", self.toggle)
 
@@ -72,14 +73,10 @@ class ActionButton(Menubutton):
         if not self.enabled:
             self.master.sidebar.pack()
             self.view.grid(column=0, row=1, sticky=tk.NSEW)
-            self.config(
-                fg=self.base.theme.layout.sidebar.actionbar.slot.selectedforeground
-            )
             self.enabled = True
 
     def disable(self) -> None:
         if self.enabled:
             self.master.sidebar.hide()
             self.view.grid_remove()
-            self.config(fg=self.base.theme.layout.sidebar.actionbar.slot.foreground)
             self.enabled = False

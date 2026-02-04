@@ -17,10 +17,10 @@ class CompletionItem(Frame):
     def __init__(self, master: AutoComplete, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.master = master
-        self.config(width=500, **self.base.theme.editors.autocomplete)
-        self.bg, self.fg, self.hbg, self.hfg = (
-            self.base.theme.editors.autocomplete.item.values()
-        )
+        # self.config(width=500)
+        # theme removed — rely on Tkinter defaults; set simple sensible defaults here
+        # (bg/hbg left None will let widgets use their default background)
+        self.bg, self.fg, self.hbg, self.hfg = (None, "black", None, "black")
 
         self.selected = False
         self.hovered = False
@@ -44,11 +44,7 @@ class CompletionItem(Frame):
             height=1,
         )
 
-        self.text.tag_config(
-            "term",
-            foreground=self.base.theme.biscuit,
-            font=self.base.settings.font_bold,
-        )
+        self.text.tag_config("term", font=self.base.settings.font_bold)
         self.text.config(state=tk.DISABLED)
 
         self.grid_columnconfigure(1, weight=1)

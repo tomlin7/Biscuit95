@@ -87,11 +87,8 @@ class EventHandler:
                         )
                         for item in sorted(
                             e.completion_list.items,
-                            key=(lambda item: item.sortText or item.label),
-                        )
-                    ],
-                ),
-            )
+                            key=(lambda item: item.sortText or item.label))
+                    ]))
             return
 
         if isinstance(e, lsp.PublishDiagnostics):
@@ -110,11 +107,9 @@ class EventHandler:
                         start=decode_position(diagnostic.range.start),
                         end=decode_position(diagnostic.range.end),
                         message=f"{diagnostic.source}: {diagnostic.message}",
-                        severity=(diagnostic.severity),
-                    )
+                        severity=(diagnostic.severity))
                     for diagnostic in e.diagnostics
-                ],
-            )
+                ])
             return
 
         if isinstance(e, lsp.Definition):
@@ -127,12 +122,9 @@ class EventHandler:
                         JumpLocationRange(
                             file_path=str(path),
                             start=decode_position(range.start),
-                            end=decode_position(range.end),
-                        )
+                            end=decode_position(range.end))
                         for path, range in jump_paths_and_ranges(e.result)
-                    ],
-                ),
-            )
+                    ]))
             return
 
         if isinstance(e, lsp.References):
@@ -151,12 +143,9 @@ class EventHandler:
                         JumpLocationRange(
                             file_path=decode_path_uri(loc.uri),
                             start=decode_position(loc.range.start),
-                            end=decode_position(loc.range.end),
-                        )
+                            end=decode_position(loc.range.end))
                         for loc in e.result
-                    ],
-                ),
-            )
+                    ]))
             return
 
         if isinstance(e, lsp.WorkspaceEdit):
@@ -173,11 +162,9 @@ class EventHandler:
                                 TextEdit(
                                     start=decode_position(j.range.start),
                                     end=decode_position(j.range.end),
-                                    new_text=j.newText,
-                                )
+                                    new_text=j.newText)
                                 for j in i.edits
-                            ],
-                        )
+                            ])
                         for i in e.documentChanges
                     ]
                 )
@@ -200,8 +187,7 @@ class EventHandler:
                     e.result
                     if e.result and isinstance(e.result[0], lsp.DocumentSymbol)
                     else to_document_symbol(e.result)
-                ),
-            )
+                ))
             return
 
         # TODO hooks

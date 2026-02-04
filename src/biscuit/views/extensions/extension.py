@@ -30,7 +30,7 @@ class ExtensionGUI(Frame):
 
         super().__init__(master, *args, **kwargs)
         self.master: Results = master
-        self.config(**self.base.theme.views.sidebar.item)
+        self.config()
         self.manager = self.base.extensions_manager
 
         self.partial_id = name
@@ -73,10 +73,10 @@ class ExtensionGUI(Frame):
         self.path = Path(self.base.extensiondir) / "extensions" / self.id
         # GUI ----------------
         self.selected = False
-        self.bg = self.base.theme.views.sidebar.item.background
-        self.hbg = self.base.theme.views.sidebar.item.highlightbackground
+        self.bg = None
+        self.hbg = None
 
-        self.container = Frame(self, padx=10, pady=10)
+        self.container = Frame(self)  # , padx=10, pady=10)
         self.container.pack(fill=tk.BOTH, expand=True)
 
         self.namelbl = Label(
@@ -84,7 +84,6 @@ class ExtensionGUI(Frame):
             text=name[0].upper() + name[1:],
             font=("Segoi UI", 11, "bold"),
             anchor=tk.W,
-            **self.base.theme.views.sidebar.item.content,
         )
         self.namelbl.pack(fill=tk.X)
 
@@ -97,7 +96,6 @@ class ExtensionGUI(Frame):
             ),
             font=("Segoi UI", 9),
             anchor=tk.W,
-            **self.base.theme.views.sidebar.item.content,
         )
         self.descriptionlbl.config(fg="grey")
         self.descriptionlbl.pack(fill=tk.X, expand=True)
@@ -110,7 +108,6 @@ class ExtensionGUI(Frame):
             text=f"@{self.author}",
             font=("Segoi UI", 7, "bold"),
             anchor=tk.W,
-            **self.base.theme.views.sidebar.item.content,
         )
         self.authorlbl.config(fg="grey")
         self.authorlbl.pack(side=tk.LEFT, fill=tk.X)
@@ -118,7 +115,7 @@ class ExtensionGUI(Frame):
         self.install = HoverChangeButton(self.subcontainer, "Install", padx=10)
         self.install.config(font=("Segoi UI", 8), pady=2)
         self.install.pack(side=tk.RIGHT, fill=tk.X)
-        
+
         if self.installed:
             self.set_installed()
         else:
@@ -137,8 +134,10 @@ class ExtensionGUI(Frame):
 
     @property
     def installed(self):
-        return self.submodule_repo and self.submodule_repo.module_exists() and (
-            (self.manager.extension_dir / f"extensions/{self.id}/.git").exists()
+        return (
+            self.submodule_repo
+            and self.submodule_repo.module_exists()
+            and ((self.manager.extension_dir / f"extensions/{self.id}/.git").exists())
         )
 
     def uninstall_extension(self, *_):
@@ -150,50 +149,42 @@ class ExtensionGUI(Frame):
     def set_unavailable(self):
         self.install.text = "Error"
         self.install.hovertext = "Retry"
-        self.install.config(
-            text="Error", bg=self.base.theme.border, activebackground=self.base.theme.biscuit
-        )
+        self.install.config(text="Error")
 
     def set_installed(self):
         self.install.set_command(self.uninstall_extension)
 
         self.install.text = "Installed"
         self.install.hovertext = "Uninstall"
-        self.install.config(
-            text="Installed",
-            bg=self.base.theme.border,
-            activebackground="#c61c1c",
-        )
+        self.install.config(text="Installed", activebackground="#c61c1c")
 
     def set_uninstalled(self):
         self.install.set_command(self.install_extension)
 
-        self.install.config(
-            text="Install", bg=self.base.theme.biscuit, activebackground=self.base.theme.biscuit
-        )
+        self.install.config(text="Install")
         self.install.text = "Install"
         self.install.hovertext = None
 
     def set_fetching(self):
-        self.install.config(text="Fetching...", bg=self.base.theme.biscuit_dark)
+        self.install.config(text="Fetching...")
 
     def set_selected(self, *_):
         self.master.set_selected(self)
 
     def select(self):
         self.selected = True
-        self.config(bg=self.hbg)
-        self.namelbl.config(bg=self.hbg)
-        self.authorlbl.config(bg=self.hbg)
+        # self.config(bg=self.hbg)
+        # self.namelbl.config(bg=self.hbg)
+        # self.authorlbl.config(bg=self.hbg)
         self.descriptionlbl.config(bg=self.hbg)
         self.container.config(bg=self.hbg)
         self.subcontainer.config(bg=self.hbg)
 
     def deselect(self):
         self.selected = False
-        self.config(bg=self.bg)
-        self.namelbl.config(bg=self.bg)
-        self.authorlbl.config(bg=self.bg)
+        # self.config(bg=self.bg)
+        # self.namelbl.config(bg=self.bg)
+        # self.authorlbl.config(bg=self.bg)
         self.descriptionlbl.config(bg=self.bg)
         self.container.config(bg=self.bg)
         self.subcontainer.config(bg=self.bg)
@@ -202,27 +193,26 @@ class ExtensionGUI(Frame):
         if self.selected:
             return
 
-        try:
-            self.config(bg=self.hbg)
-            self.namelbl.config(bg=self.hbg)
-            self.authorlbl.config(bg=self.hbg)
-            self.descriptionlbl.config(bg=self.hbg)
-            self.container.config(bg=self.hbg)
-            self.subcontainer.config(bg=self.hbg)
-        except:
-            pass
+        # try:
+        #     self.config(bg=self.hbg)
+        #     self.namelbl.config(bg=self.hbg)
+        #     self.authorlbl.config(bg=self.hbg)
+        #     self.descriptionlbl.config(bg=self.hbg)
+        #     self.container.config(bg=self.hbg)
+        #     self.subcontainer.config(bg=self.hbg)
+        # except:
+        #     pass
 
     def hoveroff(self, *_) -> None:
         if self.selected:
             return
 
-        try:
-            self.config(bg=self.bg)
-            self.namelbl.config(bg=self.bg)
-            self.authorlbl.config(bg=self.bg)
-            self.descriptionlbl.config(bg=self.bg)
-            self.container.config(bg=self.bg)
-            self.subcontainer.config(bg=self.bg)
-        except:
-            pass
-
+        # try:
+        #     self.config(bg=self.bg)
+        #     self.namelbl.config(bg=self.bg)
+        #     self.authorlbl.config(bg=self.bg)
+        #     self.descriptionlbl.config(bg=self.bg)
+        #     self.container.config(bg=self.bg)
+        #     self.subcontainer.config(bg=self.bg)
+        # except:
+        #     pass

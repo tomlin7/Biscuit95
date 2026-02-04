@@ -20,8 +20,7 @@ import hintedtext
 
 from biscuit.common.ai import Agent, AgentState, AgentStep, AgentTask
 from biscuit.common.icons import Icons
-from biscuit.common.ui import (Button, Entry, Frame, IconButton, Label,
-                               Scrollbar)
+from biscuit.common.ui import Button, Entry, Frame, IconButton, Label, Scrollbar
 from biscuit.common.ui.native import Canvas, Text
 from biscuit.common.ui.native import Frame as NativeFrame
 from biscuit.common.ui.native import Label as NativeLabel
@@ -34,50 +33,45 @@ if typing.TYPE_CHECKING:
 
 class CollapsibleThought(Frame):
     """A native collapsible widget for AI thoughts."""
-    
+
     def __init__(self, master, title="Thought", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.expanded = False
         self.content_text = ""
-        
-        theme = self.base.theme
-        self.configure(bg=theme.primary_background)
-        
+
+        self.configure()
+
         # Header frame
-        self.header = Frame(self, bg=theme.primary_background, cursor="hand2")
+        self.header = Frame(self)  # , cursor="hand2")
         self.header.pack(fill=tk.X, pady=(5, 2))
-        
-        self.icon = Label(self.header, text=Icons.CHEVRON_RIGHT, font=("codicon", 12), 
-                         bg=theme.primary_background, fg=theme.secondary_foreground)
+
+        self.icon = Label(self.header, text=Icons.CHEVRON_RIGHT, font=("codicon", 12))
         self.icon.pack(side=tk.LEFT, padx=(0, 5))
-        
-        self.title = Label(self.header, text=title, font=self.base.settings.uifont,
-                          fg=theme.secondary_foreground, bg=theme.primary_background)
+
+        self.title = Label(self.header, text=title, font=self.base.settings.uifont)
         self.title.pack(side=tk.LEFT)
-        
+
         # Content frame (hidden by default)
-        self.content_frame = Frame(self, bg=theme.primary_background)
-        
+        self.content_frame = Frame(self)
+
         # Use a Text widget for thought content to allow selection/scrolling if long
         # and to be lighter than a full HtmlFrame
         self.text_display = Text(
             self.content_frame,
             height=1,
-            bg=theme.primary_background,
-            fg=theme.secondary_foreground,
             font=self.base.settings.uifont,
             border=0,
             padx=20,
             pady=5,
             wrap=tk.WORD,
-            state=tk.DISABLED
+            state=tk.DISABLED,
         )
         self.text_display.pack(fill=tk.X)
-        
+
         # Bind toggle event
         for widget in (self.header, self.icon, self.title):
             widget.bind("<Button-1>", self.toggle)
-            
+
     def toggle(self, _=None):
         if self.expanded:
             self.content_frame.pack_forget()
@@ -85,7 +79,7 @@ class CollapsibleThought(Frame):
         else:
             self.content_frame.pack(fill=tk.X)
             self.icon.config(text=Icons.CHEVRON_DOWN)
-        
+
         self.expanded = not self.expanded
         # Ensure the main chat stays scrolled to the bottom
         self.master.master.chat.scroll_to_bottom()
@@ -95,9 +89,9 @@ class CollapsibleThought(Frame):
         self.text_display.config(state=tk.NORMAL)
         self.text_display.delete(1.0, tk.END)
         self.text_display.insert(1.0, self.content_text.strip())
-        
+
         # Auto-resize height
-        line_count = self.content_text.count('\n') + 2
+        line_count = self.content_text.count("\n") + 2
         self.text_display.config(height=min(line_count, 15))
         self.text_display.config(state=tk.DISABLED)
 
@@ -107,79 +101,93 @@ class CollapsibleThought(Frame):
 
 class ToolActionWidget(Frame):
     """A native widget for tool executions."""
-    
-    def __init__(self, master, icon=Icons.FILE, action="Analyzed", target="File", extra="", lang_icon=Icons.FILE_CODE, *args, **kwargs):
+
+    def __init__(
+        self,
+        master,
+        icon=Icons.FILE,
+        action="Analyzed",
+        target="File",
+        extra="",
+        lang_icon=Icons.FILE_CODE,
+        *args,
+        **kwargs,
+    ):
         super().__init__(master, *args, **kwargs)
-        theme = self.base.theme
-        self.configure(bg=theme.primary_background)
-        
-        container = Frame(self, bg=theme.primary_background)
+        self.configure()
+
+        container = Frame(self)
         container.pack(fill=tk.X, pady=2)
-        
+
         # Icon for the action type (e.g. search, terminal)
-        Label(container, text=icon, font=("codicon", 11), 
-              bg=theme.primary_background, fg=theme.secondary_foreground).pack(side=tk.LEFT, padx=(0, 10))
-        
-        Label(container, text=action, font=self.base.settings.uifont,
-              fg=theme.secondary_foreground, bg=theme.primary_background).pack(side=tk.LEFT)
-        
+        Label(container, text=icon, font=("codicon", 11)).pack(
+            side=tk.LEFT, padx=(0, 10)
+        )
+
+        Label(container, text=action, font=self.base.settings.uifont).pack(side=tk.LEFT)
+
         if lang_icon:
             # Language icon (e.g. Python, JS)
-            Label(container, text=lang_icon, font=("codicon", 10), 
-                  bg=theme.primary_background, fg=theme.biscuit).pack(side=tk.LEFT, padx=(8, 2))
+            Label(container, text=lang_icon, font=("codicon", 10)).pack(
+                side=tk.LEFT, padx=(8, 2)
+            )
 
         # Target (e.g. filename) in bold
-        Label(container, text=target, font=self.base.settings.uifont_bold,
-              fg=theme.foreground, bg=theme.primary_background).pack(side=tk.LEFT, padx=5)
-        
+        Label(container, text=target, font=self.base.settings.uifont_bold).pack(
+            side=tk.LEFT, padx=5
+        )
+
         if extra:
             # Metadata with lower opacity feel
-            Label(container, text=extra, font=self.base.settings.font,
-                  fg=theme.secondary_foreground, bg=theme.primary_background).pack(side=tk.LEFT, padx=2)
-        
-    # Right aligned "Open diff" link
+            Label(container, text=extra, font=self.base.settings.font).pack(
+                side=tk.LEFT, padx=2
+            )
+
+        # Right aligned "Open diff" link
         if "Edited" in action:
-            link = Label(container, text="Open diff", font=("Segoe UI", 8), cursor="hand2",
-                        fg=theme.secondary_foreground, bg=theme.primary_background)
+            link = Label(
+                container, text="Open diff", font=("Segoe UI", 8), cursor="hand2"
+            )
             link.pack(side=tk.RIGHT)
 
 
 class TodoPanel(Frame):
     """A native collapsible todo list widget for the AI agent."""
-    
+
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        theme = self.base.theme
-        self.configure(bg=theme.primary_background)
-        
+        self.configure()
+
         self.expanded = False
-        self.container = Frame(self, bg=theme.border, padx=1, pady=1)
+        self.container = Frame(self)  # , padx=1, pady=1)
         self.container.pack(fill=tk.X, pady=(0, 10))
-        
-        inner = Frame(self.container, bg=theme.primary_background)
+
+        inner = Frame(self.container)
         inner.pack(fill=tk.X)
 
-        self.header = Frame(inner, bg=theme.secondary_background, cursor="hand2")
+        self.header = Frame(inner, cursor="hand2")
         self.header.pack(fill=tk.X)
-        
-        self.icon = Label(self.header, text=Icons.TASKLIST, font=("codicon", 11), 
-                         bg=theme.secondary_background, fg=theme.biscuit)
+
+        self.icon = Label(self.header, text=Icons.TASKLIST, font=("codicon", 11))
         self.icon.pack(side=tk.LEFT, padx=(10, 5), pady=5)
-        
-        self.title_label = Label(self.header, text="Task List", font=self.base.settings.uifont_bold,
-                           fg=theme.foreground, bg=theme.secondary_background)
+
+        self.title_label = Label(
+            self.header, text="Task List", font=self.base.settings.uifont_bold
+        )
         self.title_label.pack(side=tk.LEFT, pady=5)
-        
-        self.count_label = Label(self.header, text="(0)", font=self.base.settings.uifont,
-                           fg=theme.secondary_foreground, bg=theme.secondary_background)
+
+        self.count_label = Label(
+            self.header, text="(0)", font=self.base.settings.uifont
+        )
         self.count_label.pack(side=tk.LEFT, padx=5, pady=5)
 
-        self.chevron = Label(self.header, text=Icons.CHEVRON_RIGHT, font=("codicon", 10),
-                           fg=theme.secondary_foreground, bg=theme.secondary_background)
+        self.chevron = Label(
+            self.header, text=Icons.CHEVRON_RIGHT, font=("codicon", 10)
+        )
         self.chevron.pack(side=tk.RIGHT, padx=10, pady=5)
-        
+
         self._setup_content(inner)
-        
+
         self.header.bind("<Button-1>", self.toggle)
         self.icon.bind("<Button-1>", self.toggle)
         self.title_label.bind("<Button-1>", self.toggle)
@@ -187,26 +195,29 @@ class TodoPanel(Frame):
         self.count_label.bind("<Button-1>", self.toggle)
 
     def _setup_content(self, parent):
-        theme = self.base.theme
-        self.content_container = Frame(parent, bg=theme.primary_background)
+        self.content_container = Frame(parent)
         # Not packed initially
         self.content_container.grid_columnconfigure(0, weight=1)
         self.content_container.grid_rowconfigure(0, weight=1)
-        
+
         # Max height scrollable area
-        self.canvas = Canvas(self.content_container, bg=theme.primary_background, 
-                       highlightthickness=0, height=0)
+        self.canvas = Canvas(self.content_container, highlightthickness=0, height=0)
         self.canvas.grid(row=0, column=0, sticky=tk.NSEW)
 
         # Using themed Scrollbar (which uses grid internally for auto-hiding)
-        self.scrollbar = Scrollbar(self.content_container, orient=tk.VERTICAL, 
-                                 command=self.canvas.yview, style="EditorScrollbar")
+        self.scrollbar = Scrollbar(
+            self.content_container,
+            orient=tk.VERTICAL,
+            command=self.canvas.yview,
+        )
         self.scrollbar.grid(row=0, column=1, sticky=tk.NS)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
-        
-        self.tasks_frame = Frame(self.canvas, bg=theme.primary_background)
-        self.tasks_window = self.canvas.create_window((0, 0), window=self.tasks_frame, anchor=tk.NW)
-        
+
+        self.tasks_frame = Frame(self.canvas)
+        self.tasks_window = self.canvas.create_window(
+            (0, 0), window=self.tasks_frame, anchor=tk.NW
+        )
+
         def on_configure(_):
             self.canvas.configure(scrollregion=self.canvas.bbox("all"))
             h = self.tasks_frame.winfo_reqheight()
@@ -214,16 +225,21 @@ class TodoPanel(Frame):
                 self.canvas.config(height=220)
             else:
                 self.canvas.config(height=h if h > 0 else 1)
-            
+
         self.tasks_frame.bind("<Configure>", on_configure)
-        self.canvas.bind("<Configure>", lambda e: self.canvas.itemconfig(self.tasks_window, width=e.width))
-        
+        self.canvas.bind(
+            "<Configure>",
+            lambda e: self.canvas.itemconfig(self.tasks_window, width=e.width),
+        )
+
         # Enable mousewheel scrolling
         def _on_mousewheel(event):
             if self.canvas.winfo_height() < self.tasks_frame.winfo_reqheight():
                 self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
-        
-        self.canvas.bind("<Enter>", lambda _: self.canvas.bind_all("<MouseWheel>", _on_mousewheel))
+
+        self.canvas.bind(
+            "<Enter>", lambda _: self.canvas.bind_all("<MouseWheel>", _on_mousewheel)
+        )
         self.canvas.bind("<Leave>", lambda _: self.canvas.unbind_all("<MouseWheel>"))
 
     def toggle(self, _=None):
@@ -247,35 +263,36 @@ class TodoPanel(Frame):
 
     def refresh(self):
         from biscuit.common.ai.tools import TodoWriteTool
+
         todos = TodoWriteTool._todos
-        theme = self.base.theme
-        
+
         # Clear content (direct children of tasks_frame)
         for child in self.tasks_frame.winfo_children():
             child.destroy()
-            
+
         self.count_label.config(text=f"({len(todos)})")
-        
+
         if not todos:
-            Label(self.tasks_frame, text="No tasks active", font=self.base.settings.uifont,
-                  fg=theme.secondary_foreground, bg=theme.primary_background).pack(padx=15, pady=10, anchor=tk.W)
+            Label(
+                self.tasks_frame, text="No tasks active", font=self.base.settings.uifont
+            ).pack(padx=15, pady=10, anchor=tk.W)
             return
 
         status_icons = {
-            'pending': Icons.CIRCLE_OUTLINE,
-            'in_progress': Icons.SYNC,
-            'completed': Icons.CHECK,
-            'cancelled': Icons.X
+            "pending": Icons.CIRCLE_OUTLINE,
+            "in_progress": Icons.SYNC,
+            "completed": Icons.CHECK,
+            "cancelled": Icons.X,
         }
 
         # Canonicalize status names to handle diverse model outputs
         status_map = {
-            'pending': ['pending', 'todo', 'task'],
-            'in_progress': ['in_progress', 'doing', 'working', 'progress'],
-            'completed': ['completed', 'complete', 'done', 'finished', 'success'],
-            'cancelled': ['cancelled', 'cancel', 'failed', 'stopped']
+            "pending": ["pending", "todo", "task"],
+            "in_progress": ["in_progress", "doing", "working", "progress"],
+            "completed": ["completed", "complete", "done", "finished", "success"],
+            "cancelled": ["cancelled", "cancel", "failed", "stopped"],
         }
-        
+
         def get_canonical_status(s):
             s = str(s).lower()
             for canonical, aliases in status_map.items():
@@ -284,94 +301,93 @@ class TodoPanel(Frame):
             return s
 
         for tid, todo in todos.items():
-            f = Frame(self.tasks_frame, bg=theme.primary_background)
+            f = Frame(self.tasks_frame)
             f.pack(fill=tk.X, pady=1)
-            
-            raw_status = todo.get('status', 'pending')
+
+            raw_status = todo.get("status", "pending")
             status = get_canonical_status(raw_status)
             icon = status_icons.get(status, Icons.CIRCLE_OUTLINE)
-            
-            fg = theme.foreground
-            icon_fg = theme.secondary_foreground
-            
-            if status == 'in_progress':
-                icon_fg = theme.biscuit
-            elif status == 'completed':
-                icon_fg = "#3fb950" 
-            elif status == 'cancelled':
+
+            fg = None
+            icon_fg = None
+
+            if status == "in_progress":
+                icon_fg = None
+            elif status == "completed":
+                icon_fg = "#3fb950"
+            elif status == "cancelled":
                 icon_fg = "#f85149"
-            
-            Label(f, text=icon, font=("codicon", 10), fg=icon_fg, 
-                  bg=theme.primary_background).pack(side=tk.LEFT, padx=(10, 8))
-            
-            lbl = Label(f, text=todo['content'], font=self.base.settings.uifont, 
-                  fg=fg, bg=theme.primary_background, anchor=tk.W, justify=tk.LEFT)
+
+            Label(f, text=icon, font=("codicon", 10), fg=icon_fg).pack(
+                side=tk.LEFT, padx=(10, 8)
+            )
+
+            lbl = Label(
+                f,
+                text=todo["content"],
+                font=self.base.settings.uifont,
+                fg=fg,
+                anchor=tk.W,
+                justify=tk.LEFT,
+            )
             lbl.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
 
 class StreamingMessage(Frame):
     """Widget for displaying streaming AI messages."""
-    
+
     def __init__(self, master, chat, message_type: str = "ai", *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.chat = chat
         self.message_type = message_type
         self.content = ""
         self.setup_ui()
-        
+
     def setup_ui(self):
         """Setup the message UI."""
-        theme = self.base.theme
-        
+
         # For user messages, use a box-like layout
         if self.message_type == "user":
-            self.configure(bg=theme.primary_background, padx=5, pady=5)
-            
+            # self.configure(padx=5, pady=5)
+
             # Message container with border
-            self.container = Frame(self, bg=theme.secondary_background, 
-                                  highlightbackground=theme.border, highlightthickness=1)
+            self.container = Frame(self)  # , highlighthighlightthickness=1)
             self.container.pack(fill=tk.X, expand=True)
 
             # Plain text content for user messages
             self.content_text = Text(
                 self.container,
                 height=1,
-                bg=theme.secondary_background,
-                fg=theme.secondary_foreground,
                 font=self.base.settings.uifont,
                 border=0,
                 padx=10,
                 pady=10,
                 wrap=tk.WORD,
-                state=tk.DISABLED
+                state=tk.DISABLED,
             )
             self.content_text.pack(fill=tk.X)
-            
+
         else:
             # AI message: Container for multiple parts (thoughts, tools, markdown)
-            self.configure(bg=theme.primary_background, padx=5, pady=5)
-            
-            self.parts_container = Frame(self, bg=theme.primary_background)
+            # self.configure(padx=5, pady=5)
+
+            self.parts_container = Frame(self)
             self.parts_container.pack(fill=tk.X, padx=5)
-            
+
             # Internal state to track the active part
             self.current_markdown_renderer = None
             self.current_thought_widget = None
 
             # Typing indicator
-            self.indicator_frame = Frame(self, bg=theme.primary_background)
+            self.indicator_frame = Frame(self)
             self.typing_indicator = Label(
-                self.indicator_frame,
-                text="thinking...",
-                font=self.base.settings.uifont,
-                fg=theme.secondary_foreground,
-                bg=theme.primary_background
+                self.indicator_frame, text="thinking...", font=self.base.settings.uifont
             )
             # Not packed initially
 
             # Actions bar for AI messages (not packed initially)
-            self.actions_frame = Frame(self, bg=theme.primary_background)
-            
+            self.actions_frame = Frame(self)
+
             self._add_action_icon(Icons.THUMBSUP)
             self._add_action_icon(Icons.THUMBSDOWN)
             self._add_action_icon(Icons.COPY)
@@ -379,10 +395,14 @@ class StreamingMessage(Frame):
             self._add_action_icon(Icons.ARROW_UP)
 
     def _add_action_icon(self, icon):
-        btn = IconButton(self.actions_frame, icon=icon, iconsize=10, hfg_only=True)
-        btn.config(bg=self.base.theme.primary_background, fg=self.base.theme.secondary_foreground)
+        btn = IconButton(
+            self.actions_frame,
+            icon=icon,
+            iconsize=10,
+        )  # hfg_only=True)
+        btn.config()
         btn.pack(side=tk.LEFT, padx=3)
-        
+
     def start_typing(self):
         """Show typing indicator."""
         if self.message_type == "ai":
@@ -390,12 +410,12 @@ class StreamingMessage(Frame):
             self.indicator_frame.pack(fill=tk.X, pady=2)
             self.typing_indicator.pack(side=tk.LEFT)
             self._animate_typing()
-    
+
     def _animate_typing(self):
         """Animate the typing indicator."""
         if not self.typing_indicator.winfo_viewable():
             return
-            
+
         current = self.typing_indicator.cget("text")
         if current == "thinking...":
             new_text = "thinking.  "
@@ -403,28 +423,28 @@ class StreamingMessage(Frame):
             new_text = "thinking.. "
         else:
             new_text = "thinking..."
-        
+
         try:
             self.typing_indicator.config(text=new_text)
         except tk.TclError:
             pass
         # Store the animation ID so we can cancel it
-        if hasattr(self, '_typing_active') and self._typing_active:
+        if hasattr(self, "_typing_active") and self._typing_active:
             self.typing_animation_id = self.after(500, self._animate_typing)
-    
+
     def stop_typing(self):
         """Hide typing indicator."""
         self._typing_active = False
         # Cancel animation
-        if hasattr(self, 'typing_animation_id'):
+        if hasattr(self, "typing_animation_id"):
             self.after_cancel(self.typing_animation_id)
         self.indicator_frame.pack_forget()
-        
+
     def show_actions(self):
         """Show the actions bar (like, dislike, copy, etc.)."""
         if self.message_type == "ai":
             self.actions_frame.pack(fill=tk.X)
-        
+
     def append_content(self, text: str):
         """Append text to the message content."""
         if self.message_type == "user":
@@ -445,16 +465,18 @@ class StreamingMessage(Frame):
                 self.current_markdown_renderer = Renderer(self.parts_container)
                 self.current_markdown_renderer.pack(fill=tk.X, pady=2)
                 self.current_markdown_renderer._buffer = ""
-            
+
             self.current_markdown_renderer._buffer += text
-            self.current_markdown_renderer.write(self.current_markdown_renderer._buffer, clear=True)
+            self.current_markdown_renderer.write(
+                self.current_markdown_renderer._buffer, clear=True
+            )
             self.content += text
 
     def add_thought(self, title: str = "Thought"):
         """Add a new collapsible thought block."""
         self.current_markdown_renderer = None
-        
-        # If no parts have been added to this message yet, treat the first thought 
+
+        # If no parts have been added to this message yet, treat the first thought
         # as non-collapsible markdown (similar to how we handle the final result)
         # TODO: check if this also lets second thought be non-collapsible
         if not self.parts_container.winfo_children():
@@ -476,23 +498,27 @@ class StreamingMessage(Frame):
         children = self.parts_container.winfo_children()
         if not children:
             return
-            
+
         last_child = children[-1]
         if isinstance(last_child, CollapsibleThought):
             content = last_child.content_text
             last_child.destroy()
-            
+
             # Ensure we start a new renderer for the final result
             self.current_markdown_renderer = None
             self.append_content(content)
-        
-    def add_tool_action(self, icon: str, action: str, target: str, extra: str = "", lang_icon: str = ""):
+
+    def add_tool_action(
+        self, icon: str, action: str, target: str, extra: str = "", lang_icon: str = ""
+    ):
         """Add a native tool action widget."""
         self.current_markdown_renderer = None
         self.current_thought_widget = None
-        widget = ToolActionWidget(self.parts_container, icon, action, target, extra, lang_icon)
+        widget = ToolActionWidget(
+            self.parts_container, icon, action, target, extra, lang_icon
+        )
         widget.pack(fill=tk.X)
-        
+
     def set_content(self, text: str):
         """Set the complete message content."""
         if self.message_type == "user":
@@ -503,7 +529,7 @@ class StreamingMessage(Frame):
             self.content_text.insert(1.0, text)
             self.content_text.config(state=tk.DISABLED)
             # Auto-resize
-            line_count = text.count('\n') + 1
+            line_count = text.count("\n") + 1
             self.content_text.config(height=min(line_count, 5))
         else:
             # Markdown for AI messages
@@ -513,136 +539,133 @@ class StreamingMessage(Frame):
                 child.destroy()
             self.current_markdown_renderer = None
             self.current_thought_widget = None
-            
+
             self.append_content(text)
             self.show_actions()
 
+
 class AgentChat(Frame):
     """Agent chat interface with multi-model support."""
-    
+
     def __init__(self, master: AI, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master: AI = master
         self.enhanced_agent: Optional[Agent] = None
         self.current_task: Optional[AgentTask] = None
         self.messages: List[StreamingMessage] = []
-        
+
         self.setup_ui()
-        
+
     def setup_ui(self):
         """Setup the chat interface."""
-        theme = self.base.theme
-        
+
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
-        
+
         # Main chat area
         self.setup_chat_area(self)
-        
+
         # Input area at bottom
         self.setup_input_area()
-        
+
     def setup_chat_area(self, parent):
         """Setup the main chat area."""
-        theme = self.base.theme
-        
+
         # Chat container with scrollbar
-        chat_container = Frame(parent, bg=theme.primary_background)
+        chat_container = Frame(parent)
         chat_container.grid(row=1, column=0, sticky=tk.NSEW)
         chat_container.grid_columnconfigure(0, weight=1)
         chat_container.grid_rowconfigure(0, weight=1)
-        
+
         # Scrollable chat area
-        self.chat_canvas = Canvas(
-            chat_container,
-            bg=theme.primary_background,
-            highlightthickness=0
-        )
+        self.chat_canvas = Canvas(chat_container, highlightthickness=0)
         self.chat_canvas.grid(row=0, column=0, sticky=tk.NSEW)
-        
+
         # Scrollbar
         scrollbar = Scrollbar(
             chat_container,
             orient=tk.VERTICAL,
-            command=self.chat_canvas.yview, 
-            style="EditorScrollbar"
+            command=self.chat_canvas.yview,
         )
         scrollbar.grid(row=0, column=1, sticky=tk.NS)
         self.chat_canvas.configure(yscrollcommand=scrollbar.set)
-        
-        self.messages_frame = Frame(self.chat_canvas, bg=theme.primary_background)
+
+        self.messages_frame = Frame(self.chat_canvas)
         self.canvas_window = self.chat_canvas.create_window(
             0, 0, anchor=tk.NW, window=self.messages_frame
         )
-        
-        self.messages_frame.bind('<Configure>', self._on_messages_configure)
-        self.chat_canvas.bind('<Configure>', self._on_canvas_configure)
-        
-        self.chat_canvas.bind('<Enter>', lambda _: self.chat_canvas.bind_all('<MouseWheel>', self._on_mousewheel))
-        self.chat_canvas.bind('<Leave>', lambda _: self.chat_canvas.unbind_all('<MouseWheel>'))
-        
+
+        self.messages_frame.bind("<Configure>", self._on_messages_configure)
+        self.chat_canvas.bind("<Configure>", self._on_canvas_configure)
+
+        self.chat_canvas.bind(
+            "<Enter>",
+            lambda _: self.chat_canvas.bind_all("<MouseWheel>", self._on_mousewheel),
+        )
+        self.chat_canvas.bind(
+            "<Leave>", lambda _: self.chat_canvas.unbind_all("<MouseWheel>")
+        )
+
         self.show_welcome_message()
-        
+
     def setup_input_area(self):
         """Setup the input area."""
-        theme = self.base.theme
         from biscuit.common import Dropdown
-        
+
         # Input container
-        input_container = Frame(self, bg=theme.primary_background, padx=10, pady=10)
+        input_container = Frame(self)  # , padx=10, pady=10)
         input_container.grid(row=2, column=0, sticky=tk.EW)
-        
+
         # Todo panel above input
         self.todo_panel = TodoPanel(input_container)
         self.todo_panel.pack(fill=tk.X)
-        
+
         # Bordered frame for input
-        input_border = Frame(input_container, bg=theme.border, padx=1, pady=1)
+        input_border = Frame(input_container)  # , padx=1, pady=1)
         input_border.pack(fill=tk.X)
         input_border.grid_columnconfigure(0, weight=1)
 
-        input_inner = Frame(input_border, bg=theme.secondary_background)
+        input_inner = Frame(input_border)
         input_inner.pack(fill=tk.BOTH)
-        
+
         # Text input
         self.text_input = hintedtext.HintedText(
             input_inner,
             hint="Message the Biscuit Agent\nUse @ to include context",
             height=3,
-            bg=theme.secondary_background,
-            fg=theme.secondary_foreground,
             font=self.base.settings.uifont,
             border=0,
             padx=10,
             pady=10,
-            wrap=tk.WORD
+            wrap=tk.WORD,
         )
         self.text_input.pack(fill=tk.X)
-        
+
         # Bottom tools bar
-        tools_bar = Frame(input_inner, bg=theme.secondary_background, padx=5, pady=5)
+        tools_bar = Frame(input_inner)  # , padx=5, pady=5)
         tools_bar.pack(fill=tk.X)
 
         # Left side icons
-        mention_btn = IconButton(tools_bar, icon=Icons.MENTION, iconsize=14, hfg_only=True)
-        mention_btn.config(bg=theme.secondary_background)
+        mention_btn = IconButton(
+            tools_bar,
+            icon=Icons.MENTION,
+            iconsize=14,  # hfg_only=True
+        )
+        mention_btn.config()
         mention_btn.pack(side=tk.LEFT)
 
         # IconButton(tools_bar, icon=Icons.TARGET, iconsize=14).pack(side=tk.LEFT, padx=2)
         # IconButton(tools_bar, icon=Icons.GLOBE, iconsize=14).pack(side=tk.LEFT, padx=2)
 
         # Right side: status, dropdowns, send
-        right_tools = Frame(tools_bar, bg=theme.secondary_background)
+        right_tools = Frame(tools_bar)
         right_tools.pack(side=tk.RIGHT)
 
-        self.status_label = Label(right_tools, text="Ready", font=("Segoe UI", 8), 
-              fg=theme.secondary_foreground, bg=theme.secondary_background)
+        self.status_label = Label(right_tools, text="Ready", font=("Segoe UI", 8))
         self.status_label.pack(side=tk.LEFT, padx=(5, 5))
 
-        self.usage_label = Label(right_tools, text="0 tokens", font=("Segoe UI", 8), 
-              fg=theme.secondary_foreground, bg=theme.secondary_background)
+        self.usage_label = Label(right_tools, text="0 tokens", font=("Segoe UI", 8))
         self.usage_label.pack(side=tk.LEFT, padx=(5, 5))
-
 
         # Model selector
         self.model_dropdown = Dropdown(
@@ -657,22 +680,19 @@ class AgentChat(Frame):
 
         # Send button
         self.send_btn = IconButton(
-            right_tools,
-            icon=Icons.SEND,
-            iconsize=14,
-            event=self.send_message
+            right_tools, icon=Icons.SEND, iconsize=14, event=self.send_message
         )
-        self.send_btn.config(fg=theme.biscuit, bg=theme.secondary_background)
+        self.send_btn.config()
         self.send_btn.pack(side=tk.LEFT, padx=(0, 1))
-        
+
         # Bind Enter key
-        self.text_input.bind('<Control-Return>', self.add_newline)
-        self.text_input.bind('<Return>', self.return_key_send_message)
-        self.text_input.bind('<KeyRelease>', self._on_text_change)
-        
+        self.text_input.bind("<Control-Return>", self.add_newline)
+        self.text_input.bind("<Return>", self.return_key_send_message)
+        self.text_input.bind("<KeyRelease>", self._on_text_change)
+
         # Placeholder text
         self._show_placeholder()
-    
+
     def return_key_send_message(self, event):
         self.send_message()
         return "break"
@@ -680,29 +700,29 @@ class AgentChat(Frame):
     def add_newline(self, event):
         self.text_input.insert(tk.END, "\n")
         return "break"
-        
+
     def _show_placeholder(self):
         """Show placeholder text in input."""
         if not self.text_input.get(1.0, tk.END).strip():
-            self.text_input.config(fg=self.base.theme.secondary_foreground)
-            
+            self.text_input.config()
+
     def _on_text_change(self, event=None):
         """Handle text input changes."""
         content = self.text_input.get(1.0, tk.END).strip()
-    
+
     def _on_messages_configure(self, event):
         """Handle messages frame configuration."""
         self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
-        
+
     def _on_canvas_configure(self, event):
         """Handle canvas configuration."""
         canvas_width = event.width
         self.chat_canvas.itemconfig(self.canvas_window, width=canvas_width)
-        
+
     def _on_mousewheel(self, event):
         """Handle mouse wheel scrolling."""
         self.chat_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
-        
+
     def scroll_to_bottom(self, force=False):
         """Scroll to the bottom of the chat."""
         # Only auto-scroll if we're already near the bottom (within 10%)
@@ -715,85 +735,91 @@ class AgentChat(Frame):
         def _scroll():
             self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
             self.chat_canvas.yview_moveto(1.0)
-            
+
         # Small delay to ensure all layout updates (like HtmlFrame resize) are complete
         self.after(50, _scroll)
-        
+
     def show_welcome_message(self):
         """Show welcome message."""
         welcome_text = "How can I help you with your code?"
-        
+
         message = StreamingMessage(self.messages_frame, self, "ai")
         message.pack(fill=tk.X, pady=5, padx=5)
         message.set_content(welcome_text)
         self.messages.append(message)
         self.scroll_to_bottom(force=True)
-        
+
     def set_enhanced_agent(self, agent: Agent):
         """Set the enhanced agent."""
         self.enhanced_agent = agent
         if agent:
             agent.set_usage_callback(self.update_usage)
-            
+
     def update_usage(self, input_tokens: int, output_tokens: int):
         """Update the usage label in the UI."""
         total = input_tokens + output_tokens
         if total > 1000:
-            text = f"{total/1000:.1f}k tokens"
+            text = f"{total / 1000:.1f}k tokens"
         else:
             text = f"{total} tokens"
-            
+
         def update():
             self.usage_label.config(text=text)
+
         self.after(0, update)
-        
+
     def send_message(self, event=None):
         """Send message to the agent."""
         if not self.enhanced_agent:
             self.show_error("Enhanced agent not available")
             return
-            
+
         # Get message text
         message_text = self.text_input.get(1.0, tk.END).strip()
         if not message_text or message_text == "What do you want me to code?":
             return
-            
+
         # Clear input
         self.text_input.delete(1.0, tk.END)
         self._show_placeholder()
-        
+
         # Add user message
         user_message = StreamingMessage(self.messages_frame, self, "user")
         user_message.pack(fill=tk.X, pady=5, padx=5)
         user_message.set_content(message_text)
         self.messages.append(user_message)
-        
+
         # Add AI response placeholder
         ai_message = StreamingMessage(self.messages_frame, self, "ai")
         ai_message.pack(fill=tk.X, pady=5, padx=5)
         ai_message.start_typing()
         self.messages.append(ai_message)
         # self.scroll_to_bottom(force=True)
-        
+
         # Start agent execution
         self._start_agent_execution(message_text, ai_message)
-        
-    def _start_agent_execution(self, task_description: str, response_message: StreamingMessage):
+
+    def _start_agent_execution(
+        self, task_description: str, response_message: StreamingMessage
+    ):
         """Start the agent execution in a separate thread with real-time updates."""
+
         def execute_task():
             try:
                 # Update UI state
                 self.after(0, lambda: self._set_execution_state(True))
-                
+
                 # Setup real-time streaming callback
                 self._current_thought = None
+
                 def stream_callback(content: str):
                     """Stream content to the UI in real-time."""
+
                     def update_ui():
                         if content == "[START_THOUGHT]":
                             response_message.add_thought("Thought...")
                             return
-                        
+
                         if content.startswith("[END_THOUGHT]"):
                             try:
                                 duration = content.split(" ")[1]
@@ -802,7 +828,7 @@ class AgentChat(Frame):
                             response_message.close_thought(duration)
                             self.scroll_to_bottom()
                             return
-                        
+
                         if content == "[DONE]":
                             return
 
@@ -810,59 +836,85 @@ class AgentChat(Frame):
                         self.scroll_to_bottom()
 
                     self.after(0, update_ui)
-                
+
                 # Setup tool execution callback
-                def tool_callback(tool_name: str, tool_input: str, tool_output: str, category: str = "analysis"):
+                def tool_callback(
+                    tool_name: str,
+                    tool_input: str,
+                    tool_output: str,
+                    category: str = "analysis",
+                ):
                     """Show tool executions in real-time."""
                     if tool_name == "todo_write":
                         self.after(0, self.todo_panel.refresh)
+
                     def update_ui():
                         # Parsing logic to mimic the provided UI
-                        import os
                         import json
-                        
+                        import os
+
                         icon = Icons.FILE
-                        action_label = "Analyzed" if category == "analysis" else "Edited"
+                        action_label = (
+                            "Analyzed" if category == "analysis" else "Edited"
+                        )
                         file_info = ""
                         extra_info = ""
                         lang_icon = ""
-                        
+
                         try:
                             # Robust parsing of tool input
                             data = json.loads(tool_input)
-                            path = data.get('file_path') or data.get('directory_path') or data.get('path') or data.get('AbsolutePath')
-                            
+                            path = (
+                                data.get("file_path")
+                                or data.get("directory_path")
+                                or data.get("path")
+                                or data.get("AbsolutePath")
+                            )
+
                             if path:
-                                file_info = os.path.basename(path) if path != "." else os.path.basename(os.getcwd())
+                                file_info = (
+                                    os.path.basename(path)
+                                    if path != "."
+                                    else os.path.basename(os.getcwd())
+                                )
                                 ext = os.path.splitext(file_info)[1].lower()
                                 mapping = {
-                                    '.py': Icons.SYMBOL_METHOD, '.js': Icons.SYMBOL_EVENT, '.ts': Icons.SYMBOL_INTERFACE, 
-                                    '.html': Icons.GLOBE, '.css': Icons.SYMBOL_COLOR, '.json': Icons.JSON, 
-                                    '.md': Icons.MARKDOWN, '.txt': Icons.SYMBOL_TEXT
+                                    ".py": Icons.SYMBOL_METHOD,
+                                    ".js": Icons.SYMBOL_EVENT,
+                                    ".ts": Icons.SYMBOL_INTERFACE,
+                                    ".html": Icons.GLOBE,
+                                    ".css": Icons.SYMBOL_COLOR,
+                                    ".json": Icons.JSON,
+                                    ".md": Icons.MARKDOWN,
+                                    ".txt": Icons.SYMBOL_TEXT,
                                 }
                                 lang_icon = mapping.get(ext, Icons.FILE_CODE)
 
                                 if "start_line" in data:
-                                    sl = data.get('start_line')
-                                    el = data.get('end_line') or "EOF"
-                                    extra_info = f'#L{sl}-{el}'
+                                    sl = data.get("start_line")
+                                    el = data.get("end_line") or "EOF"
+                                    extra_info = f"#L{sl}-{el}"
                                 elif "StartLine" in data:
-                                    sl = data.get('StartLine')
-                                    el = data.get('EndLine') or "EOF"
-                                    extra_info = f'#L{sl}-{el}'
-                            
+                                    sl = data.get("StartLine")
+                                    el = data.get("EndLine") or "EOF"
+                                    extra_info = f"#L{sl}-{el}"
+
                             if tool_name == "execute_command":
                                 icon = Icons.TERMINAL
                                 action_label = "Executed"
-                                file_info = data.get('command', '').split(' ')[0]
-                                extra_info = f' {data.get("command")}'
-                            elif "write" in tool_name or "replace" in tool_name or "create" in tool_name:
+                                file_info = data.get("command", "").split(" ")[0]
+                                extra_info = f" {data.get('command')}"
+                            elif (
+                                "write" in tool_name
+                                or "replace" in tool_name
+                                or "create" in tool_name
+                            ):
                                 icon = Icons.EDIT
                                 action_label = "Edited"
                             elif "search" in tool_name or "grep" in tool_name:
                                 icon = Icons.SEARCH
                                 action_label = "Searched"
-                                file_info = data.get('query', data.get('Query', ''))
+                                file_info = data.get("query", data.get("Query", ""))
                             elif tool_name == "todo_write":
                                 icon = Icons.TASKLIST
                                 action_label = "Updated Plan"
@@ -870,30 +922,33 @@ class AgentChat(Frame):
                                 icon = Icons.FILE
                                 action_label = "Analyzed"
                                 # file_info is already set from path
-        
+
                         except Exception as e:
                             # Fallback if input is not JSON
                             file_info = tool_name
-                            extra_info = f'{tool_input[:30]}...'
+                            extra_info = f"{tool_input[:30]}..."
 
-                        response_message.add_tool_action(icon, action_label, file_info, extra_info, lang_icon)
+                        response_message.add_tool_action(
+                            icon, action_label, file_info, extra_info, lang_icon
+                        )
                         self.scroll_to_bottom()
+
                     self.after(0, update_ui)
-                
+
                 # Set up the agent with callbacks
-                if hasattr(self.enhanced_agent, 'set_stream_callback'):
+                if hasattr(self.enhanced_agent, "set_stream_callback"):
                     self.enhanced_agent.set_stream_callback(stream_callback)
-                if hasattr(self.enhanced_agent, 'set_tool_callback'):
+                if hasattr(self.enhanced_agent, "set_tool_callback"):
                     self.enhanced_agent.set_tool_callback(tool_callback)
-                
+
                 # Execute task with streaming
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
-                
+
                 task = loop.run_until_complete(
                     self.enhanced_agent.execute_task_with_streaming(task_description)
                 )
-                
+
                 # Update final response
                 def finish_task():
                     # If the last part was a thought, it's likely the final answer
@@ -901,82 +956,99 @@ class AgentChat(Frame):
                     response_message.promote_last_thought()
                     response_message.show_actions()
                     self.scroll_to_bottom(force=True)
+
                 self.after(0, finish_task)
-                
+
             except Exception as e:
+
                 def show_error(e):
                     error_msg = f"Error: {str(e)}"
                     response_message.append_content(f"\n\n{error_msg}")
                     self.scroll_to_bottom()
+
                 self.after(0, lambda e=e: show_error(e))
             finally:
+
                 def cleanup():
                     self._set_execution_state(False)
                     response_message.stop_typing()
+
                 self.after(0, cleanup)
-        
+
         # Start execution thread
         thread = threading.Thread(target=execute_task, daemon=True)
         thread.start()
-        
+
     def _set_execution_state(self, is_executing: bool):
         """Update UI for execution state."""
         if is_executing:
             self.status_label.config(text="Working...")
         else:
             self.status_label.config(text="Ready")
-            
+
     def _finish_response(self, message: StreamingMessage, content: str):
         """Finish the AI response message."""
         message.stop_typing()
         message.set_content(content)
         self.scroll_to_bottom()
-        
+
     def _generate_task_summary(self, task: AgentTask) -> str:
         """Generate a detailed summary of the completed task."""
         summary = ["\n---\n### ✨ Final Results\n"]
-        
+
         # Summary of actions
-        status_icon = "🎉" if task.status.value == "completed" else "❌" if task.status.value == "error" else "ℹ️"
+        status_icon = (
+            "🎉"
+            if task.status.value == "completed"
+            else "❌"
+            if task.status.value == "error"
+            else "ℹ️"
+        )
         summary.append(f"**Status:** {status_icon} {task.status.value.capitalize()}\n")
-        
+
         # Files modified
         modified_files = []
         for step in task.steps:
             modified_files.extend(step.files_modified)
-        
+
         if modified_files:
             unique_files = list(set(modified_files))
             summary.append("**Modified Files:**")
             for f in unique_files:
                 summary.append(f"- 📝 `{f}`")
             summary.append("")
-        
+
         # Steps summary
         if task.steps:
             summary.append("**Execution Timeline:**")
             for step in task.steps:
-                icon = "✅" if step.result else "❌" if step.state.value == "error" else "➡️"
+                icon = (
+                    "✅"
+                    if step.result
+                    else "❌"
+                    if step.state.value == "error"
+                    else "➡️"
+                )
                 summary.append(f"{step.step_number}. {icon} {step.action}")
-        
+
         return "\n".join(summary)
-        
+
     def stop_execution(self, event=None):
         """Stop the current agent execution."""
         if self.enhanced_agent and self.enhanced_agent.is_running:
             self.enhanced_agent.stop_execution()
             self.status_label.config(text="Stopping...")
-            
+
     def clear_chat(self, event=None):
         """Clear the chat history."""
         # Clear messages
         for message in self.messages:
             message.destroy()
         self.messages.clear()
-        
+
         # Show welcome message
         self.show_welcome_message()
-        
+
     def show_error(self, error_message: str):
         """Show an error message."""
         error_msg = StreamingMessage(self.messages_frame, self, "ai")

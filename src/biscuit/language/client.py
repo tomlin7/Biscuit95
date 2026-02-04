@@ -58,11 +58,7 @@ class LangServerClient:
                     tab.language,
                     master.langservers.get(
                         tab.language.lower(),
-                        master.langservers.get(tab.language_alias, None),
-                    ),
-                ),
-            ),
-        )
+                        master.langservers.get(tab.language_alias, None)))))
 
         self.root_dir = root_dir
         self._counter = itertools.count()
@@ -80,8 +76,7 @@ class LangServerClient:
             process_id=self.io.p.pid,
             root_uri=self.root_uri,
             workspace_folders=[lsp.WorkspaceFolder(uri=self.root_uri, name="Root")],
-            trace="verbose",
-        )
+            trace="verbose")
         self.handler = EventHandler(self)
 
     def run_loop(self) -> None:
@@ -123,8 +118,7 @@ class LangServerClient:
                     uri=Path(tab.path).as_uri(),
                     languageId=self.language,
                     text=tab.get_all_text(),
-                    version=next(self._counter),
-                )
+                    version=next(self._counter))
             )
 
     def close_tab(self, tab: Text) -> None:
@@ -166,12 +160,10 @@ class LangServerClient:
         req_id = self.client.completion(
             text_document_position=lsp.TextDocumentPosition(
                 textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-                position=encode_position(request.cursor),
-            ),
+                position=encode_position(request.cursor)),
             context=lsp.CompletionContext(
                 triggerKind=lsp.CompletionTriggerKind.INVOKED
-            ),
-        )
+            ))
 
         self.completion_requests[req_id] = (tab, request)
 
@@ -187,8 +179,7 @@ class LangServerClient:
         request_id = self.client.hover(
             lsp.TextDocumentPosition(
                 textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-                position=encode_position(tab.get_mouse_pos()),
-            )
+                position=encode_position(tab.get_mouse_pos()))
         )
         self.hover_requests[request_id] = (tab, tab.get_mouse_pos())
 
@@ -210,8 +201,7 @@ class LangServerClient:
         request_id = self.client.definition(
             lsp.TextDocumentPosition(
                 textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-                position=encode_position(pos),
-            )
+                position=encode_position(pos))
         )
         self.gotodef_requests[request_id] = (tab, pos)
 
@@ -232,8 +222,7 @@ class LangServerClient:
         request_id = self.client.references(
             lsp.TextDocumentPosition(
                 textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-                position=encode_position(pos),
-            )
+                position=encode_position(pos))
         )
         self.ref_requests.append((tab, pos))
 
@@ -253,10 +242,8 @@ class LangServerClient:
         request_id = self.client.rename(
             lsp.TextDocumentPosition(
                 textDocument=lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-                position=encode_position(pos),
-            ),
-            new_name=new_name,
-        )
+                position=encode_position(pos)),
+            new_name=new_name)
         self.rename_requests[request_id] = tab
 
     def request_outline(self, tab: Text) -> None:
@@ -269,8 +256,7 @@ class LangServerClient:
             return
 
         request_id = self.client.documentSymbol(
-            lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()),
-        )
+            lsp.TextDocumentIdentifier(uri=Path(tab.path).as_uri()))
         self.outline_requests[request_id] = tab
 
     def send_change_events(self, tab: Text) -> None:
@@ -292,7 +278,5 @@ class LangServerClient:
                     #     start=encode_position(tab.get_begin()),
                     #     end=encode_position(tab.get_end()),
                     # ),
-                    text=tab.get_all_text(),
-                )
-            ],
-        )
+                    text=tab.get_all_text())
+            ])

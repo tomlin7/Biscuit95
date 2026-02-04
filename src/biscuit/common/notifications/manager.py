@@ -31,7 +31,7 @@ class Notifications(Toplevel):
 
     def __init__(self, base) -> None:
         super().__init__(base)
-        self.config(bg=self.base.theme.border, padx=1, pady=1)
+        # self.config( padx=1, pady=1)
         self.active = False
         self.overrideredirect(True)
 
@@ -50,20 +50,17 @@ class Notifications(Toplevel):
         self.toggle_button: IconButton = None
         self.notifications: list[Notification] = []
 
-        topbar = Frame(self, **self.base.theme.notifications)
+        topbar = Frame(self)
         topbar.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
         self.title = Label(
             topbar,
-            text="NOTIFICATIONS",
-            anchor=tk.W,
-            font=self.base.settings.uifont,
-            **self.base.theme.notifications.title,
+            text="NOTIFICATIONS",  # , anchor=tk.W, font=self.base.settings.uifont
         )
         self.title.pack(side=tk.LEFT, padx=10, fill=tk.BOTH, expand=1)
 
         close_button = IconButton(topbar, Icons.CLOSE, self.hide)
-        close_button.config(**self.base.theme.notifications.title)
+        close_button.config()
         close_button.pack(side=tk.RIGHT, fill=tk.BOTH, pady=(0, 1))
 
         # self.base.bind("<FocusIn>", lambda *_: self.lift, add=True)
@@ -83,9 +80,7 @@ class Notifications(Toplevel):
         Args:
             text (str): notification text"""
 
-        instance = Notification(
-            self, Icons.INFO, text=text, fg=self.base.theme.biscuit, actions=actions
-        )
+        instance = Notification(self, Icons.INFO, text=text, actions=actions)
         instance.pack(side=tk.TOP, fill=tk.BOTH, expand=1, pady=(0, 1))
         self.count += 1
         self.show()
@@ -174,18 +169,8 @@ class Notifications(Toplevel):
             return
 
         try:
-            # x = (
-            #     self.base.winfo_x()
-            #     + self.base.winfo_width()
-            #     - self.winfo_width()
-            #     - self.xoffset
-            # )
-            # y = (
-            #     self.base.winfo_y()
-            #     + self.base.winfo_height()
-            #     - self.winfo_height()
-            #     - self.yoffset
-            # )
+            if not self.toggle_button:
+                return
 
             x = (
                 self.toggle_button.winfo_rootx()

@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import tkinter as tk
 import typing
-
-from biscuit.common.ui import Menubutton
+from tkinter import ttk
 
 if typing.TYPE_CHECKING:
     from .menu import Menu
 
 
-class Command(Menubutton):
+class Command(ttk.Button):
     """A menu item
 
     Inherits from Menubutton"""
@@ -28,15 +27,13 @@ class Command(Menubutton):
         self.command = command
         self.menu = master.master
 
-        self.config(
-            text=text,
-            anchor=tk.W,
-            font=self.base.settings.uifont,
-            cursor="hand2",
-            padx=20,
-            pady=2,
-            **self.base.theme.menu.item,
-        )
+        # self.config(
+        #     text=text,
+        #     anchor=tk.W,
+        #     font=self.base.settings.uifont,
+        #     cursor="hand2",
+        #     padx=20,
+        #     pady=2)
         self.bind("<Button-1>", self.on_click)
 
     def on_click(self, *_) -> None:

@@ -21,27 +21,27 @@ class HistoryNavigation(Frame):
     def __init__(self, master: BreadCrumbs, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
         self.master: BreadCrumbs = master
-        self.config(bg=self.base.theme.border)
+        self.config()
 
         self.left = IconButton(
             self,
             Icons.ARROW_LEFT,
             event=self.go_down,
             iconsize=12,
-            padx=7,
-            hfg_only=True,
+            # padx=7,
+            # hfg_only=True
         )
-        self.left.config(**self.base.theme.editors.breadcrumbs.item)
+        self.left.config()
 
         self.right = IconButton(
             self,
             Icons.ARROW_RIGHT,
             event=self.go_up,
             iconsize=12,
-            padx=7,
-            hfg_only=True,
+            # padx=7,
+            # hfg_only=True,
         )
-        self.right.config(**self.base.theme.editors.breadcrumbs.item)
+        self.right.config()
 
         self.left.config(state=tk.DISABLED)
         self.right.config(state=tk.DISABLED)

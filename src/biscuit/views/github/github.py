@@ -37,9 +37,7 @@ class GitHub(SideBarView):
         self.placeholder = WrappingLabel(
             self,
             text="Open a GitHub repository to see issues & pull requests.",
-            font=self.base.settings.uifont,
-            **self.base.theme.utils.label,
-        )
+            font=self.base.settings.uifont)
         self.placeholder.pack(fill=tk.X, side=tk.TOP)
 
         self.base.bind("<<DirectoryChanged>>", self.on_directory_change, add=True)

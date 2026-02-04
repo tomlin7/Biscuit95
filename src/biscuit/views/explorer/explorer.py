@@ -42,8 +42,7 @@ class Explorer(SideBarView):
                     "Create new file: {}",
                     lambda filename=None: self.directory.new_file(filename),
                 ]
-            ],
-        )
+            ])
         self.base.palette.register_actionset(lambda: self.newfile_actionset)
 
         self.newfolder_actionset = ActionSet(
@@ -54,8 +53,7 @@ class Explorer(SideBarView):
                     "Create new folder: {}",
                     lambda foldername=None: self.directory.new_folder(foldername),
                 ]
-            ],
-        )
+            ])
         self.base.palette.register_actionset(lambda: self.newfolder_actionset)
 
         self.rename_actionset = ActionSet(
@@ -66,8 +64,7 @@ class Explorer(SideBarView):
                     "Rename to: {}",
                     lambda newname=None: self.directory.rename_item(newname),
                 ]
-            ],
-        )
+            ])
         self.base.palette.register_actionset(lambda: self.rename_actionset)
 
     def get_actionset(self, term: str) -> ActionSet:
@@ -90,7 +87,6 @@ class Explorer(SideBarView):
                             file,
                             lambda _, path=os.path.join(r, file): self.base.open_editor(
                                 path
-                            ),
-                        )
+                            ))
                     )
         return pys

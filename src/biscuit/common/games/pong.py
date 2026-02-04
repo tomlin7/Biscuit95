@@ -27,7 +27,7 @@ class Pong(BaseGame):
         self.score1 = self.score2 = 0
 
         self.canvas = Canvas(
-            self, width=WIDTH, height=HEIGHT + 10, **self.base.theme.editors
+            self, width=WIDTH, height=HEIGHT + 10
         )
         self.canvas.pack(pady=30)
 
@@ -36,53 +36,44 @@ class Pong(BaseGame):
             HEIGHT / 2 - PADDLE_HEIGHT / 2,
             20,
             HEIGHT / 2 + PADDLE_HEIGHT / 2,
-            outline="",
-            fill=self.base.theme.biscuit,
-        )
+            outline="")
         self.paddle2 = self.canvas.create_rectangle(
             WIDTH - 20,
             HEIGHT / 2 - PADDLE_HEIGHT / 2,
             WIDTH - 10,
             HEIGHT / 2 + PADDLE_HEIGHT / 2,
-            outline="",
-            fill=self.base.theme.biscuit,
-        )
+            outline="")
         self.ball = self.canvas.create_oval(
             WIDTH / 2 - BALL_RADIUS,
             HEIGHT / 2 - BALL_RADIUS,
             WIDTH / 2 + BALL_RADIUS,
             HEIGHT / 2 + BALL_RADIUS,
-            outline="",
-            fill=self.base.theme.biscuit,
-        )
+            outline="")
 
         self.score1_text = self.canvas.create_text(
             WIDTH / 4,
             50,
             text=self.score1,
-            fill=self.base.theme.biscuit_dark,
-            font=("Fixedsys", 30, "bold"),
-        )
+
+            font=("Fixedsys", 30, "bold"))
         self.canvas.create_text(
             2 * WIDTH / 4,
             50,
             text="|",
-            fill=self.base.theme.biscuit_dark,
-            font=("Fixedsys", 30, "bold"),
-        )
+
+            font=("Fixedsys", 30, "bold"))
         self.score2_text = self.canvas.create_text(
             3 * WIDTH / 4,
             50,
             text=self.score2,
-            fill=self.base.theme.biscuit_dark,
-            font=("Fixedsys", 30, "bold"),
-        )
+
+            font=("Fixedsys", 30, "bold"))
 
         self.canvas.create_rectangle(
-            0, 0, 1000, 10, outline="", fill=self.base.theme.biscuit_dark
+            0, 0, 1000, 10, outline=""
         )
         self.canvas.create_rectangle(
-            0, HEIGHT, 1000, HEIGHT + 10, outline="", fill=self.base.theme.biscuit_dark
+            0, HEIGHT, 1000, HEIGHT + 10, outline=""
         )
 
         self.bind_all("<KeyPress>", self.move_paddle)
@@ -155,10 +146,8 @@ class Pong(BaseGame):
             WIDTH / 2 - BALL_RADIUS,
             HEIGHT / 2 - BALL_RADIUS,
             WIDTH / 2 + BALL_RADIUS,
-            HEIGHT / 2 + BALL_RADIUS,
-        )
+            HEIGHT / 2 + BALL_RADIUS)
         self.canvas.move(
             self.ball,
             random.choice([-1, 1]) * random.randint(2, 4),
-            random.choice([-1, 1]) * random.randint(2, 4),
-        )
+            random.choice([-1, 1]) * random.randint(2, 4))
