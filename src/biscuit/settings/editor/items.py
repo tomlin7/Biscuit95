@@ -7,34 +7,16 @@ from biscuit.common.ui import Entry, Frame
 class Item(Frame):
     def __init__(self, master, name="Example", *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-
         self.name = name
-        self.description = None  # TODO add descriptions
+        self.config(padding=10)
 
-        # self.bg, self.fg, self.highlightbg()
-        # self.config(padx=10, pady=10, bg=self.bg)
-
-        self.lbl = tk.Label(
+        self.lbl = ttk.Label(
             self,
             text=self.name,
-            # font=self.base.settings.uifont_bold,
-            # anchor=tk.W,
-            # bg=self.bg,
-            # fg=self.fg,
+            font=self.base.settings.uifont_bold,
+            anchor=tk.W,
         )
-        self.lbl.pack(fill=tk.X, expand=True)
-
-    #     self.bind("<Enter>", self.hoverin)
-    #     self.bind("<Leave>", self.hoveroff)
-
-    # def hoverin(self, *_):
-    #     self.config(bg=self.highlightbg)
-    #     self.lbl.config(bg=self.highlightbg)
-
-    # def hoveroff(self, *_):
-    #     self.config(bg=self.bg)
-    #     self.lbl.config(bg=self.bg)
-
+        self.lbl.pack(side=tk.LEFT, fill=tk.X)
 
 class DropdownItem(Item):
     def __init__(
@@ -51,7 +33,7 @@ class DropdownItem(Item):
         self.var = tk.StringVar(self, value=options[default])
         m = ttk.OptionMenu(self, self.var, options[default], *options)
         m.config(width=30)
-        m.pack(side=tk.LEFT)
+        m.pack(side=tk.RIGHT)
 
     @property
     def value(self) -> str:
@@ -71,7 +53,7 @@ class IntegerItem(Item):
             validatecommand=(self.register(self.validate), "%P"),
         )
         self.entry.insert(0, default)
-        self.entry.pack(side=tk.LEFT)
+        self.entry.pack(side=tk.RIGHT)
 
     def validate(self, value) -> None:
         return bool(value.isdigit() or value == "")
@@ -89,7 +71,7 @@ class StringItem(Item):
 
         self.entry = ttk.Entry(self, font=self.base.settings.uifont, width=30)
         self.entry.insert(tk.END, default)
-        self.entry.pack(side=tk.LEFT)
+        self.entry.pack(side=tk.RIGHT)
 
     @property
     def value(self) -> str:
@@ -99,6 +81,9 @@ class StringItem(Item):
 class CheckboxItem(Item):
     def __init__(self, master, name="Example", default=True, *args, **kwargs) -> None:
         super().__init__(master, name, *args, **kwargs)
+        
+        # Remove the default label as Checkbutton has its own
+        self.lbl.destroy()
 
         self.var = tk.BooleanVar(self, value=default)
         ttk.Checkbutton(self, text=name, variable=self.var, cursor="hand2").pack(
@@ -108,6 +93,3 @@ class CheckboxItem(Item):
     @property
     def value(self) -> str:
         return self.var.get()
-
-
-# TODO list item with add to list button for taking list values

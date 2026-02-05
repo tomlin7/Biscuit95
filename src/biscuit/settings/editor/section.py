@@ -19,7 +19,7 @@ class Section(Frame):
             master (tk.Tk): root window
             title (str, optional): title of the section. Defaults to"""
 
-        super().__init__(master, *args, **kwargs)
+        super().__init__(master, style="SettingsSection.TFrame", *args, **kwargs)
         # self.config( padx=30)
 
         self.items = []

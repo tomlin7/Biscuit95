@@ -100,6 +100,9 @@ class Style(ttk.Style):
         # AI Provider Style
         self.configure("AIProvider.TFrame", borderwidth=2, relief="raised", padding=(15, 10))
         
+        # Settings Section Style
+        self.configure("SettingsSection.TFrame", borderwidth=1, relief="raised", padding=15)
+        
         self.gen_fileicons()
         self.config_treeview()
         self.config_scrollbars()

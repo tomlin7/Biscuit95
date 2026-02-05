@@ -38,17 +38,17 @@ class AI(SideBarView):
 
         # Available models by provider
         self.available_models = {
-            "Gemini 2.0 Flash": "gemini-2.0-flash",
-            "Gemini 2.0 Pro": "gemini-2.0-pro",
             "Gemini 2.5 Flash": "gemini-2.5-flash",
             "Gemini 2.5 Pro": "gemini-2.5-pro",
-            "Claude 4.5 Opus": "claude-opus-4-5-20251101",
-            "Claude 4.5 Sonnet": "claude-sonnet-4-5-20250929",
-            "Claude 4.5 Haiku": "claude-haiku-4-5-20251001",
-            "Claude 4 Opus": "claude-opus-4-20250514",
-            "Claude 4 Sonnet": "claude-sonnet-4-20250514",
-            "Claude 3.5 Sonnet": "claude-3-5-sonnet-20241022",
-            "Claude 3.5 Haiku": "claude-3-5-haiku-20241022",
+            "Gemini 2.0 Flash": "gemini-2.0-flash",
+            "Gemini 2.0 Pro": "gemini-2.0-pro",
+            "Claude 4.5 Opus": "claude-opus-4-5",
+            "Claude 4.5 Sonnet": "claude-sonnet-4-5",
+            "Claude 4.5 Haiku": "claude-haiku-4-5",
+            "Claude 4 Opus": "claude-opus-4",
+            "Claude 4 Sonnet": "claude-sonnet-4",
+            "Claude 3.5 Sonnet": "claude-3-5-sonnet",
+            "Claude 3.5 Haiku": "claude-3-5-haiku",
         }
         self.current_model = "Gemini 2.0 Flash"
         self.api_keys = {"gemini": "", "anthropic": ""}
@@ -109,8 +109,6 @@ class AI(SideBarView):
     def add_placeholder(self) -> None:
         """Show the home page for the AI assistant view"""
         self.add_item(self.placeholder)
-        if self.api_key:
-            self.placeholder.api_key.set(self.api_key)
 
         if self.chat:
             self.remove_item(self.chat)
@@ -119,14 +117,6 @@ class AI(SideBarView):
 
         if self.agent:
             self.agent = None
-
-    def add_chat(self, api_key: str = None) -> None:
-        """Add a new chat to the view."""
-        if api_key:
-            self.api_key = api_key
-
-        if not self.api_key:
-            return self.add_placeholder()
 
     def save_keys(self, gemini: str = None, anthropic: str = None) -> None:
         """Save API keys to toml file and start chat."""
@@ -165,6 +155,21 @@ class AI(SideBarView):
             api_key = self.api_keys[provider]
 
             if not api_key:
+                # If current provider has no key, check if others do
+                for p, key in self.api_keys.items():
+                    if key:
+                        # Found a provider with a key, switch to their default model
+                        if p == "anthropic":
+                            self.current_model = "Claude 4.5 Sonnet"
+                        elif p == "gemini":
+                            self.current_model = "Gemini 2.5 Flash"
+                        
+                        # Set the menu variable if it exists (for the UI checkmark)
+                        # self.menu.... (UI update might be needed but skipping for now)
+                        
+                        # Retry with new model
+                        return self.add_chat()
+
                 self.add_placeholder()
                 return
 

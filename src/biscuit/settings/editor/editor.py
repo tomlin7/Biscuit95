@@ -36,8 +36,7 @@ class SettingsEditor(BaseEditor):
 
         self.sections = []
         self.container = ScrollableFrame(frame)
-        # self.container.content.config(pady=10)
-        self.container.config()
+        self.container.content.config(padding=(50, 10))
         self.container.pack(fill=tk.BOTH, expand=True)
 
         self.add_sections()
@@ -92,7 +91,7 @@ class SettingsEditor(BaseEditor):
         self.anthropic_item = ai.add_stringvalue("Anthropic API Key", anthropic_key)
         
         from biscuit.common.ui import IconLabelButton, Icons
-        IconLabelButton(ai, "Save Keys (Starts Chat)", Icons.SAVE, self.save_ai_keys).pack(fill=tk.X, pady=10)
+        IconLabelButton(ai, "Save Keys", Icons.SAVE, self.save_ai_keys).pack(fill=tk.X, pady=10)
 
     def save_ai_keys(self, *_) -> None:
         import os
@@ -108,8 +107,8 @@ class SettingsEditor(BaseEditor):
                 toml.dump(secrets, f)
             
             # Refresh AI view if active
-            if hasattr(self.base, 'views') and "Agent" in self.base.views:
-                agent_view = self.base.views["Agent"]
+            if hasattr(self.base, 'ai') and self.base.ai:
+                agent_view = self.base.ai
                 agent_view.api_keys["gemini"] = secrets["GEMINI_API_KEY"]
                 agent_view.api_keys["anthropic"] = secrets["ANTHROPIC_API_KEY"]
                 agent_view.add_chat()
@@ -128,7 +127,7 @@ class SettingsEditor(BaseEditor):
             Section: section to add items to"""
 
         section = Section(self.container.content, name)
-        section.pack(fill=tk.X, expand=True)
+        section.pack(fill=tk.X, expand=True, pady=10)
         self.sections.append(section)
 
         shortcut = Button(self.tree, name)

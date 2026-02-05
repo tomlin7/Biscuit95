@@ -23,7 +23,7 @@ class Notification(Frame):
         icon: str,
         text: str,
         actions: list[tuple[str, typing.Callable[[None], None]]],
-        fg: str,
+        fg: str = None,
         *args,
         **kwargs,
     ) -> None:
