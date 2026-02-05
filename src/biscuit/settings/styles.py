@@ -97,6 +97,9 @@ class Style(ttk.Style):
         # HistoryPanel Style (for history panel container)
         self.configure("HistoryPanel.TFrame", borderwidth=2, relief="raised", padding=10)
         
+        # AI Provider Style
+        self.configure("AIProvider.TFrame", borderwidth=2, relief="raised", padding=(15, 10))
+        
         self.gen_fileicons()
         self.config_treeview()
         self.config_scrollbars()

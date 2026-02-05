@@ -11,16 +11,16 @@ class Item(Frame):
         self.name = name
         self.description = None  # TODO add descriptions
 
-        self.bg, self.fg, self.highlightbg()
+        # self.bg, self.fg, self.highlightbg()
         # self.config(padx=10, pady=10, bg=self.bg)
 
         self.lbl = tk.Label(
             self,
             text=self.name,
-            font=self.base.settings.uifont_bold,
-            anchor=tk.W,
-            bg=self.bg,
-            fg=self.fg,
+            # font=self.base.settings.uifont_bold,
+            # anchor=tk.W,
+            # bg=self.bg,
+            # fg=self.fg,
         )
         self.lbl.pack(fill=tk.X, expand=True)
 

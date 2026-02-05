@@ -1,13 +1,12 @@
 from __future__ import annotations
-
 import tkinter as tk
+from tkinter import ttk
 import typing
 
 from biscuit.common.icons import Icons
 from biscuit.common.ui import (
     Entry,
     Frame,
-    IconLabelButton,
     Label,
     WebLinkLabel,
     WrappingLabel,
@@ -24,69 +23,29 @@ class AIPlaceholder(Frame):
 
     def __init__(self, master, *args, **kwargs) -> None:
         super().__init__(master, *args, **kwargs)
-        # self.config(padx=15, pady=10)
+        self.config(padding=20)
 
         self.label = WrappingLabel(
             self,
             font=self.base.settings.uifont,
             justify=tk.LEFT,
             anchor=tk.W,
-            text="Configure your AI providers to start chatting.",
+            text="AI features are disabled because no API keys were found.\n\nPlease configure your AI providers in Settings to start chatting.",
         )
-        self.label.pack(fill=tk.X, pady=(0, 10))
+        self.label.pack(fill=tk.X, pady=(0, 20))
 
-        # --- Gemini Section ---
-        gemini_frame = Frame(self)
-        gemini_frame.pack(fill=tk.X, pady=5)
-
-        Label(
-            gemini_frame,
-            text="Google Gemini",
-            font=self.base.settings.uifont_bold,
-            anchor=tk.W,
-        ).pack(fill=tk.X)
-
-        self.gemini_key = tk.StringVar(value=self.master.api_keys.get("gemini", ""))
-        self.gemini_entry = Entry(
-            gemini_frame, hint="Gemini API Key...", textvariable=self.gemini_key
-        )
-        self.gemini_entry.pack(fill=tk.X, pady=2)
-
-        # --- Anthropic Section ---
-        anthropic_frame = Frame(self)
-        anthropic_frame.pack(fill=tk.X, pady=10)
-
-        Label(
-            anthropic_frame,
-            text="Anthropic Claude",
-            font=self.base.settings.uifont_bold,
-            anchor=tk.W,
-        ).pack(fill=tk.X)
-
-        self.anthropic_key = tk.StringVar(
-            value=self.master.api_keys.get("anthropic", "")
-        )
-        self.anthropic_entry = Entry(
-            anthropic_frame,
-            hint="Anthropic API Key...",
-            textvariable=self.anthropic_key,
-        )
-        self.anthropic_entry.pack(fill=tk.X, pady=2)
-
-        confirm_btn = IconLabelButton(
-            self,
-            text="Save and Start",
-            icon=Icons.SPARKLE_FILLED,
-            callback=self.start_chat,
-            # pady=2,
-            # highlighted=True,
-        )
-        confirm_btn.pack(fill=tk.X, pady=20)
-
+        if self.base.commands.open_settings:
+            btn = ttk.Button(
+                self,
+                text="Open Settings",
+                command=self.base.commands.open_settings,
+            )
+            btn.pack(fill=tk.X, pady=5)
+        
         self.link = WebLinkLabel(
             self, text="Get Gemini Key", link="https://aistudio.google.com/app/apikey"
         )
-        self.link.pack(fill=tk.X)
+        self.link.pack(fill=tk.X, pady=(20, 0))
 
         self.link2 = WebLinkLabel(
             self,
@@ -94,6 +53,3 @@ class AIPlaceholder(Frame):
             link="https://console.anthropic.com/settings/keys",
         )
         self.link2.pack(fill=tk.X)
-
-    def start_chat(self) -> None:
-        self.master.save_keys(self.gemini_key.get(), self.anthropic_key.get())

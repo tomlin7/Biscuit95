@@ -36,7 +36,7 @@ class SettingsEditor(BaseEditor):
 
         self.sections = []
         self.container = ScrollableFrame(frame)
-        self.container.content.config(pady=10)
+        # self.container.content.config(pady=10)
         self.container.config()
         self.container.pack(fill=tk.BOTH, expand=True)
 
@@ -45,6 +45,7 @@ class SettingsEditor(BaseEditor):
     def add_sections(self):
         self.add_commonly_used()
         self.add_text_editor()
+        self.add_ai_config()
 
     def add_commonly_used(self):
         """Add commonly used settings to the settings editor"""
@@ -67,6 +68,56 @@ class SettingsEditor(BaseEditor):
         commonly_used.add_checkbox("Auto Surround", True)
         commonly_used.add_checkbox("Word Wrap", False)
 
+    def add_ai_config(self):
+        """Add AI configuration settings to the settings editor"""
+        import os
+        import toml
+
+        ai = self.add_section(f"AI Configuration")
+        
+        secrets_path = os.path.join(self.base.datadir, "secrets.toml")
+        gemini_key = ""
+        anthropic_key = ""
+        
+        try:
+            if os.path.exists(secrets_path):
+                with open(secrets_path, "r") as f:
+                    secrets = toml.load(f)
+                    gemini_key = secrets.get("GEMINI_API_KEY", "")
+                    anthropic_key = secrets.get("ANTHROPIC_API_KEY", "")
+        except Exception:
+            pass
+
+        self.gemini_item = ai.add_stringvalue("Gemini API Key", gemini_key)
+        self.anthropic_item = ai.add_stringvalue("Anthropic API Key", anthropic_key)
+        
+        from biscuit.common.ui import IconLabelButton, Icons
+        IconLabelButton(ai, "Save Keys (Starts Chat)", Icons.SAVE, self.save_ai_keys).pack(fill=tk.X, pady=10)
+
+    def save_ai_keys(self, *_) -> None:
+        import os
+        import toml
+        
+        secrets_path = os.path.join(self.base.datadir, "secrets.toml")
+        try:
+            secrets = {
+                "GEMINI_API_KEY": self.gemini_item.value,
+                "ANTHROPIC_API_KEY": self.anthropic_item.value
+            }
+            with open(secrets_path, "w") as f:
+                toml.dump(secrets, f)
+            
+            # Refresh AI view if active
+            if hasattr(self.base, 'views') and "Agent" in self.base.views:
+                agent_view = self.base.views["Agent"]
+                agent_view.api_keys["gemini"] = secrets["GEMINI_API_KEY"]
+                agent_view.api_keys["anthropic"] = secrets["ANTHROPIC_API_KEY"]
+                agent_view.add_chat()
+                
+            self.base.notifications.info("AI Keys saved successfully!")
+        except Exception as e:
+            self.base.notifications.error(f"Failed to save secrets: {e}")
+
     def add_section(self, name: str) -> Section:
         """Add a section to the settings editor
 
@@ -80,7 +131,7 @@ class SettingsEditor(BaseEditor):
         section.pack(fill=tk.X, expand=True)
         self.sections.append(section)
 
-        shortcut = Button(self.tree, name, anchor=tk.W)
+        shortcut = Button(self.tree, name)
         shortcut.pack(fill=tk.X)
         shortcut.config()
 
