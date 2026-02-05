@@ -25,12 +25,14 @@ class Tab(Frame):
         self.icon = Icon(self, Icons.FILE, iconsize=12)
         self.icon.pack(side=tk.LEFT, padx=5, fill=tk.Y)
 
-        self.name = tk.Label(
+        from tkinter import ttk
+        
+        self.name = ttk.Label(
             self,
             text=(
                 f"{editor.filename} (working tree)" if editor.diff else editor.filename
             ),
-            padx=5,
+            padding=(5, 0),
             font=self.base.settings.uifont)
         self.name.pack(side=tk.LEFT)
 
@@ -51,6 +53,7 @@ class Tab(Frame):
         if self.selected:
             self.editor.grid_remove()
             self.selected = False
+            self.config(relief="flat", borderwidth=0)
 
     def select(self, *_) -> None:
         if not self.selected:
@@ -63,6 +66,7 @@ class Tab(Frame):
                 self.base.set_title(self.editor.filename)
             self.editor.grid(column=0, row=1, sticky=tk.NSEW, in_=self.master.master)
             self.selected = True
+            self.config(relief="raised", borderwidth=1)
 
         if (
             self.editor.path

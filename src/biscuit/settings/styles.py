@@ -31,7 +31,9 @@ class Style(ttk.Style):
         self.configure("TEntry", font=self.settings.uifont, padding=5, borderwidth=1, relief="sunken")
         self.configure("TMenubutton", font=self.settings.uifont, padding=(10, 5))
         self.configure("TNotebook", font=self.settings.uifont, borderwidth=0)
-        self.configure("TNotebook.Tab", font=self.settings.uifont, padding=(12, 4), borderwidth=1, relief="flat")
+        self.configure("TNotebook.Tab", font=self.settings.uifont, padding=(10, 3), borderwidth=1, relief="raised")
+        self.map("TNotebook.Tab",
+                relief=[("selected", "sunken"), ("!selected", "raised")])
         
         # Configure PanedWindow sash
         self.configure("TPanedwindow", sashwidth=4, sashrelief="raised", background="#d0d0d0")
@@ -82,6 +84,9 @@ class Style(ttk.Style):
                       font=self.settings.uifont,
                       padding=(10, 2),
                       borderwidth=0)
+        
+        # Editor Tab Style
+        self.configure("EditorTab.TFrame", borderwidth=1, relief="flat", padding=(3, 1))
         
         self.gen_fileicons()
         self.config_treeview()
