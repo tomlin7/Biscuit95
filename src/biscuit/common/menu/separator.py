@@ -1,7 +1,8 @@
 import tkinter as tk
+from tkinter import ttk
 
 
-class Separator(tk.Label):
+class Separator(ttk.Separator):
     """A separator for the menu"""
 
     def __init__(self, master, length=20, *args, **kwargs) -> None:
@@ -9,16 +10,9 @@ class Separator(tk.Label):
 
         Args:
             master: The parent widget
-            length: The length of the separator
+            length: The length of the separator (ignored, kept for compatibility)
         """
 
-        super().__init__(master, *args, **kwargs)
+        super().__init__(master, orient="horizontal", *args, **kwargs)
         self.base = getattr(master, "base", None)
         self.master = master
-
-        if self.base:
-            self.config(text="—" * round((length * self.base.scale)))
-        else:
-            self.config(text="—" * length)
-        # pady=0,
-        # height=1)

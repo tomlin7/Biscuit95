@@ -1,12 +1,12 @@
 import tkinter as tk
+from tkinter import ttk
 
 from biscuit.common.icons import Icons
-from biscuit.common.ui import IconLabelButton
 
 
-class Checkable(IconLabelButton):
+class Checkable(ttk.Checkbutton):
     """A checkable menu item
-    Inherits from IconLabelButton"""
+    Inherits from ttk.Checkbutton"""
 
     def __init__(
         self, master, text, command=lambda *_: ..., checked=False, *args, **kwargs
@@ -18,26 +18,23 @@ class Checkable(IconLabelButton):
             text: The text to display on the menu item
             command: The command to run when the item is clicked
             checked: The initial checked state
-            *args: Additional arguments to pass to the Icon
+            *args: Additional arguments to pass to the Checkbutton
         """
-
+        
+        self.var = tk.BooleanVar(value=checked)
+        self.command = command
+        self.menu = master.master
+        
         super().__init__(
             master,
-            text,
-            Icons.CHECK,
-            command,
-            expandicon=False,
-            iconsize=10,
-            icon_visible=checked,
+            text=text,
+            variable=self.var,
+            style="MenuItem.TCheckbutton",
+            command=self.on_click,
             *args,
             **kwargs,
         )
 
-        self.command = command
-        self.bg = self.fg = self.hbg = self.hfg = None
-        # self.on_leave()
-
     def on_click(self, *_) -> None:
-        self.master.hide()
-        self.toggle_icon()
-        return super().on_click(*_)
+        self.menu.event_chosen()
+        self.command()

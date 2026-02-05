@@ -23,17 +23,14 @@ class Command(ttk.Button):
             *args: Additional arguments to pass to the Menubutton
         """
 
-        super().__init__(master, *args, **kwargs)
+        super().__init__(master, style="MenuItem.TButton", *args, **kwargs)
         self.command = command
         self.menu = master.master
 
-        # self.config(
-        #     text=text,
-        #     anchor=tk.W,
-        #     font=self.base.settings.uifont,
-        #     cursor="hand2",
-        #     padx=20,
-        #     pady=2)
+        self.config(
+            text=text,
+            width=0,
+            command=self.on_click)
         self.bind("<Button-1>", self.on_click)
 
     def on_click(self, *_) -> None:

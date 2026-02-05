@@ -64,6 +64,25 @@ class Style(ttk.Style):
         # SearchBar Style
         self.configure("SearchBar.TFrame", borderwidth=1, relief="sunken")
         
+        # MenuItem Style (for dropdown menu items)
+        self.configure("MenuItem.TButton", 
+                      font=self.settings.uifont, 
+                      padding=(10, 2), 
+                      relief="flat",
+                      anchor="w",
+                      borderwidth=0)
+        self.map("MenuItem.TButton",
+                relief=[("active", "flat")])
+        
+        # Menu Container Style
+        self.configure("Menu.TFrame", borderwidth=1, relief="raised", padding=2)
+        
+        # MenuItem Checkbutton Style (for checkable menu items)
+        self.configure("MenuItem.TCheckbutton",
+                      font=self.settings.uifont,
+                      padding=(10, 2),
+                      borderwidth=0)
+        
         self.gen_fileicons()
         self.config_treeview()
         self.config_scrollbars()

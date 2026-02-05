@@ -42,9 +42,12 @@ class Menu(Toplevel):
         # self.config(bg=None)
         self.withdraw()
         self.overrideredirect(True)
+        
+        # Add border to the toplevel window
+        self.config(highlightthickness=1, highlightbackground="black")
 
-        self.container = Frame(self)  # , padx=5, pady=5)
-        self.container.pack(fill=tk.BOTH, expand=True, padx=1, pady=1)
+        self.container = Frame(self, style="Menu.TFrame")
+        self.container.pack(fill=tk.BOTH, expand=True)
         self.container.grid_columnconfigure(0, weight=1)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.hide = self.hide
