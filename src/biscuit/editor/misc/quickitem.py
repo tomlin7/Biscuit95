@@ -11,7 +11,7 @@ class RecentItem(Frame):
     """Recent Menu Item"""
 
     def __init__(self, master, path: str, callback: Callable, *args, **kwargs) -> None:
-        super().__init__(master, *args, **kwargs)
+        super().__init__(master, style="RecentItem.TFrame", *args, **kwargs)
 
         self.text = os.path.abspath(path)
         self.callback = callback
@@ -49,12 +49,14 @@ class RecentItem(Frame):
         self.bind("<Leave>", self.on_leave)
 
     def on_enter(self, *_) -> None:
+        self.config(relief="raised")
         self.frame.config()
         self.label.config()
         self.fullpath_label.config()
         self.frame2.pack(fill=tk.BOTH, expand=True, pady=(0, 3))
 
     def on_leave(self, *_) -> None:
+        self.config(relief="solid")
         self.frame.config()
         self.label.config()
         self.fullpath_label.config()
@@ -74,7 +76,7 @@ class QuickItem(Frame):
         *args,
         **kwargs,
     ) -> None:
-        super().__init__(master, *args, **kwargs)
+        super().__init__(master, style="QuickItem.TFrame", *args, **kwargs)
         self.text = text
         self.icon = icon
         self.callback = callback
@@ -100,13 +102,10 @@ class QuickItem(Frame):
         self.on_leave()
 
     def on_enter(self, *_) -> None:
-        self.config()
+        self.config(relief="raised")
         self.icon.config()
         self.label.config()
         self.shortcutlabel.config()
 
     def on_leave(self, *_) -> None:
-        self.config()
-        self.icon.config()
-        self.label.config()
-        self.shortcutlabel.config()
+        self.config(relief="flat")

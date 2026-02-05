@@ -45,7 +45,7 @@ class Welcome(BaseEditor):
         self.create_quick_group()
 
         if self.base.history.folder_history.list:  # TODO: make this optional
-            self.right = Frame(self.container)  # , padx=10)
+            self.right = Frame(self.container, style="HistoryPanel.TFrame")
             self.right.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, pady=1, padx=1)
 
             self.create_recent_group()

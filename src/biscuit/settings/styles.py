@@ -88,6 +88,15 @@ class Style(ttk.Style):
         # Editor Tab Style
         self.configure("EditorTab.TFrame", borderwidth=1, relief="flat", padding=(3, 1))
         
+        # QuickItem Style (for welcome page)
+        self.configure("QuickItem.TFrame", borderwidth=2, relief="solid", padding=(8, 4))
+        
+        # RecentItem Style (for history items)
+        self.configure("RecentItem.TFrame", borderwidth=2, relief="solid", padding=(6, 3))
+        
+        # HistoryPanel Style (for history panel container)
+        self.configure("HistoryPanel.TFrame", borderwidth=2, relief="raised", padding=10)
+        
         self.gen_fileicons()
         self.config_treeview()
         self.config_scrollbars()
