@@ -68,7 +68,7 @@ class Section(Frame):
         self.items.append(int)
         return int
 
-    def add_checkbox(self, name="Example", default=True) -> None:
+    def add_checkbox(self, name="Example", default=True) -> CheckboxItem:
         """Add a checkbox item to the section
 
         Args:
@@ -79,3 +79,4 @@ class Section(Frame):
         dropdown = CheckboxItem(self, name, default)
         dropdown.pack(fill=tk.X, expand=True)
         self.items.append(dropdown)
+        return dropdown

@@ -1351,7 +1351,7 @@ class Text(BaseText):
 
     def on_selection(self, *args):
         self.tag_remove("hover", 1.0, tk.END)
-        if self.base.context_engine:
+        if self.base.config.clippy_enabled and self.base.context_engine:
             now = time.time()
             if now - self.last_selection_report > 0.5:
                 self.base.context_engine.report_user_action("selection")
@@ -1429,7 +1429,7 @@ class Text(BaseText):
             self.write(self._edit_stack[self._edit_stack_index][0][:-1])
             self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
 
-            if self.base.context_engine:
+            if self.base.config.clippy_enabled and self.base.context_engine:
                 self.base.context_engine.report_user_action("redo")
 
     def _been_modified(self, event=None):
@@ -1442,7 +1442,7 @@ class Text(BaseText):
                     # real modified
                     cursor_index = self.index(tk.INSERT)
                     
-                    if self.base.context_engine:
+                    if self.base.config.clippy_enabled and self.base.context_engine:
                         line = self.get("insert linestart", "insert lineend")
                         indent = len(line) - len(line.lstrip())
                         indent_level = indent // self.tab_spaces if self.tab_spaces > 0 else indent

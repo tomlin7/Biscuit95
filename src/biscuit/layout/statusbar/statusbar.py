@@ -133,7 +133,8 @@ class Statusbar(Frame):
             description="Toggle Clippy",
         )
         self.clippy_toggle.set_pack_data(side=tk.RIGHT, padx=(0, 10))
-        self.clippy_toggle.show()
+        if self.base.config.clippy_enabled:
+            self.clippy_toggle.show()
 
     def add_button(
         self,

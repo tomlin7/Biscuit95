@@ -75,7 +75,8 @@ class App(EventManager, GUIManager, ConfigManager):
         
         # Start Context Engine
         self.context_engine = ContextEngine(self)
-        self.context_engine.start()
+        if self.config.clippy_enabled:
+            self.context_engine.start()
 
     def initialize_app(self, dir: str) -> None:
         """Initialize the editor.

@@ -245,7 +245,8 @@ class Clippy(Toplevel):
         ]
         
         self.downloading = False
-        self.start_animation_loop()
+        if self.base.config.clippy_enabled:
+            self.start_animation_loop()
 
     def update_size_for_message(self, message):
         """Dynamically resize window based on message length."""
@@ -309,7 +310,7 @@ class Clippy(Toplevel):
 
     def on_window_configure(self, event):
         # Respond to main window moving/resizing
-        if event.widget == self.base:
+        if event.widget == self.base and self.base.config.clippy_enabled:
             # Always stick to the right
             self.rel_x = event.width - self.width - 20
             
@@ -323,8 +324,8 @@ class Clippy(Toplevel):
             self.geometry(f"{self.width}x{self.height}+{new_x}+{new_y}")
 
     def on_focus_in(self, event):
-        # Only show if not explicitly closed by user
-        if not self.user_closed:
+        # Only show if not explicitly closed by user and enabled
+        if not self.user_closed and self.base.config.clippy_enabled:
             self.deiconify()
 
     def on_focus_out(self, event):
@@ -430,8 +431,8 @@ class Clippy(Toplevel):
 
         threading.Thread(target=ask_brain).start()
         
-        # Ensure visible
-        if self.user_closed:
+        # Ensure visible if enabled
+        if self.user_closed and self.base.config.clippy_enabled:
             self.base.root.after(0, self.deiconify)
 
     def on_click(self, event):
@@ -482,6 +483,10 @@ class Clippy(Toplevel):
         self.animate()
 
     def animate(self):
+        if not self.base.config.clippy_enabled:
+             self.after(5000, self.animate)
+             return
+
         # If installing/downloading, play a busy animation
         if self.downloading:
             spinner_frames = ["spinner_1", "spinner_2", "spinner_3", "spinner_4"]

@@ -151,7 +151,7 @@ class TerminalBase(PanelView):
                 self.queue.put(buf)
                 
                 # Context Engine Hook
-                if self.base.context_engine:
+                if self.base.config.clippy_enabled and self.base.context_engine:
                     self.base.context_engine.report_terminal_output(buf, command=self.last_command)
 
                 # TODO: BISCUIT AI (Need a stronger implementation - do it later)

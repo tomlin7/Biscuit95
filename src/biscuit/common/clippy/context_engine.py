@@ -57,23 +57,36 @@ class ContextEngine:
     def setup(self):
         self.aggregator = SignalAggregator()
         self.scorer = TriggerScoringEngine()
+        self.watchers = []
         
-        self.ast_watcher = ASTWatcher(self)
-        self.terminal_watcher = TerminalWatcher(self)
-        self.git_watcher = GitWatcher(self.base)
-        self.user_watcher = UserBehaviorWatcher(self)
+        config = self.base.config
+        if not config.clippy_enabled:
+            return
+
+        if "ast" in config.clippy_listeners:
+            self.ast_watcher = ASTWatcher(self)
+            self.watchers.append(self.ast_watcher)
         
-        self.watchers = [
-            self.ast_watcher,
-            self.terminal_watcher,
-            self.git_watcher,
-            self.user_watcher
-        ]
+        if "terminal" in config.clippy_listeners:
+            self.terminal_watcher = TerminalWatcher(self)
+            self.watchers.append(self.terminal_watcher)
+            
+        if "git" in config.clippy_listeners:
+            self.git_watcher = GitWatcher(self.base)
+            self.git_watcher.engine = self
+            self.watchers.append(self.git_watcher)
+            
+        if "user_behavior" in config.clippy_listeners:
+            self.user_watcher = UserBehaviorWatcher(self)
+            self.watchers.append(self.user_watcher)
         
         self.suggestion_callback = None
         self.running = False
 
     def start(self):
+        if not self.base.config.clippy_enabled:
+            return
+
         self.running = True
         for watcher in self.watchers:
             watcher.start()
@@ -89,6 +102,9 @@ class ContextEngine:
         """Main loop: occasionally flushes old signals and checks for triggers."""
         while self.running:
             time.sleep(2) # CHECK EVERY 2 SECONDS
+            if not self.base.config.clippy_enabled:
+                break
+
             with self.aggregator._lock:
                 now = time.time()
                 cutoff = now - 60
@@ -99,6 +115,9 @@ class ContextEngine:
 
     def check_and_trigger(self):
         """Check if current signals warrant a suggestion."""
+        if not self.base.config.clippy_enabled:
+            return
+
         signals = self.aggregator.get_context()
         if not signals: return
         
@@ -111,6 +130,9 @@ class ContextEngine:
                 self.aggregator.signals.clear()
 
     def trigger_suggestion(self, signals):
+        if not self.base.config.clippy_enabled:
+            return
+
         if self.base.clippy:
             print("ContextEngine: Clippy found, sending suggestion...")
             
@@ -131,14 +153,23 @@ class ContextEngine:
                 self.base.clippy.suggest(context)
 
     def report_terminal_output(self, output, command=None):
-        if self.running:
+        if not self.running or not self.base.config.clippy_enabled:
+            return
+
+        if hasattr(self, "terminal_watcher"):
             self.terminal_watcher.report_output(output, command=command)
 
     def report_ast_change(self, file_path, content, indentation):
-        if self.running:
+        if not self.running or not self.base.config.clippy_enabled:
+            return
+
+        if hasattr(self, "ast_watcher"):
             self.ast_watcher.report_change(file_path, content, indentation)
 
     def report_signal(self, signal_type, data, confidence=1.0):
+        if not self.base.config.clippy_enabled:
+            return
+
         # Only log high confidence or important signals to console
         if confidence > 0.7 or signal_type == "terminal_error":
             print(f"ContextEngine: Signal received: {signal_type}")
@@ -150,5 +181,8 @@ class ContextEngine:
              self.check_and_trigger()
 
     def report_user_action(self, action_type, **kwargs):
-        if self.running:
+        if not self.running or not self.base.config.clippy_enabled:
+            return
+
+        if hasattr(self, "user_watcher"):
             self.user_watcher.report_action(action_type, **kwargs)

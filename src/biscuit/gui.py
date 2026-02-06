@@ -188,6 +188,8 @@ class GUIManager(Tk, ConfigManager):
         self.diagnostic = Diagnostic(self)
 
         self.clippy = Clippy(self)
+        if not self.config.clippy_enabled:
+            self.clippy.withdraw()
 
     def late_setup(self) -> None:
         """Late setup for GUI components that are dependant on other components.
