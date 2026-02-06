@@ -58,11 +58,16 @@ class ContextEngine:
         self.aggregator = SignalAggregator()
         self.scorer = TriggerScoringEngine()
         
+        self.ast_watcher = ASTWatcher(self)
+        self.terminal_watcher = TerminalWatcher(self)
+        self.git_watcher = GitWatcher(self.base)
+        self.user_watcher = UserBehaviorWatcher(self)
+        
         self.watchers = [
-            ASTWatcher(self),
-            TerminalWatcher(self),
-            GitWatcher(self.base),
-            UserBehaviorWatcher(self)
+            self.ast_watcher,
+            self.terminal_watcher,
+            self.git_watcher,
+            self.user_watcher
         ]
         
         self.suggestion_callback = None
@@ -128,6 +133,14 @@ class ContextEngine:
                 print("ContextEngine: Clippy has no suggest method!")
         else:
             print("ContextEngine: Clippy instance NOT found in self.base!")
+
+    def report_user_action(self, action_type, **kwargs):
+        if self.running:
+            self.user_watcher.report_action(action_type, **kwargs)
+
+    def report_terminal_output(self, output, command=None):
+        if self.running:
+            self.terminal_watcher.report_output(output, command=command)
 
     def report_signal(self, signal_type, data, confidence=1.0):
         print(f"ContextEngine: Signal received: {signal_type} ({confidence})")

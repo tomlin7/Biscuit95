@@ -241,10 +241,7 @@ class Text(BaseText):
         
         # Context Engine Hook
         if self.base.context_engine:
-             for w in self.base.context_engine.watchers:
-                 if w.__class__.__name__ == "UserBehaviorWatcher":
-                     w.report_action("type")
-                     break
+            self.base.context_engine.report_user_action("type")
 
         match event.keysym.lower():
             case (
@@ -1138,6 +1135,9 @@ class Text(BaseText):
         if self.insert_final_newline:
             if not self.get("end-2c", "end-1c").endswith("\n"):
                 self.add_newline()
+        
+        if self.base.context_engine:
+            self.base.context_engine.report_user_action("save")
 
         if path:
             try:
@@ -1347,6 +1347,11 @@ class Text(BaseText):
     def clear_all_selection(self):
         self.tag_remove(tk.SEL, 1.0, tk.END)
 
+    def on_selection(self, *args):
+        self.tag_remove("hover", 1.0, tk.END)
+        if self.base.context_engine:
+            self.base.context_engine.report_user_action("selection")
+
     def highlight_current_line(self, *_):
         self.tag_remove("currentline", 1.0, tk.END)
         if self.minimalist or self.tag_ranges(tk.SEL):
@@ -1408,6 +1413,9 @@ class Text(BaseText):
             self.write(self._edit_stack[self._edit_stack_index][0][:-1])
             self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
 
+            if self.base.context_engine:
+                self.base.context_engine.report_user_action("undo")
+
     def edit_redo(self):
         if self._edit_stack_index + 1 < len(self._edit_stack):
             self._edit_stack_index = self._edit_stack_index + 1
@@ -1415,6 +1423,9 @@ class Text(BaseText):
             self.clear()
             self.write(self._edit_stack[self._edit_stack_index][0][:-1])
             self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
+
+            if self.base.context_engine:
+                self.base.context_engine.report_user_action("redo")
 
     def _been_modified(self, event=None):
         try:
@@ -1476,6 +1487,11 @@ class Text(BaseText):
 
         if args[0] in ("insert", "replace", "delete"):
             self.event_generate("<<Change>>", when="tail")
+
+            if args[0] == "insert" and len(args) >= 3 and len(args[2]) > 200:
+                if self.base.context_engine:
+                    self.base.context_engine.report_user_action("paste", data=args[2])
+
             if self.lsp:
                 try:
                     self.base.language_server_manager.content_changed(self)

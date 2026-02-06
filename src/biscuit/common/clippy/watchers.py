@@ -84,11 +84,13 @@ class UserBehaviorWatcher(BaseWatcher):
         super().__init__(engine)
         self.last_action_time = time.time()
         self.undo_count = 0
+        self.redo_count = 0
         self.type_count = 0
         self.typing_start_time = 0
+        self.fidget_count = 0
         self.warning_sent = False
         
-    def report_action(self, action_type):
+    def report_action(self, action_type, **kwargs):
         if not self.active: return
         
         now = time.time()
@@ -101,6 +103,12 @@ class UserBehaviorWatcher(BaseWatcher):
                 print("DEBUG: UserBehaviorWatcher detected UNDO BURST")
                 self.engine.report_signal("undo_burst", "Repeated undos", confidence=0.7)
                 self.undo_count = 0
+        elif action_type == "redo":
+            self.redo_count += 1
+            if self.redo_count > 3:
+                print("DEBUG: UserBehaviorWatcher detected REDO BURST")
+                self.engine.report_signal("redo_burst", "Repeated redos", confidence=0.7)
+                self.redo_count = 0
         elif action_type == "type":
             if self.typing_start_time == 0:
                 self.typing_start_time = now
@@ -109,16 +117,31 @@ class UserBehaviorWatcher(BaseWatcher):
             # If typed 30 chars in a burst, report progress
             if self.type_count > 30:
                 elapsed = now - self.typing_start_time
-                if elapsed < 10: # Fast typing
+                if elapsed < 10: # Fast typing (approx 180 CPM)
                      print("DEBUG: UserBehaviorWatcher detected TYPING BURST")
-                     # We don't necessarily want score for typing, but it's context
-                     self.engine.report_signal("typing", "User is actively coding", confidence=0.3)
+                     self.engine.report_signal("typing_flow", "User is in a typing flow", confidence=0.4)
                 
-                # Reset burst tracking but keep count for total context if needed
                 self.type_count = 0
                 self.typing_start_time = now
-        else:
-            self.undo_count = max(0, self.undo_count - 1)
+        elif action_type == "selection":
+            self.fidget_count += 1
+            if self.fidget_count > 10:
+                print("DEBUG: UserBehaviorWatcher detected FIDGETING")
+                self.engine.report_signal("fidgeting", "Frequent selection changes", confidence=0.3)
+                self.fidget_count = 0
+        elif action_type == "save":
+             print("DEBUG: UserBehaviorWatcher detected SAVE")
+             self.engine.report_signal("file_save", "User saved the file", confidence=0.5)
+        elif action_type == "paste":
+            data = kwargs.get("data", "")
+            if len(data) > 200:
+                print(f"DEBUG: UserBehaviorWatcher detected LARGE PASTE ({len(data)} chars)")
+                self.engine.report_signal("large_paste", f"Pasted {len(data)} characters", confidence=0.6)
+        
+        # Decay counts for other actions
+        if action_type != "undo": self.undo_count = max(0, self.undo_count - 0.1)
+        if action_type != "redo": self.redo_count = max(0, self.redo_count - 0.1)
+        if action_type != "selection": self.fidget_count = max(0, self.fidget_count - 0.1)
 
     def start(self):
         super().start()
@@ -126,9 +149,15 @@ class UserBehaviorWatcher(BaseWatcher):
         
     def check_idle(self):
         while self.active:
-            if time.time() - self.last_action_time > 10: # 10 seconds idle for testing (was 60)
+            idle_time = time.time() - self.last_action_time
+            if idle_time > 120: # 2 minutes for Deep Idle
+                 if self.warning_sent != "deep":
+                     print("DEBUG: UserBehaviorWatcher detected DEEP IDLE")
+                     self.engine.report_signal("deep_idle", "User is likely away", confidence=0.8)
+                     self.warning_sent = "deep"
+            elif idle_time > 30: # 30 seconds for Idle
                  if not self.warning_sent:
                      print("DEBUG: UserBehaviorWatcher detected IDLE")
-                     self.engine.report_signal("idle", "User is idle", confidence=0.6)
+                     self.engine.report_signal("idle", "User is pondering", confidence=0.5)
                      self.warning_sent = True
-            time.sleep(5)
+            time.sleep(10)
