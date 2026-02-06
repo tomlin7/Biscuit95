@@ -1,7 +1,7 @@
 from .config import ConfigManager
 from .events import EventManager
 from .gui import GUIManager
-
+from .common.clippy.context_engine import ContextEngine
 
 class App(EventManager, GUIManager, ConfigManager):
     """
@@ -67,9 +67,15 @@ class App(EventManager, GUIManager, ConfigManager):
         """Setup the app."""
 
         self.initialized = False
+        self.version = "3.5.0"
+        self.context_engine = None
         self.setup_path(self.appdir)
         self.setup_configs()
         self.initialize_tk()
+        
+        # Start Context Engine
+        self.context_engine = ContextEngine(self)
+        self.context_engine.start()
 
     def initialize_app(self, dir: str) -> None:
         """Initialize the editor.

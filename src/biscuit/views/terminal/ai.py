@@ -75,14 +75,14 @@ You have full autonomy to use any tools needed to understand the project and pro
             
             if not self.agent:
                 # Fallback: show message to configure AI
-                if hasattr(self.base, 'notifications'):
-                    self.base.notifications.error(
-                        "AI assistant not configured. Please set up API key in AI view.",
-                        actions=[
-                            (
-                                "Configure AI",
-                                lambda: self.base.sidebar.show_ai().add_placeholder() if hasattr(self.base, 'sidebar') else None)
-                        ])
+                # if hasattr(self.base, 'notifications'):
+                #     self.base.notifications.error(
+                #         "AI assistant not configured. Please set up API key in AI view.",
+                #         actions=[
+                #             (
+                #                 "Configure AI",
+                #                 lambda: self.base.sidebar.show_ai().add_placeholder() if hasattr(self.base, 'sidebar') else None)
+                #         ])
                 return None
             
             # Prepare the message with context

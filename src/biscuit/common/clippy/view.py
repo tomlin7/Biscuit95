@@ -14,9 +14,11 @@ class Clippy(Toplevel):
         self.base = master
         self.brain = ClippyBrain(self.base)
         
-        # Dimensions
-        self.char_size = 40  # 1/4th of previous roughly
-        self.width = 300
+        # Dimensions (will be dynamically adjusted)
+        self.char_size = 40
+        self.min_width = 250
+        self.max_width = 500
+        self.width = self.min_width
         self.height = 60
         
         # Remove window decorations and set interactions
@@ -44,7 +46,7 @@ class Clippy(Toplevel):
         # RIGHT: Message Label
         self.msg_label = tk.Label(self.container, text="Hi! I'm ready to help.", 
                                font=("Consolas", 9), fg="black", bg="#FFFFE0", 
-                               anchor="w", justify=tk.LEFT, wraplength=220)
+                               anchor="w", justify=tk.LEFT)
         self.msg_label.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5), pady=5)
         
         # FAR RIGHT: Close Button
@@ -60,6 +62,8 @@ class Clippy(Toplevel):
         # But we can try to guess or update later.
         
         self.user_closed = False
+        self.suggestion_id = 0
+        self.downloading = False
         self.rel_x = -1 # Relative X from top-left. If -1, not yet set.
         self.rel_y = -1 # Relative Y from top-left.
         
@@ -243,6 +247,62 @@ class Clippy(Toplevel):
         self.downloading = False
         self.start_animation_loop()
 
+    def update_size_for_message(self, message):
+        """Dynamically resize window based on message length."""
+        import tkinter.font as tkfont
+        
+        # Get font metrics
+        font = tkfont.Font(family="Consolas", size=9)
+        
+        # Calculate text width
+        text_width = font.measure(message)
+        
+        # Account for padding (char + margins + close button)
+        padding = 100
+        
+        # Determine optimal width
+        if text_width + padding <= self.min_width:
+            # Short message - use minimum
+            self.width = self.min_width
+            wrap_length = self.min_width - padding
+        elif text_width + padding <= self.max_width:
+            # Medium message - expand to fit
+            self.width = text_width + padding
+            wrap_length = text_width
+        else:
+            # Long message - use max width and wrap
+            self.width = self.max_width
+            wrap_length = self.max_width - padding
+        
+        # Update wraplength
+        self.msg_label.config(wraplength=wrap_length)
+        
+        # Calculate height based on wrapped text
+        # Estimate number of lines after wrapping
+        estimated_lines = max(1, (text_width // wrap_length) + 1)
+        line_height = font.metrics("linespace")
+        required_height = max(60, min(200, 20 + estimated_lines * line_height + 20))
+        
+        self.height = int(required_height)
+        
+        # Force update
+        self.update_idletasks()
+        
+        # Reposition to maintain bottom-right alignment
+        if hasattr(self.base, 'winfo_width'):
+            try:
+                parent_x = self.base.winfo_rootx()
+                parent_y = self.base.winfo_rooty()
+                parent_w = self.base.winfo_width()
+                parent_h = self.base.winfo_height()
+                
+                new_x = parent_x + parent_w - self.width - 20
+                new_y = parent_y + self.rel_y if self.rel_y != -1 else parent_y + parent_h - self.height - 20
+                
+                self.geometry(f"{self.width}x{self.height}+{new_x}+{new_y}")
+            except:
+                pass
+
     def close(self, event=None):
         self.user_closed = True
         self.withdraw()
@@ -343,14 +403,47 @@ class Clippy(Toplevel):
             self.on_click(event)
         self.dragging = False
 
-    def on_click(self, event):
-        if self.downloading:
-            return
-
-        # Trigger local brain thought
-        self.show_message("Thinking...", duration=None)
+    def suggest(self, context=None):
+        """Proactively suggest something based on context."""
+        self.suggestion_id += 1
+        current_id = self.suggestion_id
+        
+        if not self.brain.loading:
+            # Flash animation
+            self.play_drastic_animation()
+            self.show_message("I noticed something... Thinking...", duration=None)
         
         def update_progress(msg):
+            if current_id != self.suggestion_id and not msg.startswith("Downloading"): return
+            self.base.root.after(0, lambda: self.show_message(msg))
+            
+        def ask_brain():
+            self.downloading = True
+            
+            prompt = f"Help the user based on this context. Keep it short and helpful:\n{context}"
+            # Brain is already using DeepSeek model now
+            response = self.brain.ask(prompt, callback=update_progress)
+            
+            self.downloading = False
+            if current_id == self.suggestion_id:
+                self.base.root.after(0, lambda: self.show_message(response if response else "Nevermind."))
+
+        threading.Thread(target=ask_brain).start()
+        
+        # Ensure visible
+        if self.user_closed:
+            self.base.root.after(0, self.deiconify)
+
+    def on_click(self, event):
+        self.suggestion_id += 1
+        current_id = self.suggestion_id
+
+        if not self.brain.loading:
+            # Trigger local brain thought
+            self.show_message("Thinking...", duration=None)
+        
+        def update_progress(msg):
+            if current_id != self.suggestion_id and not msg.startswith("Downloading"): return
             self.base.root.after(0, lambda: self.show_message(msg))
             
         def ask_brain():
@@ -362,19 +455,15 @@ class Clippy(Toplevel):
             # This might trigger download
             response = self.brain.ask(prompt, callback=update_progress)
             
-            if response is None:
-                # If ask returns None (because it started a thread for download inside, though we changed that logic to be sync inside the thread)
-                # Our new brain.ask waits if it downloads (because we call load_model directly if needed)
-                 pass
-            
             self.downloading = False
-            self.base.root.after(0, lambda: self.show_message(response if response else "Something went wrong.", duration=5000))
+            if current_id == self.suggestion_id:
+                self.base.root.after(0, lambda: self.show_message(response if response else "Something went wrong."))
 
         threading.Thread(target=ask_brain).start()
         
         # Also show AI panel if needed, but maybe don't overwrite input if we are just chatting locally
-        if self.base.secondary_sidebar:
-             self.base.secondary_sidebar.show_ai()
+        # if self.base.secondary_sidebar:
+        #      self.base.secondary_sidebar.show_ai()
 
     def on_enter(self, event):
         self.container.config(bg="#EEE8AA")
@@ -453,7 +542,5 @@ class Clippy(Toplevel):
     def show_message(self, text, duration=None):
         """Update the speech bubble text."""
         self.msg_label.config(text=text)
-        
-        if duration:
-            # Revert to default after duration
-            self.after(duration, lambda: self.msg_label.config(text="Hi! I'm ready to help."))
+        self.update_size_for_message(text)
+        # Messages now persist until next event (no auto-reset)

@@ -13,8 +13,8 @@ class ClippyBrain:
     def __init__(self, base):
         self.base = base
         self.model = None
-        self.model_name = "qwen1_5-0_5b-chat-q4_k_m.gguf"
-        self.model_url = "https://huggingface.co/Qwen/Qwen1.5-0.5B-Chat-GGUF/resolve/main/qwen1_5-0_5b-chat-q4_k_m.gguf"
+        self.model_name = "deepseek-coder-1.3b-instruct.Q4_K_M.gguf"
+        self.model_url = "https://huggingface.co/TheBloke/deepseek-coder-1.3B-instruct-GGUF/resolve/main/deepseek-coder-1.3b-instruct.Q4_K_M.gguf"
         # Fix: config_dir -> configdir (ConfigManager attribute)
         self.model_path = os.path.join(self.base.configdir, "models", self.model_name)
         self.loading = False
@@ -86,9 +86,10 @@ class ClippyBrain:
             if not HAS_LLAMA:
                 return "I need a brain! (Install llama-cpp-python)"
             if not os.path.exists(self.model_path):
+                if self.loading:
+                    return "Downloading brain... please wait."
                 threading.Thread(target=self.load_model, args=(callback,)).start()
-                return # Async download started, we will just wait or user clicks again
-                # Actually, better logic is to let load_model be called synchronously in the thread wrapper in view
+                return "Downloading brain... please wait." # Async download started
 
         if not self.model:
             self.load_model(callback)
@@ -96,14 +97,14 @@ class ClippyBrain:
         if not self.model:
             return "My brain hurts. (Model failed to load)"
 
-        # Simple ChatML-like format for Qwen
-        formatted_prompt = f"<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant\n"
+        # DeepSeek-Coder-Instruct format
+        formatted_prompt = f"### Instruction:\n{prompt}\n### Response:\n"
         
         try:
             output = self.model(
                 formatted_prompt,
                 max_tokens=128, # Keep it short and snappy
-                stop=["<|im_end|>"],
+                stop=["###", "\n\n"],
                 echo=False
             )
             return output['choices'][0]['text'].strip()

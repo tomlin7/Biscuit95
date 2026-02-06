@@ -238,6 +238,13 @@ class Text(BaseText):
 
     def key_release_events(self, event: tk.Event):
         self._user_edit = True
+        
+        # Context Engine Hook
+        if self.base.context_engine:
+             for w in self.base.context_engine.watchers:
+                 if w.__class__.__name__ == "UserBehaviorWatcher":
+                     w.report_action("type")
+                     break
 
         match event.keysym.lower():
             case (
