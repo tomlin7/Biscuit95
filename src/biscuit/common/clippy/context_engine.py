@@ -86,22 +86,29 @@ class ContextEngine:
             watcher.stop()
 
     def loop(self):
-        """Main loop: occasionally flushes old signals but otherwise we are event-driven."""
+        """Main loop: occasionally flushes old signals and checks for triggers."""
         while self.running:
-            time.sleep(5)
+            time.sleep(2) # CHECK EVERY 2 SECONDS
             with self.aggregator._lock:
-                cutoff = time.time() - 60
+                now = time.time()
+                cutoff = now - 60
                 self.aggregator.signals = [s for s in self.aggregator.signals if s["timestamp"] > cutoff]
+            
+            # Non-blocking check for triggers
+            self.check_and_trigger()
 
     def check_and_trigger(self):
         """Check if current signals warrant a suggestion."""
         signals = self.aggregator.get_context()
+        if not signals: return
+        
         score = self.scorer.calculate_score(signals)
         
         if score >= 50:
             print(f"ContextEngine: Threshold met ({score}). Triggering!")
             self.trigger_suggestion(signals)
-            self.aggregator.signals.clear()
+            with self.aggregator._lock:
+                self.aggregator.signals.clear()
 
     def trigger_suggestion(self, signals):
         if self.base.clippy:
@@ -109,40 +116,39 @@ class ContextEngine:
             
             # Analyze signals to create a helpful prompt
             error_count = sum(1 for s in signals if s['type'] == 'terminal_error')
-            has_idle = any(s['type'] == 'idle' for s in signals)
-            has_undo_burst = any(s['type'] == 'undo_burst' for s in signals)
             
             # Get the actual error text
             error_text = ""
             if error_count > 0:
                 recent_errors = [s['data'] for s in signals if s['type'] == 'terminal_error']
                 if recent_errors:
-                    # Use the most recent error context, but truncate to 1000 chars to be safe
                     error_text = recent_errors[-1][:1000]
             
-            # Clean Instruct prompt for DeepSeek-Coder 1.3B
             context = f"The user ran a command and got this error:\n{error_text[:300]}\n\n"
             context += "Instruction: Suggest the correct command or a brief fix. One sentence only."
             
-            # print(f"DEBUG: Final prompt being sent to LLM:\n{context}\n")
-            
-            # Proactively ask brain
             if hasattr(self.base.clippy, 'suggest'):
                 self.base.clippy.suggest(context)
-            else:
-                print("ContextEngine: Clippy has no suggest method!")
-        else:
-            print("ContextEngine: Clippy instance NOT found in self.base!")
-
-    def report_user_action(self, action_type, **kwargs):
-        if self.running:
-            self.user_watcher.report_action(action_type, **kwargs)
 
     def report_terminal_output(self, output, command=None):
         if self.running:
             self.terminal_watcher.report_output(output, command=command)
 
+    def report_ast_change(self, file_path, content, indentation):
+        if self.running:
+            self.ast_watcher.report_change(file_path, content, indentation)
+
     def report_signal(self, signal_type, data, confidence=1.0):
-        print(f"ContextEngine: Signal received: {signal_type} ({confidence})")
+        # Only log high confidence or important signals to console
+        if confidence > 0.7 or signal_type == "terminal_error":
+            print(f"ContextEngine: Signal received: {signal_type}")
+            
         self.aggregator.add_signal(signal_type, data, confidence)
-        self.check_and_trigger()
+        
+        # If it's a critical signal (error), trigger immediately
+        if signal_type == "terminal_error":
+             self.check_and_trigger()
+
+    def report_user_action(self, action_type, **kwargs):
+        if self.running:
+            self.user_watcher.report_action(action_type, **kwargs)

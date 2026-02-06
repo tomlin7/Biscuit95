@@ -12,19 +12,74 @@ class BaseWatcher:
     def stop(self):
         self.active = False
 
+import ast
+import queue
+
 class ASTWatcher(BaseWatcher):
-    """Monitors code complexity and structure."""
+    """Monitors code complexity and structure asynchronously."""
+    def __init__(self, engine):
+        super().__init__(engine)
+        self.last_depth = 0
+        self.last_length = 0
+        self.last_report_time = 0
+        self.change_queue = queue.Queue()
+        self.worker_thread = None
+    
     def start(self):
         super().start()
-        # In a real implementation, this would subscribe to editor events
-        # via the engine. For now, it relies on 'report_change' being called manually.
-    
-    def report_change(self, file_path, content_length, indentation_level):
+        self.worker_thread = threading.Thread(target=self.worker, daemon=True)
+        self.worker_thread.start()
+
+    def worker(self):
+        while self.active:
+            try:
+                # Wait for a change, but debounce by taking only the latest if multiple arrive
+                file_path, content, indentation_level = self.change_queue.get(timeout=1)
+                while not self.change_queue.empty():
+                    file_path, content, indentation_level = self.change_queue.get_nowait()
+                
+                self._analyze(file_path, content, indentation_level)
+            except queue.Empty:
+                continue
+            except Exception as e:
+                print(f"DEBUG: ASTWatcher worker error: {e}")
+
+    def report_change(self, file_path, content, indentation_level):
         if not self.active: return
+        # Quick handoff to background thread
+        self.change_queue.put((file_path, content, indentation_level))
+
+    def _analyze(self, file_path, content, indentation_level):
+        now = time.time()
+        lines = content.splitlines()
+        line_count = len(lines)
         
-        # Simple heuristic: rapid growth in indentation or length
-        # This is a placeholder for real AST analysis
-        pass
+        # 1. Deep Nesting
+        if indentation_level > 5:
+            self.engine.report_signal("deep_nesting", f"Nesting level {indentation_level} detected in {file_path}", confidence=0.6)
+        
+        # 2. Large Module
+        if line_count > 500:
+             self.engine.report_signal("large_module", f"File has {line_count} lines, might be hard to maintain", confidence=0.4)
+             
+        # 3. Rapid Growth
+        if (now - self.last_report_time) < 30: # Within 30s
+            growth = line_count - self.last_length
+            if growth > 50:
+                self.engine.report_signal("complexity_spike", f"Rapidly grew by {growth} lines", confidence=0.7)
+        
+        self.last_length = line_count
+        self.last_report_time = now
+
+        # 4. Python Specific AST Analysis
+        if file_path.endswith(".py"):
+            try:
+                tree = ast.parse(content)
+                nodes = len(list(ast.walk(tree)))
+                if nodes > 1000:
+                     self.engine.report_signal("ast_complexity", f"High node count ({nodes}) in Python AST", confidence=0.5)
+            except SyntaxError:
+                pass
 
 class TerminalWatcher(BaseWatcher):
     """Monitors terminal output for errors."""
@@ -43,6 +98,7 @@ class TerminalWatcher(BaseWatcher):
         # Split into lines and filter
         lines = [l.strip() for l in output.split("\n") if l.strip()]
         for line in lines:
+            # simple hack on widnows to get it working okay for now xd
             if "Microsoft Windows" in line or "Version 10" in line: continue
             self.output_buffer.append(line)
         

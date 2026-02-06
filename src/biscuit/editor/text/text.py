@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import queue
+import time
 import re
 import threading
 import tkinter as tk
@@ -79,6 +80,7 @@ class Text(BaseText):
         self.lsp: bool = False
         self.current_indent_level = 0
         self.insert_final_newline = False
+        self.last_selection_report = 0
 
         self.hover_after = None
         self.last_hovered = None
@@ -1350,7 +1352,10 @@ class Text(BaseText):
     def on_selection(self, *args):
         self.tag_remove("hover", 1.0, tk.END)
         if self.base.context_engine:
-            self.base.context_engine.report_user_action("selection")
+            now = time.time()
+            if now - self.last_selection_report > 0.5:
+                self.base.context_engine.report_user_action("selection")
+                self.last_selection_report = now
 
     def highlight_current_line(self, *_):
         self.tag_remove("currentline", 1.0, tk.END)
@@ -1436,6 +1441,13 @@ class Text(BaseText):
                 ):
                     # real modified
                     cursor_index = self.index(tk.INSERT)
+                    
+                    if self.base.context_engine:
+                        line = self.get("insert linestart", "insert lineend")
+                        indent = len(line) - len(line.lstrip())
+                        indent_level = indent // self.tab_spaces if self.tab_spaces > 0 else indent
+                        self.base.context_engine.report_ast_change(self.path, text, indent_level)
+
                     if (self._edit_stack_index + 1) != len(self._edit_stack):
                         self._edit_stack = self._edit_stack[
                             : self._edit_stack_index + 1
