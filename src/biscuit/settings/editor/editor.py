@@ -44,6 +44,7 @@ class SettingsEditor(BaseEditor):
     def add_sections(self):
         self.add_commonly_used()
         self.add_text_editor()
+        self.add_clippy_config()
         self.add_ai_config()
 
     def add_commonly_used(self):
@@ -66,6 +67,22 @@ class SettingsEditor(BaseEditor):
         commonly_used.add_checkbox("Auto Indent", True)
         commonly_used.add_checkbox("Auto Surround", True)
         commonly_used.add_checkbox("Word Wrap", False)
+
+    def add_clippy_config(self):
+        """Add Clippy configuration settings to the settings editor"""
+        clippy = self.add_section(f"Clippy (BETA)")
+        
+        self.clippy_enabled_item = clippy.add_checkbox("Enable Clippy", self.base.config.clippy_enabled)
+        
+        tk.Label(clippy, text="Active Listeners", font=self.base.settings.uifont_bold, anchor=tk.W).pack(fill=tk.X, padx=10, pady=(10, 5))
+        
+        self.clippy_listeners_items = {}
+        for listener in ["ast", "terminal", "git", "user_behavior"]:
+            active = listener in self.base.config.clippy_listeners
+            self.clippy_listeners_items[listener] = clippy.add_checkbox(f"  {listener.replace('_', ' ').title()}", active)
+        
+        from biscuit.common.ui import IconLabelButton, Icons
+        IconLabelButton(clippy, "Apply Clippy Settings", Icons.SAVE, self.save_clippy_settings).pack(fill=tk.X, pady=10)
 
     def add_ai_config(self):
         """Add AI configuration settings to the settings editor"""
@@ -92,6 +109,39 @@ class SettingsEditor(BaseEditor):
         
         from biscuit.common.ui import IconLabelButton, Icons
         IconLabelButton(ai, "Save Keys", Icons.SAVE, self.save_ai_keys).pack(fill=tk.X, pady=10)
+
+    def save_clippy_settings(self, *_) -> None:
+        try:
+            self.base.config.clippy_enabled = self.clippy_enabled_item.value
+            self.base.config.clippy_listeners = [
+                l for l, item in self.clippy_listeners_items.items() if item.value
+            ]
+            self.base.config.save_config()
+            
+            # Restart or stop context engine
+            if self.base.context_engine:
+                self.base.context_engine.stop()
+                if self.base.config.clippy_enabled:
+                    self.base.context_engine.setup() # Re-initialize watchers based on new listeners
+                    self.base.context_engine.start()
+            
+            # Update Clippy UI visibility
+            if self.base.clippy:
+                if self.base.config.clippy_enabled:
+                    self.base.clippy.deiconify()
+                else:
+                    self.base.clippy.withdraw()
+            
+            # Update Statusbar Icon
+            if hasattr(self.base.statusbar, 'clippy_toggle'):
+                if self.base.config.clippy_enabled:
+                    self.base.statusbar.clippy_toggle.show()
+                else:
+                    self.base.statusbar.clippy_toggle.hide()
+
+            self.base.notifications.info("Clippy settings applied successfully!")
+        except Exception as e:
+            self.base.notifications.error(f"Failed to apply Clippy settings: {e}")
 
     def save_ai_keys(self, *_) -> None:
         import os

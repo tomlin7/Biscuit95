@@ -149,8 +149,15 @@ class TerminalBase(PanelView):
                 buf = "\n".join(buf)
 
                 self.queue.put(buf)
-                if "is not recognized as an internal or external command" in buf:
-                    self.error()
+                
+                # Context Engine Hook
+                if self.base.config.clippy_enabled and self.base.context_engine:
+                    self.base.context_engine.report_terminal_output(buf, command=self.last_command)
+
+                # TODO: BISCUIT AI (Need a stronger implementation - do it later)
+                # (Not to be confused with the context engine / clippy / terminal watcher - unrelated to em)
+                # if "is not recognized as an internal or external command" in buf:
+                #     self.error()
 
     def error(self):
         self.ai.get_response(self.last_command)

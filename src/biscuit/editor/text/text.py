@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import queue
+import time
 import re
 import threading
 import tkinter as tk
@@ -79,6 +80,7 @@ class Text(BaseText):
         self.lsp: bool = False
         self.current_indent_level = 0
         self.insert_final_newline = False
+        self.last_selection_report = 0
 
         self.hover_after = None
         self.last_hovered = None
@@ -238,6 +240,10 @@ class Text(BaseText):
 
     def key_release_events(self, event: tk.Event):
         self._user_edit = True
+        
+        # Context Engine Hook
+        if self.base.context_engine:
+            self.base.context_engine.report_user_action("type")
 
         match event.keysym.lower():
             case (
@@ -1131,6 +1137,9 @@ class Text(BaseText):
         if self.insert_final_newline:
             if not self.get("end-2c", "end-1c").endswith("\n"):
                 self.add_newline()
+        
+        if self.base.context_engine:
+            self.base.context_engine.report_user_action("save")
 
         if path:
             try:
@@ -1340,6 +1349,14 @@ class Text(BaseText):
     def clear_all_selection(self):
         self.tag_remove(tk.SEL, 1.0, tk.END)
 
+    def on_selection(self, *args):
+        self.tag_remove("hover", 1.0, tk.END)
+        if self.base.config.clippy_enabled and self.base.context_engine:
+            now = time.time()
+            if now - self.last_selection_report > 0.5:
+                self.base.context_engine.report_user_action("selection")
+                self.last_selection_report = now
+
     def highlight_current_line(self, *_):
         self.tag_remove("currentline", 1.0, tk.END)
         if self.minimalist or self.tag_ranges(tk.SEL):
@@ -1393,7 +1410,7 @@ class Text(BaseText):
 
             self.tag_add(tag, "matchStart", "matchEnd")
 
-    def stack_undo(self):
+    def edit_undo(self):
         if self._edit_stack_index > 0:
             self._edit_stack_index = self._edit_stack_index - 1
             self._user_edit = False
@@ -1401,13 +1418,19 @@ class Text(BaseText):
             self.write(self._edit_stack[self._edit_stack_index][0][:-1])
             self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
 
-    def stack_redo(self):
+            if self.base.context_engine:
+                self.base.context_engine.report_user_action("undo")
+
+    def edit_redo(self):
         if self._edit_stack_index + 1 < len(self._edit_stack):
             self._edit_stack_index = self._edit_stack_index + 1
             self._user_edit = False
             self.clear()
             self.write(self._edit_stack[self._edit_stack_index][0][:-1])
             self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
+
+            if self.base.config.clippy_enabled and self.base.context_engine:
+                self.base.context_engine.report_user_action("redo")
 
     def _been_modified(self, event=None):
         try:
@@ -1418,6 +1441,13 @@ class Text(BaseText):
                 ):
                     # real modified
                     cursor_index = self.index(tk.INSERT)
+                    
+                    if self.base.config.clippy_enabled and self.base.context_engine:
+                        line = self.get("insert linestart", "insert lineend")
+                        indent = len(line) - len(line.lstrip())
+                        indent_level = indent // self.tab_spaces if self.tab_spaces > 0 else indent
+                        self.base.context_engine.report_ast_change(self.path, text, indent_level)
+
                     if (self._edit_stack_index + 1) != len(self._edit_stack):
                         self._edit_stack = self._edit_stack[
                             : self._edit_stack_index + 1
@@ -1469,6 +1499,11 @@ class Text(BaseText):
 
         if args[0] in ("insert", "replace", "delete"):
             self.event_generate("<<Change>>", when="tail")
+
+            if args[0] == "insert" and len(args) >= 3 and len(args[2]) > 200:
+                if self.base.context_engine:
+                    self.base.context_engine.report_user_action("paste", data=args[2])
+
             if self.lsp:
                 try:
                     self.base.language_server_manager.content_changed(self)
