@@ -125,6 +125,15 @@ class Statusbar(Frame):
         )
         self.panel_toggle.set_pack_data(side=tk.RIGHT, padx=(0, 10))
         self.panel_toggle.show()
+        
+        self.clippy_toggle = SButton(
+            self,
+            icon=Icons.ROBOT,
+            callback=self.toggle_clippy,
+            description="Toggle Clippy",
+        )
+        self.clippy_toggle.set_pack_data(side=tk.RIGHT, padx=(0, 10))
+        self.clippy_toggle.show()
 
     def add_button(
         self,
@@ -153,6 +162,13 @@ class Statusbar(Frame):
 
     def toggle_panel(self) -> None:
         self.base.toggle_terminal()
+
+    def toggle_clippy(self) -> None:
+        if self.base.clippy.winfo_viewable():
+            self.base.clippy.close()
+        else:
+            self.base.clippy.user_closed = False
+            self.base.clippy.deiconify()
 
     def toggle_editmode(self, state: bool) -> None:
         widgets = [

@@ -8,6 +8,8 @@ from .config import ConfigManager
 from .editor import *
 from .extensions import *
 from .layout import *
+from .layout import *
+from .common.clippy import Clippy
 
 
 class GUIManager(Tk, ConfigManager):
@@ -184,6 +186,8 @@ class GUIManager(Tk, ConfigManager):
         self.pathview = PathView(self)
         self.hover = Hover(self)
         self.diagnostic = Diagnostic(self)
+
+        self.clippy = Clippy(self)
 
     def late_setup(self) -> None:
         """Late setup for GUI components that are dependant on other components.
