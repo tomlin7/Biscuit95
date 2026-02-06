@@ -38,7 +38,7 @@ class HTMLEditor(BaseEditor):
 
         self.editor.bind("<<Change>>", self.on_change)
         self.edit_undo = self.editor.edit_undo
-        self.editor_redo = self.editor.edit_redo
+        self.edit_redo = self.editor.edit_redo
 
     @property
     def unsaved_changes(self) -> bool:

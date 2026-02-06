@@ -1400,7 +1400,7 @@ class Text(BaseText):
 
             self.tag_add(tag, "matchStart", "matchEnd")
 
-    def stack_undo(self):
+    def edit_undo(self):
         if self._edit_stack_index > 0:
             self._edit_stack_index = self._edit_stack_index - 1
             self._user_edit = False
@@ -1408,7 +1408,7 @@ class Text(BaseText):
             self.write(self._edit_stack[self._edit_stack_index][0][:-1])
             self.mark_set("insert", self._edit_stack[self._edit_stack_index][1])
 
-    def stack_redo(self):
+    def edit_redo(self):
         if self._edit_stack_index + 1 < len(self._edit_stack):
             self._edit_stack_index = self._edit_stack_index + 1
             self._user_edit = False
